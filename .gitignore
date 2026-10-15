@@ -1,0 +1,35 @@
+# Hệ điều hành & file tạm
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Cấu hình IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Node / Dependencies & Package manager (nếu có dùng)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# File build & nhật ký tạm
+dist/
+build/
+*.tmp
+*.log
+.cache/

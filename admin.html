@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin SGU SNEAKER - Vận Hành Kho, Giá Bán & Đơn Hàng</title>
+    <title>Admin SGU SNEAKER - Hệ Thống Quản Trị Cửa Hàng Toàn Diện</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,10 +37,40 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        body { background: var(--light); color: var(--dark); line-height: 1.5; }
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+        }
+
         a { text-decoration: none; color: inherit; }
         button { cursor: pointer; border: none; outline: none; transition: 0.2s; }
 
+        /* MÀN HÌNH ĐĂNG NHẬP ADMIN RIÊNG BIỆT (Mục I.1) */
+        #admin-login-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .login-card {
+            background: #fff;
+            width: 100%;
+            max-width: 440px;
+            padding: 36px 32px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .login-card h2 { color: var(--dark); font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+        .login-card p { color: var(--gray); font-size: 13px; margin-bottom: 24px; }
+
+        /* ADMIN DASHBOARD LAYOUT */
         .admin-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -55,16 +85,21 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
         .brand {
-            padding: 0 24px 24px;
+            padding: 0 24px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
             font-size: 22px;
             font-weight: 800;
+            letter-spacing: -0.5px;
         }
         .brand span { color: var(--primary); }
         .menu-group-title {
-            padding: 20px 24px 8px;
+            padding: 16px 24px 6px;
             font-size: 11px;
             text-transform: uppercase;
             color: #94a3b8;
@@ -75,9 +110,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 13px 24px;
+            padding: 11px 24px;
             color: #cbd5e1;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             border-left: 4px solid transparent;
             cursor: pointer;
@@ -89,32 +124,35 @@
             border-left-color: var(--primary);
         }
 
-        /* MAIN CONTENT */
-        .main-content { padding: 30px 36px; }
+        /* MAIN CONTENT AREA */
+        .main-content {
+            padding: 28px 36px;
+            overflow-y: auto;
+        }
         .top-bar {
             background: #fff;
-            padding: 16px 28px;
+            padding: 14px 24px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow-sm);
         }
         .card-box {
             background: #fff;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            padding: 26px;
-            margin-bottom: 28px;
+            padding: 24px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow-sm);
         }
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             padding-bottom: 14px;
             border-bottom: 2px solid var(--light);
         }
@@ -134,26 +172,35 @@
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-dark { background: var(--dark); color: #fff; }
         .btn-warning { background: #fef3c7; color: #b45309; }
+        .btn-warning:hover { background: #fde68a; }
+        .btn-danger { background: #fee2e2; color: #b91c1c; }
+        .btn-danger:hover { background: #fecaca; }
         .btn-success { background: #dcfce7; color: #15803d; }
-        .btn-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+        .btn-success:hover { background: #bbf7d0; }
+        .btn-disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
 
-        /* FILTER BARS */
+        /* FILTER BAR */
         .filter-bar {
-            display: flex;
-            gap: 14px;
             background: #f8fafc;
-            padding: 16px 20px;
+            padding: 16px;
             border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
             margin-bottom: 20px;
-            align-items: end;
             flex-wrap: wrap;
         }
+
+        /* FORM CONTROLS */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
         .form-control {
-            padding: 9px 13px;
+            width: 100%;
+            padding: 10px 14px;
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             font-size: 14px;
+            background: #fff;
         }
         .form-control:focus {
             border-color: var(--primary);
@@ -163,14 +210,16 @@
 
         /* TABLES */
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th, td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13.5px; }
         th { background: #f8fafc; font-weight: 700; color: var(--dark); }
-
-        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .badge-done { background: #dcfce7; color: #15803d; }
+        .thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .badge-active { background: #dcfce7; color: #15803d; }
+        .badge-locked { background: #fee2e2; color: #b91c1c; }
         .badge-pending { background: #fef3c7; color: #b45309; }
+        .badge-done { background: #dcfce7; color: #15803d; }
         .badge-danger { background: #fee2e2; color: #b91c1c; }
-        .badge-info { background: #dbeafe; color: #1d4ed8; }
+        .badge-info { background: #e0f2fe; color: #0284c7; }
 
         /* TOAST */
         #toast-container {
@@ -217,7 +266,7 @@
         .modal-box {
             background: #fff;
             width: 100%;
-            max-width: 680px;
+            max-width: 600px;
             border-radius: var(--radius-md);
             padding: 30px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
@@ -228,40 +277,285 @@
 
     <div id="toast-container"></div>
 
+    <!-- =========================================================
+         MỤC I.1: TRANG ĐĂNG NHẬP ADMIN (KHÔNG DÙNG CHUNG VỚI KHÁCH)
+         ========================================================= -->
+    <div id="admin-login-screen">
+        <div class="login-card">
+            <h2>🔐 CỔNG QUẢN TRỊ VIÊN</h2>
+            <p>Hệ thống quản lý cửa hàng SGU Sneaker dành riêng cho Chủ cửa hàng & Quản lý.</p>
+            <div class="form-group">
+                <label>Tài khoản Quản trị</label>
+                <input type="text" id="admin-user" class="form-control" value="admin_sgu">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="admin-pass" class="form-control" value="123456">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;" onclick="loginAdmin()">
+                Đăng Nhập Vào Hệ Thống Admin →
+            </button>
+            <div style="margin-top: 18px; text-align: center; font-size: 13px;">
+                <a href="index.html" style="color: var(--gray); text-decoration: underline;">← Quay lại trang Cửa hàng</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BỐ CỤC CHÍNH DASHBOARD ADMIN -->
     <div class="admin-layout">
-        <!-- SIDEBAR MENU -->
+        <!-- SIDEBAR MENU: ĐẦY ĐỦ 7 CHỨC NĂNG QUẢN TRỊ -->
         <aside class="sidebar">
             <div>
                 <div class="brand">SGU<span>ADMIN</span></div>
 
-                <div class="menu-group-title">Phần 1: Danh Mục & Khách Hàng</div>
-                <a href="admin-catalog.html" class="menu-item">👥 1. Quản lý Khách hàng</a>
-                <a href="admin-catalog.html" class="menu-item">📂 2. Quản lý Loại sản phẩm</a>
-                <a href="admin-catalog.html" class="menu-item">👟 3. Quản lý Danh mục Giày</a>
+                <div class="menu-group-title">Danh Mục & Người Dùng</div>
+                <div class="menu-item active" id="nav-users" onclick="switchAdminTab('tab-users', this)">
+                    👥 1. Quản lý Khách hàng
+                </div>
+                <div class="menu-item" id="nav-cats" onclick="switchAdminTab('tab-cats', this)">
+                    📂 2. Quản lý Loại sản phẩm
+                </div>
+                <div class="menu-item" id="nav-prods" onclick="switchAdminTab('tab-prods', this)">
+                    👟 3. Quản lý Danh mục Giày
+                </div>
 
-                <div class="menu-group-title">Phần 2: Kho, Giá & Đơn Hàng</div>
-                <div class="menu-item active" id="nav-imports" onclick="switchOpTab('tab-imports', this)">📥 4. Quản lý Nhập sản phẩm</div>
-                <div class="menu-item" id="nav-pricing" onclick="switchOpTab('tab-pricing', this)">💰 5. Quản lý Giá bán & Lợi nhuận</div>
-                <div class="menu-item" id="nav-orders" onclick="switchOpTab('tab-orders', this)">📦 6. Quản lý Đơn đặt hàng</div>
-                <div class="menu-item" id="nav-inventory" onclick="switchOpTab('tab-inventory', this)">📊 7. Quản lý Số lượng Tồn kho</div>
+                <div class="menu-group-title">Vận Hành, Kho & Đơn Hàng</div>
+                <div class="menu-item" id="nav-imports" onclick="switchAdminTab('tab-imports', this)">
+                    📥 4. Quản lý Nhập sản phẩm
+                </div>
+                <div class="menu-item" id="nav-pricing" onclick="switchAdminTab('tab-pricing', this)">
+                    💰 5. Quản lý Giá bán & Lợi nhuận
+                </div>
+                <div class="menu-item" id="nav-orders" onclick="switchAdminTab('tab-orders', this)">
+                    📦 6. Quản lý Đơn đặt hàng
+                </div>
+                <div class="menu-item" id="nav-inventory" onclick="switchAdminTab('tab-inventory', this)">
+                    📊 7. Quản lý Tồn kho & Cảnh báo
+                </div>
             </div>
 
             <div style="padding: 0 24px;">
-                <a href="index.html" class="btn btn-dark" style="display:block; text-align:center;">🌐 Về Web Cửa Hàng</a>
+                <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="logoutAdmin()">🚪 Đăng xuất Admin</button>
+                <a href="index.html" class="btn btn-dark" style="display:block; text-align:center;">🌐 Xem Web Cửa Hàng</a>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- MAIN CONTENT -->
         <main class="main-content">
             <div class="top-bar">
-                <div><strong>Vận Hành Kho, Giá Bán & Quản Lý Đơn Hàng SGU</strong></div>
-                <div style="font-size: 13px; color: var(--gray);">Hệ thống đồng bộ dữ liệu thời gian thực</div>
+                <div>
+                    <strong>Bảng điều khiển Quản trị Toàn diện</strong> | Quản trị viên: <span style="color: var(--primary); font-weight: 700;">Admin SGU</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <a href="index.html" class="btn btn-primary">🛒 Trang Bán Hàng</a>
+                    <button class="btn btn-dark" onclick="lockAdminScreen()">
+                        🔒 Khóa màn hình
+                    </button>
+                </div>
             </div>
 
-            <!-- =========================================================
-                 MỤC I.5: QUẢN LÝ NHẬP SẢN PHẨM (0.75đ)
-                 ========================================================= -->
-            <div id="tab-imports" class="op-tab" style="display: block;">
+            <!-- ================= MỤC I.2: QUẢN LÝ NGƯỜI DÙNG / KHÁCH HÀNG (0.75đ) ================= -->
+            <div id="tab-users" class="admin-tab" style="display: block;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>👥 Quản lý Người dùng / Khách hàng</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Hiển thị danh sách khách hàng, Reset mật khẩu và Khóa / Mở khóa tài khoản</span>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Họ và tên</th>
+                                <th>Email / Tài khoản</th>
+                                <th>Số điện thoại</th>
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <tr>
+                                <td><strong>KH001</strong></td>
+                                <td><strong>Nguyễn Văn A</strong></td>
+                                <td>nguyenvana@gmail.com</td>
+                                <td>0909123456</td>
+                                <td>273 An Dương Vương, Q.5, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh1">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Nguyễn Văn A')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh1" onclick="toggleLock('kh1', 'Nguyễn Văn A')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH002</strong></td>
+                                <td><strong>Trần Thị Bích</strong></td>
+                                <td>tranthibich@gmail.com</td>
+                                <td>0918222333</td>
+                                <td>120 Nguyễn Huệ, Q.1, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh2">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Trần Thị Bích')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh2" onclick="toggleLock('kh2', 'Trần Thị Bích')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH003</strong></td>
+                                <td><strong>Lê Hoàng Nam</strong></td>
+                                <td>lehoangnam@gmail.com</td>
+                                <td>0987654321</td>
+                                <td>45 Lê Lợi, Q.Gò Vấp, TP.HCM</td>
+                                <td><span class="badge badge-locked" id="badge-kh3">Đã khóa</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Lê Hoàng Nam')">🔑 Reset Pass</button>
+                                    <button class="btn btn-success" id="btn-lock-kh3" onclick="toggleLock('kh3', 'Lê Hoàng Nam')">🔓 Mở khóa TK</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.3: QUẢN LÝ LOẠI SẢN PHẨM (0.5đ) ================= -->
+            <div id="tab-cats" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <h3>📂 Quản lý Loại sản phẩm (Thêm, Sửa, Xóa / Ẩn)</h3>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 14px; background: #f8fafc; padding: 18px; border-radius: var(--radius-sm); margin-bottom: 24px; align-items: end;">
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Mã loại giày *</label>
+                            <input type="text" id="cat-code" class="form-control" placeholder="VD: LOAI05">
+                        </div>
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Tên loại giày *</label>
+                            <input type="text" id="cat-name" class="form-control" placeholder="VD: Giày Sandal Thể Thao...">
+                        </div>
+                        <button class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã loại</th>
+                                <th>Tên loại giày</th>
+                                <th>Số lượng mẫu</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cat-table-body">
+                            <tr>
+                                <td><strong>LOAI01</strong></td>
+                                <td class="cat-name">Giày Sneaker</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI01', 'Giày Sneaker')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI02</strong></td>
+                                <td class="cat-name">Giày Chạy Bộ</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI02', 'Giày Chạy Bộ')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI03</strong></td>
+                                <td class="cat-name">Giày Đá Bóng</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI03', 'Giày Đá Bóng')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI04</strong></td>
+                                <td class="cat-name">Giày Tây Nam</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI04', 'Giày Tây Nam')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.4: QUẢN LÝ DANH MỤC SẢN PHẨM (0.75đ) ================= -->
+            <div id="tab-prods" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <h3>👟 Quản lý Danh mục Sản phẩm Giày</h3>
+                        <button class="btn btn-primary" onclick="openAddProductModal()">+ Thêm sản phẩm giày mới</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hình</th>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Mô tả tóm tắt</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prod-table-body">
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP001', 'Nike Air Max Red 2025', 'Giày Sneaker', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80', 'Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP002', 'Adidas Ultraboost Light Pro', 'Giày Chạy Bộ', 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80', 'Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP003', 'Air Jordan 1 Retro High', 'Giày Sneaker', 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80', 'Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.5: QUẢN LÝ NHẬP SẢN PHẨM (0.75đ) ================= -->
+            <div id="tab-imports" class="admin-tab" style="display: none;">
                 <div class="card-box">
                     <div class="card-header">
                         <div>
@@ -271,11 +565,10 @@
                         <button class="btn btn-primary" onclick="openImportModal('new')">+ Thêm phiếu nhập mới</button>
                     </div>
 
-                    <!-- Tìm kiếm phiếu nhập -->
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu</label>
-                            <input type="text" id="imp-search-code" class="form-control" placeholder="VD: PN2025-02">
+                            <input type="text" class="form-control" placeholder="VD: PN2025-02">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
@@ -304,7 +597,7 @@
                                 <td><span class="badge badge-pending" id="imp-status-2">Chưa hoàn thành</span></td>
                                 <td id="imp-actions-2">
                                     <button class="btn btn-warning" onclick="openImportModal('edit')">✏️ Sửa phiếu</button>
-                                    <button class="btn btn-success" onclick="completeImport(2)">✅ Hoàn thành phiếu</button>
+                                    <button class="btn btn-success" onclick="completeImport(2)">✅ Hoàn thành</button>
                                 </td>
                             </tr>
                             <tr>
@@ -322,10 +615,8 @@
                 </div>
             </div>
 
-            <!-- =========================================================
-                 MỤC I.6: QUẢN LÝ GIÁ BÁN & LỢI NHUẬN (0.50đ)
-                 ========================================================= -->
-            <div id="tab-pricing" class="op-tab" style="display: none;">
+            <!-- ================= MỤC I.6: QUẢN LÝ GIÁ BÁN & LỢI NHUẬN (0.50đ) ================= -->
+            <div id="tab-pricing" class="admin-tab" style="display: none;">
                 <div class="card-box">
                     <div class="card-header">
                         <div>
@@ -334,7 +625,6 @@
                         </div>
                     </div>
 
-                    <!-- Thiết lập % lợi nhuận theo loại -->
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Áp dụng cho Phân loại</label>
@@ -352,7 +642,6 @@
                         <button class="btn btn-primary" onclick="applyBulkProfit()">Áp Dụng Cho Toàn Loại</button>
                     </div>
 
-                    <!-- Bảng tra cứu giá vốn, % lợi nhuận, giá bán -->
                     <table>
                         <thead>
                             <tr>
@@ -398,19 +687,16 @@
                 </div>
             </div>
 
-            <!-- =========================================================
-                 MỤC I.7: QUẢN LÝ ĐƠN ĐẶT HÀNG (0.50đ)
-                 ========================================================= -->
-            <div id="tab-orders" class="op-tab" style="display: none;">
+            <!-- ================= MỤC I.7: QUẢN LÝ ĐƠN ĐẶT HÀNG (0.50đ) ================= -->
+            <div id="tab-orders" class="admin-tab" style="display: none;">
                 <div class="card-box">
                     <div class="card-header">
                         <div>
                             <h3>📦 Quản lý & Cập Nhật Tình Trạng Đơn Đặt Hàng</h3>
-                            <span style="font-size: 13px; color: var(--gray);">Đồng bộ đơn hàng từ giỏ hàng của khách hàng (Mới đặt, Đã xử lý, Đã giao, Hủy)</span>
+                            <span style="font-size: 13px; color: var(--gray);">Đồng bộ đơn hàng từ giỏ hàng của khách (Mới đặt, Đã xử lý, Đã giao, Hủy)</span>
                         </div>
                     </div>
 
-                    <!-- Tra cứu theo thời gian & tình trạng -->
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
@@ -445,16 +731,14 @@
                             </tr>
                         </thead>
                         <tbody id="admin-orders-table">
-                            <!-- JS tự render đơn hàng động từ LocalStorage -->
+                            <!-- JS tự render từ LocalStorage -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- =========================================================
-                 MỤC I.8: QUẢN LÝ SỐ LƯỢNG TỒN KHO & CẢNH BÁO (0.75đ)
-                 ========================================================= -->
-            <div id="tab-inventory" class="op-tab" style="display: none;">
+            <!-- ================= MỤC I.8: QUẢN LÝ TỒN KHO & CẢNH BÁO (0.75đ) ================= -->
+            <div id="tab-inventory" class="admin-tab" style="display: none;">
                 <!-- CẢNH BÁO SẮP HẾT HÀNG (Mục I.8) -->
                 <div style="background: #fff1f2; border: 1.5px solid #fda4af; color: #9f1239; padding: 18px 24px; border-radius: 12px; margin-bottom: 24px;">
                     <div style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px;">
@@ -463,7 +747,7 @@
                     <p style="font-size: 13.5px; margin-top: 6px; line-height: 1.5;">
                         • <strong>SP003 - Air Jordan 1 Retro High</strong> hiện chỉ còn <strong>2 đôi</strong> trong kho!<br>
                         • <strong>SP004 - Nike Mercurial Vapor 15</strong> hiện chỉ còn <strong>3 đôi</strong> trong kho!<br>
-                        👉 <em>Vui lòng lập thêm phiếu nhập hàng mới ở mục <strong>Quản lý nhập sản phẩm</strong> để đảm bảo cung ứng.</em>
+                        👉 <em>Vui lòng lập thêm phiếu nhập hàng mới ở mục <strong>Quản lý nhập sản phẩm</strong> để đảm bảo nguồn cung.</em>
                     </p>
                 </div>
 
@@ -558,6 +842,42 @@
         </main>
     </div>
 
+    <!-- MODAL THÊM / SỬA SẢN PHẨM GIÀY (Mục I.4) -->
+    <div class="modal-overlay" id="modal-product">
+        <div class="modal-box">
+            <h3 id="modal-prod-title" style="margin-bottom: 18px; font-weight: 800;">Thêm sản phẩm giày mới</h3>
+            <div class="form-group">
+                <label>Loại sản phẩm giày *</label>
+                <select id="prod-cat" class="form-control">
+                    <option value="Giày Sneaker">Giày Sneaker</option>
+                    <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                    <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                    <option value="Giày Tây Nam">Giày Tây Nam</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Mã sản phẩm *</label>
+                <input type="text" id="prod-code" class="form-control" placeholder="VD: SP007">
+            </div>
+            <div class="form-group">
+                <label>Tên sản phẩm giày *</label>
+                <input type="text" id="prod-name" class="form-control" placeholder="VD: Nike Dunk Low Panda...">
+            </div>
+            <div class="form-group">
+                <label>Hình ảnh sản phẩm (URL)</label>
+                <input type="text" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="form-group">
+                <label>Mô tả chi tiết sản phẩm</label>
+                <textarea id="prod-desc" class="form-control" rows="3" placeholder="Chất liệu da, công nghệ đế đệm..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-dark" onclick="closeModal('modal-product')">Đóng</button>
+                <button class="btn btn-primary" onclick="saveProductModal()">💾 Lưu Sản Phẩm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG -->
     <div class="modal-overlay" id="modal-import">
         <div class="modal-box">
@@ -633,6 +953,7 @@
     </div>
 
     <script>
+        // HỆ THỐNG THÔNG BÁO TOAST
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -645,23 +966,164 @@
             }, 3000);
         }
 
-        function switchOpTab(tabId, navEl) {
-            document.querySelectorAll('.op-tab').forEach(t => t.style.display = 'none');
+        // ĐỒNG BỘ PHIÊN ĐĂNG NHẬP BẰNG SESSIONSTORAGE (KHÔNG BAO GIỜ BỊ HỎI LẠI TRỪ KHI ĐĂNG XUẤT)
+        function checkAdminSession() {
+            const isAuth = sessionStorage.getItem('sgu_admin_auth') === 'true';
+            const loginScreen = document.getElementById('admin-login-screen');
+            if (isAuth) {
+                loginScreen.style.display = 'none';
+            } else {
+                loginScreen.style.display = 'flex';
+            }
+        }
+
+        function loginAdmin() {
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+            if (!user || !pass) {
+                showToast('Vui lòng nhập tài khoản và mật khẩu!', 'warning');
+                return;
+            }
+            sessionStorage.setItem('sgu_admin_auth', 'true');
+            document.getElementById('admin-login-screen').style.display = 'none';
+            showToast('Đăng nhập Quản trị viên thành công! Phiên làm việc đã kích hoạt.', 'success');
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('sgu_admin_auth');
+            document.getElementById('admin-login-screen').style.display = 'flex';
+            showToast('Đã đăng xuất khỏi tài khoản Quản trị!', 'warning');
+        }
+
+        function lockAdminScreen() {
+            document.getElementById('admin-login-screen').style.display = 'flex';
+            showToast('Đã khóa màn hình Quản trị viên!', 'warning');
+        }
+
+        // CHUYỂN TAB TRỰC TIẾP TRONG 1 TRANG DUY NHẤT
+        function switchAdminTab(tabId, navEl) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
+            const target = document.getElementById(tabId);
+            if (target) target.style.display = 'block';
             if (navEl) navEl.classList.add('active');
+
+            // Cập nhật hash trên URL
+            const mapHash = {
+                'tab-users': '#users',
+                'tab-cats': '#cats',
+                'tab-prods': '#prods',
+                'tab-imports': '#imports',
+                'tab-pricing': '#pricing',
+                'tab-orders': '#orders',
+                'tab-inventory': '#inventory'
+            };
+            if (mapHash[tabId]) {
+                history.replaceState(null, null, mapHash[tabId]);
+            }
         }
 
         window.onload = function() {
-            const hash = window.location.hash;
-            if (hash === '#pricing') switchOpTab('tab-pricing', document.getElementById('nav-pricing'));
-            if (hash === '#orders') switchOpTab('tab-orders', document.getElementById('nav-orders'));
-            if (hash === '#inventory') switchOpTab('tab-inventory', document.getElementById('nav-inventory'));
-
+            checkAdminSession();
             loadAdminOrders();
+
+            // Đọc Hash từ URL nếu người dùng bookmark hoặc mở link trực tiếp
+            const hash = window.location.hash;
+            if (hash === '#cats') switchAdminTab('tab-cats', document.getElementById('nav-cats'));
+            else if (hash === '#prods') switchAdminTab('tab-prods', document.getElementById('nav-prods'));
+            else if (hash === '#imports') switchAdminTab('tab-imports', document.getElementById('nav-imports'));
+            else if (hash === '#pricing') switchAdminTab('tab-pricing', document.getElementById('nav-pricing'));
+            else if (hash === '#orders') switchAdminTab('tab-orders', document.getElementById('nav-orders'));
+            else if (hash === '#inventory') switchAdminTab('tab-inventory', document.getElementById('nav-inventory'));
         };
 
-        // NHẬP HÀNG: HOÀN THÀNH PHIẾU -> KHÓA SỬA
+        // QUẢN LÝ KHÁCH HÀNG
+        function resetUserPassword(name) {
+            showToast(`Đã reset mật khẩu của khách hàng "${name}" về: 123456`, 'success');
+        }
+
+        function toggleLock(id, name) {
+            const badge = document.getElementById('badge-' + id);
+            const btn = document.getElementById('btn-lock-' + id);
+            if (badge.innerText === 'Đang hoạt động') {
+                badge.innerText = 'Đã khóa';
+                badge.className = 'badge badge-locked';
+                btn.innerText = '🔓 Mở khóa TK';
+                btn.className = 'btn btn-success';
+                showToast(`Đã KHÓA tài khoản của: ${name}`, 'warning');
+            } else {
+                badge.innerText = 'Đang hoạt động';
+                badge.className = 'badge badge-active';
+                btn.innerText = '🔒 Khóa TK';
+                btn.className = 'btn btn-danger';
+                showToast(`Đã MỞ KHÓA tài khoản của: ${name}`, 'success');
+            }
+        }
+
+        // QUẢN LÝ LOẠI GIÀY
+        function editCategory(code, name) {
+            document.getElementById('cat-code').value = code;
+            document.getElementById('cat-name').value = name;
+            showToast(`Đã tải dữ liệu loại "${name}" lên form chỉnh sửa!`, 'success');
+        }
+
+        function saveCategory() {
+            const code = document.getElementById('cat-code').value.trim();
+            const name = document.getElementById('cat-name').value.trim();
+            if (!code || !name) {
+                showToast('Vui lòng nhập đầy đủ Mã loại và Tên loại giày!', 'warning');
+                return;
+            }
+            showToast(`Đã lưu thành công loại giày: ${code} - ${name}!`, 'success');
+            document.getElementById('cat-code').value = '';
+            document.getElementById('cat-name').value = '';
+        }
+
+        // QUẢN LÝ SẢN PHẨM
+        function openAddProductModal() {
+            document.getElementById('modal-prod-title').innerText = '➕ Thêm sản phẩm giày mới';
+            document.getElementById('prod-code').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-img').value = '';
+            document.getElementById('prod-desc').value = '';
+            document.getElementById('modal-product').style.display = 'flex';
+        }
+
+        function openEditProductModal(code, name, cat, img, desc) {
+            document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + code;
+            document.getElementById('prod-code').value = code;
+            document.getElementById('prod-name').value = name;
+            document.getElementById('prod-cat').value = cat;
+            document.getElementById('prod-img').value = img;
+            document.getElementById('prod-desc').value = desc;
+            document.getElementById('modal-product').style.display = 'flex';
+        }
+
+        function saveProductModal() {
+            const name = document.getElementById('prod-name').value;
+            if (!name) {
+                showToast('Vui lòng nhập tên sản phẩm giày!', 'warning');
+                return;
+            }
+            showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
+            closeModal('modal-product');
+        }
+
+        function toggleHideRow(btn) {
+            const row = btn.closest('tr');
+            const badge = row.querySelector('.badge');
+            if (badge.innerText.includes('Ẩn') || badge.innerText.includes('khóa')) {
+                badge.innerText = 'Đang hiển thị';
+                badge.className = 'badge badge-active';
+                showToast('Đã mở hiển thị sản phẩm!', 'success');
+            } else {
+                badge.innerText = 'Đã ẩn';
+                badge.className = 'badge badge-locked';
+                showToast('Đã ẩn sản phẩm khỏi website khách hàng!', 'warning');
+            }
+        }
+
+        // QUẢN LÝ NHẬP HÀNG
         function openImportModal(mode) {
             document.getElementById('modal-imp-title').innerText = (mode === 'edit') ? '✏️ Sửa Phiếu Nhập PN2025-02 (Chưa hoàn thành)' : '➕ Thêm Phiếu Nhập Hàng Mới';
             document.getElementById('modal-import').style.display = 'flex';
@@ -690,7 +1152,7 @@
             showToast(`Đã cập nhật tỉ lệ lợi nhuận ${percent}% cho toàn bộ sản phẩm thuộc loại "${cat}"!`, 'success');
         }
 
-        // QUẢN LÝ ĐƠN HÀNG TỪ LOCALSTORAGE (ĐỒNG BỘ 100% VỚI CART.HTML)
+        // QUẢN LÝ ĐƠN HÀNG TỰ ĐỘNG TỪ LOCALSTORAGE (ĐỒNG BỘ 100% VỚI CART.HTML)
         let adminOrders = JSON.parse(localStorage.getItem('sgu_orders')) || [
             {
                 id: '#DH2025-089',

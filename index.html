@@ -854,10 +854,10 @@
 
     <!-- PROMO TOPBAR -->
     <div class="promo-bar">
-        <div>🔥 <strong>Ưu Đãi Đặc Biệt:</strong> Giảm ngay 20% cho thành viên mới với mã <span style="color:#fb7185; font-weight:700;">SGUNEW20</span></div>
+        <div>🔥 <strong>Ưu Đãi Đặc Biệt:</strong> Giảm ngay 20% cho thành viên mới với mã <span style="color:#fb7185; font-weight:700;">SGUNEW20</span> | <a href="product-detail.html?id=SP001" style="color:#f43f5e; font-weight:700;">👟 Xem Demo Trang Chi Tiết SP (Mới)</a></div>
         <div class="promo-bar-right">
             <span>📞 CSKH: 1900 1234</span>
-            <a href="admin-catalog.html" style="color: #cbd5e1;">Cổng Quản Trị Admin ↗</a>
+            <a href="admin.html" style="color: #cbd5e1; font-weight:600;">🔐 Cổng Quản Trị Admin ↗</a>
         </div>
     </div>
 
@@ -1226,8 +1226,9 @@
                 <h4>Về Cửa Hàng</h4>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="product-detail.html?id=SP001">Chi tiết sản phẩm</a></li>
                     <li><a href="cart.html">Giỏ hàng & Đơn hàng</a></li>
-                    <li><a href="admin-catalog.html">Trang Quản trị Admin</a></li>
+                    <li><a href="admin.html">Trang Quản trị Admin</a></li>
                     <li><a href="#">Chính sách đổi trả</a></li>
                 </ul>
             </div>
@@ -1680,7 +1681,7 @@
                             </div>
                         </div>
                         <div class="product-card-actions">
-                            <button class="btn-outline" style="font-size: 13px;" onclick="openProductDetailById('${prod.id}')">Chi tiết</button>
+                            <a href="product-detail.html?id=${prod.id}" class="btn-outline" style="font-size: 13px; display:inline-flex; align-items:center; justify-content:center;">Chi tiết ↗</a>
                             <button class="btn-primary" style="font-size: 13px;" onclick="addToCart('${prod.name}', ${prod.price}, '${prod.id}', '${prod.img}')">Chọn mua</button>
                         </div>
                     </div>

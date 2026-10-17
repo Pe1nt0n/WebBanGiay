@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Giày - SGU SNEAKER Chính Hãng</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-hover: #be123c;
+            --primary-light: #ffe4e6;
+            --secondary: #0f172a;
+            --secondary-surface: #1e293b;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --gray: #64748b;
+            --gray-light: #f1f5f9;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 28px rgba(0,0,0,0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; outline: none; transition: 0.25s; }
+
+        /* TOP PROMO BAR */
+        .promo-bar {
+            background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+            color: #cbd5e1;
+            padding: 8px 24px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .promo-bar a { color: #f43f5e; font-weight: 600; text-decoration: underline; }
+
+        /* HEADER */
+        header {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        .logo span { color: var(--secondary); }
+
+        .search-input {
+            width: 380px;
+            padding: 10px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 13.5px;
+            outline: none;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        .header-actions { display: flex; align-items: center; gap: 14px; }
+        .cart-btn {
+            position: relative;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            padding: 9px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 13.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-badge {
+            background: var(--primary);
+            color: #fff;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb-wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 18px 24px 8px;
+            font-size: 13.5px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breadcrumb-wrap a:hover { color: var(--primary); }
+
+        /* PRODUCT DETAIL CONTAINER */
+        .detail-wrapper {
+            max-width: 1280px;
+            margin: 12px auto 50px;
+            padding: 0 24px;
+        }
+
+        .product-main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            background: #fff;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* LEFT: GALLERY */
+        .gallery-box { display: flex; flex-direction: column; gap: 16px; }
+        .main-img-box {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            background: #f8fafc;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .main-img-box img {
+            max-width: 88%;
+            max-height: 88%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .main-img-box:hover img { transform: scale(1.06); }
+        .badge-hot-tag {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .thumb-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .thumb-card {
+            height: 95px;
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .thumb-card.active, .thumb-card:hover {
+            border-color: var(--primary);
+            background: #fff;
+        }
+        .thumb-card img {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+        }
+
+        /* RIGHT: PRODUCT INFO */
+        .info-box { display: flex; flex-direction: column; }
+        .prod-brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .brand-pill {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .sku-text { font-size: 13px; color: var(--gray); }
+
+        .prod-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .rating-sold-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13.5px;
+            color: var(--gray);
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .stars { color: #f59e0b; }
+
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .curr-price {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .old-price {
+            font-size: 18px;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+        .discount-pill {
+            background: #fee2e2;
+            color: #b91c1c;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .prod-short-desc {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* COLOR & SIZE SELECTORS */
+        .option-group { margin-bottom: 22px; }
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+        }
+        .size-guide-btn {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .color-chips, .size-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .chip {
+            padding: 9px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chip:hover, .chip.selected {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* QUANTITY & ACTIONS */
+        .action-row {
+            display: flex;
+            gap: 14px;
+            margin-top: 24px;
+            margin-bottom: 28px;
+        }
+        .qty-box {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            overflow: hidden;
+        }
+        .qty-btn {
+            width: 40px;
+            height: 48px;
+            background: #f8fafc;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:hover { background: #e2e8f0; }
+        .qty-val {
+            width: 46px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            outline: none;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            background: #fff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 800;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-add-cart:hover {
+            background: var(--primary-light);
+        }
+        .btn-buy-now {
+            flex: 1;
+            background: var(--primary);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 800;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3);
+        }
+        .btn-buy-now:hover { background: var(--primary-hover); }
+
+        /* TRUST BADGES */
+        .trust-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* PRODUCT TABS (SPECIFICATIONS & REVIEWS) */
+        .tabs-section {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            margin-top: 36px;
+            padding: 36px;
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-headers {
+            display: flex;
+            gap: 30px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 26px;
+        }
+        .tab-title {
+            font-size: 16px;
+            font-weight: 800;
+            padding-bottom: 14px;
+            cursor: pointer;
+            color: var(--gray);
+            position: relative;
+        }
+        .tab-title.active {
+            color: var(--primary);
+        }
+        .tab-title.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0; right: 0;
+            height: 2.5px;
+            background: var(--primary);
+        }
+
+        .spec-table { width: 100%; border-collapse: collapse; }
+        .spec-table tr:nth-child(even) { background: #f8fafc; }
+        .spec-table td { padding: 12px 18px; font-size: 14px; }
+        .spec-table td:first-child { width: 220px; font-weight: 700; color: var(--secondary); }
+
+        /* RELATED PRODUCTS */
+        .related-section { margin-top: 48px; }
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .product-card {
+            background: #fff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.25s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .card-img-box {
+            height: 180px;
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .card-img-box img { max-width: 85%; max-height: 85%; object-fit: contain; }
+
+        /* FOOTER */
+        footer {
+            background: var(--secondary);
+            color: #fff;
+            padding: 40px 24px;
+            margin-top: 60px;
+        }
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        /* TOAST */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 300px;
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            background: #fff;
+            color: var(--secondary);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--primary);
+            font-weight: 700;
+            font-size: 13.5px;
+            animation: slideIn 0.3s forwards;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 580px;
+            border-radius: var(--radius-md);
+            padding: 28px;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: #f1f5f9;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <!-- PROMO BAR -->
+    <div class="promo-bar">
+        <div>🎉 Khuyến mãi Tháng 10: Giảm ngay 15% cho tất cả Sneaker | Mã: <strong>SGU15</strong></div>
+        <div>
+            <a href="admin.html" style="color: #cbd5e1; text-decoration:none;">🔐 Cổng Quản Trị Admin →</a>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                👟 SGU<span>SNEAKER</span>
+            </a>
+
+            <div style="flex:1; max-width:420px; margin: 0 20px;">
+                <input type="text" class="search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." onkeydown="if(event.key==='Enter') window.location.href='index.html'">
+            </div>
+
+            <div class="header-actions">
+                <a href="index.html" class="chip" style="padding: 8px 16px;">🏠 Trang Chủ</a>
+                <a href="cart.html" class="cart-btn">
+                    <span>🛒 Giỏ Hàng</span>
+                    <span class="cart-badge" id="cart-counter">1</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb-wrap">
+        <a href="index.html">Trang chủ</a> <span>/</span>
+        <span id="bc-category">Giày Sneaker</span> <span>/</span>
+        <span id="bc-name" style="color: var(--secondary); font-weight: 700;">Nike Air Max Red 2025</span>
+    </div>
+
+    <!-- MAIN PRODUCT DETAIL -->
+    <div class="detail-wrapper">
+        <div class="product-main-grid">
+            <!-- CỘT 1: HÌNH ẢNH & THUMBNAILS -->
+            <div class="gallery-box">
+                <div class="main-img-box">
+                    <span class="badge-hot-tag">HOT DEAL -15%</span>
+                    <img id="main-shoe-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Nike Air Max Red">
+                </div>
+                <div class="thumb-row">
+                    <div class="thumb-card active" onclick="switchImage(this, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80" alt="Angle 1">
+                    </div>
+                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80" alt="Angle 2">
+                    </div>
+                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80" alt="Angle 3">
+                    </div>
+                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=200&q=80" alt="Angle 4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT 2: THÔNG TIN CHI TIẾT & CHỌN MUA -->
+            <div class="info-box">
+                <div class="prod-brand-row">
+                    <span class="brand-pill" id="detail-brand">NIKE</span>
+                    <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
+                </div>
+
+                <h1 class="prod-title" id="detail-title">Nike Air Max Red 2025 - Special Edition</h1>
+
+                <div class="rating-sold-row">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span><strong>4.9 / 5</strong> (128 nhận xét)</span>
+                    <span>•</span>
+                    <span>Đã bán: <strong>486 đôi</strong></span>
+                </div>
+
+                <div class="price-section">
+                    <span class="curr-price" id="detail-price">2.450.000 ₫</span>
+                    <span class="old-price" id="detail-old-price">2.900.000 ₫</span>
+                    <span class="discount-pill">Tiết kiệm 450.000 ₫ (-15%)</span>
+                </div>
+
+                <p class="prod-short-desc" id="detail-desc">
+                    Mẫu sneaker biểu tượng được trang bị hệ thống đệm khí Air Max nâng cấp, mang lại độ êm vượt trội, chống sốc tối ưu và nâng đỡ từng bước chân. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su bám đường hoàn hảo.
+                </p>
+
+                <!-- CHỌN MÀU SẮC -->
+                <div class="option-group">
+                    <div class="option-header">
+                        <span>Chọn Màu Sắc: <strong id="selected-color-name" style="color:var(--primary);">Đỏ Phối Trắng</strong></span>
+                    </div>
+                    <div class="color-chips">
+                        <button class="chip selected" onclick="selectColor(this, 'Đỏ Phối Trắng')">🔴 Đỏ Trắng</button>
+                        <button class="chip" onclick="selectColor(this, 'Đen Cam Neon')">⚫ Đen Neon</button>
+                        <button class="chip" onclick="selectColor(this, 'Trắng Băng Tuyết')">⚪ Trắng Tuyết</button>
+                    </div>
+                </div>
+
+                <!-- CHỌN SIZE GIÀY -->
+                <div class="option-group">
+                    <div class="option-header">
+                        <span>Chọn Kích Cỡ Giày (Size EU):</span>
+                        <span class="size-guide-btn" onclick="openSizeGuide()">📏 Hướng dẫn chọn size</span>
+                    </div>
+                    <div class="size-chips" id="size-chips-box">
+                        <button class="chip" onclick="selectSize(this, 38)">38</button>
+                        <button class="chip" onclick="selectSize(this, 39)">39</button>
+                        <button class="chip selected" onclick="selectSize(this, 40)">40</button>
+                        <button class="chip" onclick="selectSize(this, 41)">41</button>
+                        <button class="chip" onclick="selectSize(this, 42)">42</button>
+                        <button class="chip" onclick="selectSize(this, 43)">43</button>
+                        <button class="chip" onclick="selectSize(this, 44)">44</button>
+                    </div>
+                </div>
+
+                <!-- SỐ LƯỢNG & NÚT MUA -->
+                <div class="action-row">
+                    <div class="qty-box">
+                        <button class="qty-btn" onclick="changeQty(-1)">-</button>
+                        <input type="text" id="qty-input" class="qty-val" value="1" readonly>
+                        <button class="qty-btn" onclick="changeQty(1)">+</button>
+                    </div>
+                    <button class="btn-add-cart" onclick="addToCartDetailed()">
+                        🛒 Thêm Vào Giỏ
+                    </button>
+                    <button class="btn-buy-now" onclick="buyNowDetailed()">
+                        ⚡ Mua Ngay
+                    </button>
+                </div>
+
+                <!-- CAM KẾT VÀ BẢO HÀNH -->
+                <div class="trust-grid">
+                    <div class="trust-item">🚚 <span>Giao nhanh 2-3 ngày toàn quốc</span></div>
+                    <div class="trust-item">🔄 <span>Đổi size miễn phí trong 30 ngày</span></div>
+                    <div class="trust-item">🛡️ <span>Bảo hành keo chỉ 12 tháng</span></div>
+                    <div class="trust-item">📦 <span>Được kiểm tra trước khi nhận</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS THÔNG TIN KỸ THUẬT & ĐÁNH GIÁ -->
+        <div class="tabs-section">
+            <div class="tab-headers">
+                <div class="tab-title active" onclick="switchDetailTab('tab-desc', this)">Mô Tả & Công Nghệ</div>
+                <div class="tab-title" onclick="switchDetailTab('tab-specs', this)">Thông Số Kỹ Thuật</div>
+                <div class="tab-title" onclick="switchDetailTab('tab-reviews', this)">Đánh Giá Từ Khách Hàng (128)</div>
+            </div>
+
+            <!-- TAB 1: MÔ TẢ -->
+            <div id="tab-desc" class="tab-pane" style="display: block;">
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">Đặc điểm nổi bật của dòng giày SGU Sneaker</h3>
+                <p style="margin-bottom: 14px; color: #475569;">
+                    Đôi giày được chế tác tỉ mỉ từ những vật liệu tiên tiến nhất. Hệ thống túi khí kép độc quyền hấp thụ xung lực khi gót chân chạm đất, phân tán đều áp lực lên lòng bàn chân, giúp giảm mỏi khi mang cả ngày dài.
+                </p>
+                <ul style="padding-left: 20px; color: #475569; line-height: 1.8;">
+                    <li><strong>Công nghệ đệm khí tiên tiến:</strong> Đem lại độ đàn hồi cao và khả năng bảo vệ cổ chân.</li>
+                    <li><strong>Lưới dệt kỹ thuật cao:</strong> Hàng nghìn lỗ thông hơi nhỏ li ti giúp bàn chân luôn khô ráo.</li>
+                    <li><strong>Đế ngoài cao su lưu hóa:</strong> Vân bám đa hướng giúp chống trượt trên bề mặt ướt.</li>
+                    <li><strong>Form dáng thể thao hiện đại:</strong> Dễ dàng phối cùng quần jeans, jogger hoặc trang phục thường ngày.</li>
+                </ul>
+            </div>
+
+            <!-- TAB 2: THÔNG SỐ KỸ THUẬT -->
+            <div id="tab-specs" class="tab-pane" style="display: none;">
+                <table class="spec-table">
+                    <tr><td>Thương hiệu</td><td id="spec-brand">Nike</td></tr>
+                    <tr><td>Dòng sản phẩm</td><td>Air Max Collection 2025</td></tr>
+                    <tr><td>Chất liệu thân (Upper)</td><td>Vải dệt Flyknit dẻo dai + Da tổng hợp</td></tr>
+                    <tr><td>Chất liệu đế (Outsole)</td><td>Cao su non đúc nguyên khối chống mài mòn</td></tr>
+                    <tr><td>Kiểu dáng</td><td>Cổ thấp (Low-top) / Phong cách Thể thao đường phố</td></tr>
+                    <tr><td>Trọng lượng</td><td>Khoảng 320g / chiếc (Size 41)</td></tr>
+                    <tr><td>Xuất xứ</td><td>Chính hãng nhập khẩu / Việt Nam gia công xuất khẩu</td></tr>
+                </table>
+            </div>
+
+            <!-- TAB 3: ĐÁNH GIÁ -->
+            <div id="tab-reviews" class="tab-pane" style="display: none;">
+                <div style="display: flex; gap: 30px; align-items: center; background: #f8fafc; padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; font-weight: 800; color: var(--primary);">4.9</div>
+                        <div style="color: #f59e0b;">⭐⭐⭐⭐⭐</div>
+                        <div style="font-size: 13px; color: var(--gray);">128 đánh giá thực tế</div>
+                    </div>
+                    <div style="font-size: 14px; color: #475569;">
+                        100% đánh giá từ khách hàng đã đặt mua và nhận hàng thành công qua hệ thống SGU Sneaker.
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Trần Văn Bình</strong> <span style="font-size: 12px; color: var(--gray);">14/10/2025</span>
+                        </div>
+                        <div style="color: #f59e0b; font-size: 13px;">⭐⭐⭐⭐⭐ - Đã mua Size 41</div>
+                        <p style="font-size: 13.5px; color: #475569; margin-top: 4px;">Giày form rất chuẩn, đi êm chân hơn mong đợi. Giao hàng tại Q.5 chỉ mất 1 ngày!</p>
+                    </div>
+                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Lê Thị Thu Thảo</strong> <span style="font-size: 12px; color: var(--gray);">08/10/2025</span>
+                        </div>
+                        <div style="color: #f59e0b; font-size: 13px;">⭐⭐⭐⭐⭐ - Đã mua Size 38</div>
+                        <p style="font-size: 13.5px; color: #475569; margin-top: 4px;">Màu đỏ trắng bên ngoài rất nổi bật, vải thoáng khí mang đi tập gym rất thích.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SẢN PHẨM LIÊN QUAN -->
+        <div class="related-section">
+            <h2 class="section-title">Có Thể Bạn Cũng Thích</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=300&q=80" alt="Shoe 2">
+                    </div>
+                    <div>
+                        <div style="font-size:12px; color:var(--gray); font-weight:700;">ADIDAS</div>
+                        <h4 style="font-size:15px; margin: 4px 0 8px;">Adidas Ultraboost Light Pro</h4>
+                        <div style="font-weight:800; color:var(--primary); font-size:16px;">1.890.000 ₫</div>
+                    </div>
+                    <a href="product-detail.html?id=SP002" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
+                </div>
+
+                <div class="product-card">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=300&q=80" alt="Shoe 3">
+                    </div>
+                    <div>
+                        <div style="font-size:12px; color:var(--gray); font-weight:700;">NIKE JORDAN</div>
+                        <h4 style="font-size:15px; margin: 4px 0 8px;">Air Jordan 1 Retro High</h4>
+                        <div style="font-weight:800; color:var(--primary); font-size:16px;">3.190.000 ₫</div>
+                    </div>
+                    <a href="product-detail.html?id=SP003" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
+                </div>
+
+                <div class="product-card">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=300&q=80" alt="Shoe 4">
+                    </div>
+                    <div>
+                        <div style="font-size:12px; color:var(--gray); font-weight:700;">NIKE FOOTBALL</div>
+                        <h4 style="font-size:15px; margin: 4px 0 8px;">Nike Mercurial Vapor 15</h4>
+                        <div style="font-weight:800; color:var(--primary); font-size:16px;">2.150.000 ₫</div>
+                    </div>
+                    <a href="product-detail.html?id=SP004" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
+                </div>
+
+                <div class="product-card">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=300&q=80" alt="Shoe 5">
+                    </div>
+                    <div>
+                        <div style="font-size:12px; color:var(--gray); font-weight:700;">BITI'S</div>
+                        <h4 style="font-size:15px; margin: 4px 0 8px;">Biti's Hunter X Street Army</h4>
+                        <div style="font-weight:800; color:var(--primary); font-size:16px;">950.000 ₫</div>
+                    </div>
+                    <a href="product-detail.html?id=SP005" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL HƯỚNG DẪN CHỌN SIZE CHUẨN (MỤC II.2) -->
+    <div class="modal-overlay" id="modal-size-guide">
+        <div class="modal-box">
+            <button class="close-btn" onclick="closeSizeGuide()">✕</button>
+            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">📏 Bảng Quy Đổi Size Giày Chuẩn</h3>
+            <p style="font-size: 13.5px; color: var(--gray); margin-bottom: 20px;">
+                Đo chiều dài từ gót chân đến đầu ngón chân dài nhất (cm) và đối chiếu bảng bên dưới:
+            </p>
+            <table class="spec-table" style="text-align: center;">
+                <tr style="background:#f1f5f9; font-weight:800;">
+                    <td>Size EU</td><td>Chiều dài chân (cm)</td><td>Size US</td><td>Độ ôm form</td>
+                </tr>
+                <tr><td><strong>38</strong></td><td>23.5 - 24.0 cm</td><td>5.5</td><td>Ôm vừa chân</td></tr>
+                <tr><td><strong>39</strong></td><td>24.1 - 24.5 cm</td><td>6.5</td><td>Ôm vừa chân</td></tr>
+                <tr><td><strong>40</strong></td><td>24.6 - 25.0 cm</td><td>7.5</td><td>Chuẩn form</td></tr>
+                <tr><td><strong>41</strong></td><td>25.1 - 25.5 cm</td><td>8.5</td><td>Chuẩn form</td></tr>
+                <tr><td><strong>42</strong></td><td>25.6 - 26.0 cm</td><td>9.0</td><td>Nới nhẹ nửa size</td></tr>
+                <tr><td><strong>43</strong></td><td>26.1 - 26.8 cm</td><td>10.0</td><td>Chuẩn form</td></tr>
+                <tr><td><strong>44</strong></td><td>26.9 - 27.5 cm</td><td>11.0</td><td>Chuẩn form</td></tr>
+            </table>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="chip selected" style="padding: 10px 24px;" onclick="closeSizeGuide()">Đã Hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div>
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 12px; color: var(--primary);">SGU SNEAKER</h3>
+                <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                    Đồ án môn Lập trình Web và Ứng dụng - Khoa Công nghệ Thông tin - Trường Đại học Sài Gòn (SGU).
+                </p>
+            </div>
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 12px;">Điều hướng</h4>
+                <ul style="list-style: none; font-size: 14px; color: #94a3b8; line-height: 2;">
+                    <li><a href="index.html">Trang chủ cửa hàng</a></li>
+                    <li><a href="cart.html">Giỏ hàng & Thanh toán</a></li>
+                    <li><a href="admin.html">Cổng Quản trị Admin</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 12px;">Hỗ trợ khách hàng</h4>
+                <p style="color: #94a3b8; font-size: 14px; line-height: 1.8;">
+                    Hotline: 1800 6868 (8:00 - 21:00)<br>
+                    Địa chỉ: 273 An Dương Vương, Q.5, TP.HCM
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DỮ LIỆU SẢN PHẨM
+        const sampleProducts = {
+            'SP001': {
+                name: 'Nike Air Max Red 2025 - Special Edition',
+                brand: 'NIKE',
+                category: 'Giày Sneaker',
+                sku: 'SP001',
+                price: '2.450.000 ₫',
+                oldPrice: '2.900.000 ₫',
+                numPrice: 2450000,
+                desc: 'Mẫu sneaker biểu tượng được trang bị hệ thống đệm khí Air Max nâng cấp, mang lại độ êm vượt trội, chống sốc tối ưu và nâng đỡ từng bước chân. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su bám đường hoàn hảo.',
+                img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80'
+            },
+            'SP002': {
+                name: 'Adidas Ultraboost Light Pro - Đệm Boost',
+                brand: 'ADIDAS',
+                category: 'Giày Chạy Bộ',
+                sku: 'SP002',
+                price: '1.890.000 ₫',
+                oldPrice: '2.300.000 ₫',
+                numPrice: 1890000,
+                desc: 'Công nghệ bọt Boost thế hệ mới siêu nhẹ, hỗ trợ hoàn trả năng lượng tối đa cho mỗi sải bước chạy bộ và vận động thể thao cường độ cao.',
+                img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80'
+            },
+            'SP003': {
+                name: 'Air Jordan 1 Retro High - Da Thật Cao Cấp',
+                brand: 'NIKE JORDAN',
+                category: 'Giày Sneaker',
+                sku: 'SP003',
+                price: '3.190.000 ₫',
+                oldPrice: '3.800.000 ₫',
+                numPrice: 3190000,
+                desc: 'Thiết kế cổ cao kinh điển mang tinh thần bóng rổ đường phố. Thân giày bằng da thật 100% bền bỉ, tôn dáng và cá tính.',
+                img: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80'
+            },
+            'SP004': {
+                name: 'Nike Mercurial Vapor 15 - Đế Đinh TF Sân Cỏ',
+                brand: 'NIKE FOOTBALL',
+                category: 'Giày Đá Bóng',
+                sku: 'SP004',
+                price: '2.150.000 ₫',
+                oldPrice: '2.500.000 ₫',
+                numPrice: 2150000,
+                desc: 'Dòng giày đá bóng chuyên nghiệp dành cho sân cỏ nhân tạo, trọng lượng siêu nhẹ giúp bứt tốc và kiểm soát bóng chính xác.',
+                img: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800&q=80'
+            }
+        };
+
+        let currentSelectedSize = 40;
+        let currentSelectedColor = 'Đỏ Phối Trắng';
+        let currentProductKey = 'SP001';
+
+        // TỰ ĐỘNG ĐỌC SẢN PHẨM TỪ QUERY STRING (?id=SP002)
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id && sampleProducts[id]) {
+                currentProductKey = id;
+                const p = sampleProducts[id];
+                document.getElementById('detail-title').innerText = p.name;
+                document.getElementById('bc-name').innerText = p.name;
+                document.getElementById('detail-brand').innerText = p.brand;
+                document.getElementById('spec-brand').innerText = p.brand;
+                document.getElementById('detail-sku').innerText = p.sku;
+                document.getElementById('bc-category').innerText = p.category;
+                document.getElementById('detail-price').innerText = p.price;
+                document.getElementById('detail-old-price').innerText = p.oldPrice;
+                document.getElementById('detail-desc').innerText = p.desc;
+                document.getElementById('main-shoe-img').src = p.img;
+            }
+
+            // Đồng bộ counter giỏ hàng từ localStorage
+            updateCartCounter();
+        };
+
+        function switchImage(thumbEl, imgSrc) {
+            document.querySelectorAll('.thumb-card').forEach(t => t.classList.remove('active'));
+            thumbEl.classList.add('active');
+            document.getElementById('main-shoe-img').src = imgSrc;
+        }
+
+        function selectColor(btn, colorName) {
+            document.querySelectorAll('.color-chips .chip').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+            currentSelectedColor = colorName;
+            document.getElementById('selected-color-name').innerText = colorName;
+            showToast(`Đã chọn phối màu: ${colorName}`, 'success');
+        }
+
+        function selectSize(btn, sizeVal) {
+            document.querySelectorAll('.size-chips .chip').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+            currentSelectedSize = sizeVal;
+            showToast(`Đã chọn kích cỡ Size ${sizeVal}`, 'success');
+        }
+
+        function changeQty(delta) {
+            const input = document.getElementById('qty-input');
+            let val = parseInt(input.value) + delta;
+            if (val < 1) val = 1;
+            if (val > 20) val = 20;
+            input.value = val;
+        }
+
+        function switchDetailTab(tabId, el) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.tab-title').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            el.classList.add('active');
+        }
+
+        function openSizeGuide() {
+            document.getElementById('modal-size-guide').style.display = 'flex';
+        }
+        function closeSizeGuide() {
+            document.getElementById('modal-size-guide').style.display = 'none';
+        }
+
+        // THÊM VÀO GIỎ HÀNG (LƯU LOCALSTORAGE ĐỒNG BỘ CART.HTML)
+        function addToCartDetailed() {
+            const p = sampleProducts[currentProductKey];
+            const qty = parseInt(document.getElementById('qty-input').value) || 1;
+
+            let cart = JSON.parse(localStorage.getItem('sgu_cart')) || [];
+            const existing = cart.find(i => i.code === p.sku && i.size === currentSelectedSize);
+            if (existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({
+                    name: p.name,
+                    price: p.numPrice,
+                    code: p.sku,
+                    img: p.img,
+                    size: currentSelectedSize,
+                    color: currentSelectedColor,
+                    qty: qty
+                });
+            }
+            localStorage.setItem('sgu_cart', JSON.stringify(cart));
+            updateCartCounter();
+            showToast(`Đã thêm ${qty} đôi "${p.name} (Size ${currentSelectedSize})" vào giỏ hàng!`, 'success');
+        }
+
+        function buyNowDetailed() {
+            addToCartDetailed();
+            setTimeout(() => {
+                window.location.href = 'cart.html';
+            }, 500);
+        }
+
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem('sgu_cart')) || [];
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-counter').innerText = count;
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

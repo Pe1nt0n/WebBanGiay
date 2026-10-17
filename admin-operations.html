@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin SGU SNEAKER - Vận Hành Kho, Giá Bán & Đơn Hàng</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-hover: #be123c;
+            --primary-light: #ffe4e6;
+            --dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body { background: var(--light); color: var(--dark); line-height: 1.5; }
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; outline: none; transition: 0.2s; }
+
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--sidebar-bg);
+            color: #fff;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .brand {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 22px;
+            font-weight: 800;
+        }
+        .brand span { color: var(--primary); }
+        .menu-group-title {
+            padding: 20px 24px 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 24px;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 600;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--primary);
+        }
+
+        /* MAIN CONTENT */
+        .main-content { padding: 30px 36px; }
+        .top-bar {
+            background: #fff;
+            padding: 16px 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-box {
+            background: #fff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 26px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--light);
+        }
+        .card-header h3 { font-size: 18px; font-weight: 800; color: var(--dark); }
+
+        /* BUTTONS */
+        .btn {
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-dark { background: var(--dark); color: #fff; }
+        .btn-warning { background: #fef3c7; color: #b45309; }
+        .btn-success { background: #dcfce7; color: #15803d; }
+        .btn-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        /* FILTER BARS */
+        .filter-bar {
+            display: flex;
+            gap: 14px;
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+        .form-control {
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+        }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: #f8fafc; font-weight: 700; color: var(--dark); }
+
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-done { background: #dcfce7; color: #15803d; }
+        .badge-pending { background: #fef3c7; color: #b45309; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+        .badge-info { background: #dbeafe; color: #1d4ed8; }
+
+        /* TOAST */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            background: #fff;
+            color: var(--dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.warning { border-left-color: var(--warning); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 680px;
+            border-radius: var(--radius-md);
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="admin-layout">
+        <!-- SIDEBAR MENU -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">SGU<span>ADMIN</span></div>
+
+                <div class="menu-group-title">Phần 1: Danh Mục & Khách Hàng</div>
+                <a href="admin-catalog.html" class="menu-item">👥 1. Quản lý Khách hàng</a>
+                <a href="admin-catalog.html" class="menu-item">📂 2. Quản lý Loại sản phẩm</a>
+                <a href="admin-catalog.html" class="menu-item">👟 3. Quản lý Danh mục Giày</a>
+
+                <div class="menu-group-title">Phần 2: Kho, Giá & Đơn Hàng</div>
+                <div class="menu-item active" id="nav-imports" onclick="switchOpTab('tab-imports', this)">📥 4. Quản lý Nhập sản phẩm</div>
+                <div class="menu-item" id="nav-pricing" onclick="switchOpTab('tab-pricing', this)">💰 5. Quản lý Giá bán & Lợi nhuận</div>
+                <div class="menu-item" id="nav-orders" onclick="switchOpTab('tab-orders', this)">📦 6. Quản lý Đơn đặt hàng</div>
+                <div class="menu-item" id="nav-inventory" onclick="switchOpTab('tab-inventory', this)">📊 7. Quản lý Số lượng Tồn kho</div>
+            </div>
+
+            <div style="padding: 0 24px;">
+                <a href="index.html" class="btn btn-dark" style="display:block; text-align:center;">🌐 Về Web Cửa Hàng</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div><strong>Vận Hành Kho, Giá Bán & Quản Lý Đơn Hàng SGU</strong></div>
+                <div style="font-size: 13px; color: var(--gray);">Hệ thống đồng bộ dữ liệu thời gian thực</div>
+            </div>
+
+            <!-- =========================================================
+                 MỤC I.5: QUẢN LÝ NHẬP SẢN PHẨM (0.75đ)
+                 ========================================================= -->
+            <div id="tab-imports" class="op-tab" style="display: block;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📥 Quản lý Phiếu Nhập Hàng (Không quản lý Nhà cung cấp)</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Thêm, sửa và chỉ sửa phiếu nhập trước khi hoàn thành</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="openImportModal('new')">+ Thêm phiếu nhập mới</button>
+                    </div>
+
+                    <!-- Tìm kiếm phiếu nhập -->
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu</label>
+                            <input type="text" id="imp-search-code" class="form-control" placeholder="VD: PN2025-02">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
+                            <input type="date" class="form-control" value="2025-10-22">
+                        </div>
+                        <button class="btn btn-dark" onclick="showToast('Đã lọc danh sách phiếu nhập hàng theo ngày!', 'success')">🔍 Tìm kiếm phiếu</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày nhập</th>
+                                <th>Chi tiết sản phẩm (Số lượng & Giá nhập)</th>
+                                <th>Tổng giá trị</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PN2025-02</strong></td>
+                                <td>22/10/2025</td>
+                                <td>Nike Air Max Red (SL: 10 đôi - Giá nhập: 1.800.000₫)</td>
+                                <td><strong style="color:var(--primary);">18.000.000 ₫</strong></td>
+                                <td><span class="badge badge-pending" id="imp-status-2">Chưa hoàn thành</span></td>
+                                <td id="imp-actions-2">
+                                    <button class="btn btn-warning" onclick="openImportModal('edit')">✏️ Sửa phiếu</button>
+                                    <button class="btn btn-success" onclick="completeImport(2)">✅ Hoàn thành phiếu</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>PN2025-01</strong></td>
+                                <td>10/10/2025</td>
+                                <td>Adidas Ultraboost Pro (SL: 15 đôi - Giá nhập: 1.400.000₫)</td>
+                                <td><strong style="color:var(--primary);">21.000.000 ₫</strong></td>
+                                <td><span class="badge badge-done">Đã hoàn thành</span></td>
+                                <td>
+                                    <button class="btn btn-disabled" disabled title="Phiếu đã hoàn thành không thể sửa">🔒 Đã khóa sửa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 MỤC I.6: QUẢN LÝ GIÁ BÁN & LỢI NHUẬN (0.50đ)
+                 ========================================================= -->
+            <div id="tab-pricing" class="op-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>💰 Quản lý Giá Bán & Thiết Lập Tỉ Lệ % Lợi Nhuận</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Giá bán tự động cập nhật = Giá vốn * (1 + % Lợi nhuận)</span>
+                        </div>
+                    </div>
+
+                    <!-- Thiết lập % lợi nhuận theo loại -->
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Áp dụng cho Phân loại</label>
+                            <select class="form-control" id="bulk-cat-select">
+                                <option>Giày Sneaker</option>
+                                <option>Giày Chạy Bộ</option>
+                                <option>Giày Đá Bóng</option>
+                                <option>Giày Tây Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">% Lợi nhuận mới</label>
+                            <input type="number" id="bulk-percent-input" class="form-control" value="35" style="width:120px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="applyBulkProfit()">Áp Dụng Cho Toàn Loại</button>
+                    </div>
+
+                    <!-- Bảng tra cứu giá vốn, % lợi nhuận, giá bán -->
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Giá vốn (Giá nhập)</th>
+                                <th>Tỉ lệ % Lợi nhuận</th>
+                                <th>Giá bán ra (Tự động tính)</th>
+                                <th>Cập nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>1.800.000 ₫</td>
+                                <td><input type="number" class="form-control" value="36" style="width:85px; display:inline-block;" oninput="calcPrice(this, 1800000, 'sell-1')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-1">2.448.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP001!', 'success')">Lưu</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>1.400.000 ₫</td>
+                                <td><input type="number" class="form-control" value="35" style="width:85px; display:inline-block;" oninput="calcPrice(this, 1400000, 'sell-2')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-2">1.890.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP002!', 'success')">Lưu</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>2.400.000 ₫</td>
+                                <td><input type="number" class="form-control" value="33" style="width:85px; display:inline-block;" oninput="calcPrice(this, 2400000, 'sell-3')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-3">3.192.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP003!', 'success')">Lưu</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 MỤC I.7: QUẢN LÝ ĐƠN ĐẶT HÀNG (0.50đ)
+                 ========================================================= -->
+            <div id="tab-orders" class="op-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📦 Quản lý & Cập Nhật Tình Trạng Đơn Đặt Hàng</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Đồng bộ đơn hàng từ giỏ hàng của khách hàng (Mới đặt, Đã xử lý, Đã giao, Hủy)</span>
+                        </div>
+                    </div>
+
+                    <!-- Tra cứu theo thời gian & tình trạng -->
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
+                            <input type="date" class="form-control" value="2025-10-01">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày đặt</label>
+                            <input type="date" class="form-control" value="2025-10-31">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tình trạng đơn</label>
+                            <select class="form-control" id="order-filter-status" onchange="filterAdminOrders()">
+                                <option value="ALL">-- Tất cả tình trạng --</option>
+                                <option value="Mới đặt">Mới đặt</option>
+                                <option value="Đã xử lý">Đã xử lý</option>
+                                <option value="Đã giao">Đã giao</option>
+                                <option value="Hủy">Hủy</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-dark" onclick="filterAdminOrders()">🔍 Lọc đơn hàng</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Tình trạng hiện tại</th>
+                                <th>Cập nhật trạng thái & Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table">
+                            <!-- JS tự render đơn hàng động từ LocalStorage -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 MỤC I.8: QUẢN LÝ SỐ LƯỢNG TỒN KHO & CẢNH BÁO (0.75đ)
+                 ========================================================= -->
+            <div id="tab-inventory" class="op-tab" style="display: none;">
+                <!-- CẢNH BÁO SẮP HẾT HÀNG (Mục I.8) -->
+                <div style="background: #fff1f2; border: 1.5px solid #fda4af; color: #9f1239; padding: 18px 24px; border-radius: 12px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px;">
+                        <span>⚠️ CẢNH BÁO TỒN KHO: CÓ SẢN PHẨM SẮP HẾT HÀNG (&lt; 5 ĐÔI)</span>
+                    </div>
+                    <p style="font-size: 13.5px; margin-top: 6px; line-height: 1.5;">
+                        • <strong>SP003 - Air Jordan 1 Retro High</strong> hiện chỉ còn <strong>2 đôi</strong> trong kho!<br>
+                        • <strong>SP004 - Nike Mercurial Vapor 15</strong> hiện chỉ còn <strong>3 đôi</strong> trong kho!<br>
+                        👉 <em>Vui lòng lập thêm phiếu nhập hàng mới ở mục <strong>Quản lý nhập sản phẩm</strong> để đảm bảo cung ứng.</em>
+                    </p>
+                </div>
+
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📊 Báo Cáo Tra Cứu Nhập – Xuất – Tồn Kho</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Theo dõi biến động xuất nhập tồn của từng mẫu giày theo thời gian</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Chọn loại giày</label>
+                            <select class="form-control">
+                                <option>-- Tất cả phân loại --</option>
+                                <option>Giày Sneaker</option>
+                                <option>Giày Chạy Bộ</option>
+                                <option>Giày Đá Bóng</option>
+                                <option>Giày Tây Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày</label>
+                            <input type="date" class="form-control" value="2025-10-01">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày</label>
+                            <input type="date" class="form-control" value="2025-10-31">
+                        </div>
+                        <button class="btn btn-primary" onclick="showToast('Đã kết xuất báo cáo Nhập - Xuất - Tồn kho!', 'success')">Xuất Báo Cáo</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Tồn đầu kỳ</th>
+                                <th>SL Nhập (+)</th>
+                                <th>SL Xuất / Bán (-)</th>
+                                <th>Tồn hiện tại</th>
+                                <th>Tình trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>10</td>
+                                <td style="color:#10b981; font-weight:700;">+15</td>
+                                <td style="color:#e11d48; font-weight:700;">-7</td>
+                                <td><strong>18 đôi</strong></td>
+                                <td><span class="badge badge-done">Đủ hàng</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>8</td>
+                                <td style="color:#10b981; font-weight:700;">+15</td>
+                                <td style="color:#e11d48; font-weight:700;">-9</td>
+                                <td><strong>14 đôi</strong></td>
+                                <td><span class="badge badge-done">Đủ hàng</span></td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>5</td>
+                                <td style="color:#10b981; font-weight:700;">+0</td>
+                                <td style="color:#e11d48; font-weight:700;">-3</td>
+                                <td><strong style="color:var(--primary); font-size:16px;">2 đôi</strong></td>
+                                <td><span class="badge badge-danger">⚠️ Sắp hết hàng</span></td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td><strong>SP004</strong></td>
+                                <td><strong>Nike Mercurial Vapor 15</strong></td>
+                                <td>Giày Đá Bóng</td>
+                                <td>6</td>
+                                <td style="color:#10b981; font-weight:700;">+0</td>
+                                <td style="color:#e11d48; font-weight:700;">-3</td>
+                                <td><strong style="color:var(--primary); font-size:16px;">3 đôi</strong></td>
+                                <td><span class="badge badge-danger">⚠️ Sắp hết hàng</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG -->
+    <div class="modal-overlay" id="modal-import">
+        <div class="modal-box">
+            <h3 id="modal-imp-title" style="margin-bottom: 16px; font-weight:800;">Thêm Phiếu Nhập Hàng</h3>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Ngày nhập hàng *</label>
+                <input type="date" class="form-control" value="2025-10-24" style="width:100%;">
+            </div>
+            <p style="font-size:13px; font-weight:700; margin-bottom: 8px;">Danh sách sản phẩm nhập:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm giày</th>
+                        <th>Giá nhập (VNĐ)</th>
+                        <th>Số lượng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select class="form-control">
+                                <option>SP001 - Nike Air Max Red 2025</option>
+                                <option>SP002 - Adidas Ultraboost Pro</option>
+                                <option>SP003 - Air Jordan 1 Retro High</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="form-control" value="1800000"></td>
+                        <td><input type="number" class="form-control" value="10" style="width:80px;"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+                <button class="btn btn-dark" onclick="closeModal('modal-import')">Đóng</button>
+                <button class="btn btn-primary" onclick="showToast('Đã lưu phiếu nhập hàng ở trạng thái Chưa hoàn thành!', 'success'); closeModal('modal-import')">💾 Lưu phiếu tạm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT ĐƠN HÀNG (Mục I.7) -->
+    <div class="modal-overlay" id="modal-order-detail">
+        <div class="modal-box">
+            <h3 style="margin-bottom: 14px; font-weight:800;">Chi tiết đơn đặt hàng: <span id="ord-detail-id" style="color:var(--primary);">#DH2025-089</span></h3>
+            <div style="background:#f8fafc; padding:16px; border-radius:8px; margin-bottom:18px; font-size:14px;">
+                <p style="margin-bottom:4px;"><strong>Khách hàng:</strong> <span id="ord-detail-cust">Nguyễn Văn A</span></p>
+                <p style="margin-bottom:4px;"><strong>Địa chỉ giao:</strong> <span id="ord-detail-addr">273 An Dương Vương, Q.5, TP.HCM</span></p>
+                <p><strong>Phương thức:</strong> Tiền mặt khi nhận hàng (COD)</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm giày</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="ord-detail-items">
+                    <tr>
+                        <td>Nike Air Max Red 2025 (Size 41)</td>
+                        <td>2.450.000 ₫</td>
+                        <td>1</td>
+                        <td><strong>2.450.000 ₫</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align:right; margin-top:18px; font-weight:800; color:var(--primary); font-size:18px;">
+                Tổng tiền: <span id="ord-detail-total">2.450.000 ₫</span>
+            </div>
+            <div style="text-align:right; margin-top:20px;">
+                <button class="btn btn-dark" onclick="closeModal('modal-order-detail')">Đóng cửa sổ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function switchOpTab(tabId, navEl) {
+            document.querySelectorAll('.op-tab').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            if (navEl) navEl.classList.add('active');
+        }
+
+        window.onload = function() {
+            const hash = window.location.hash;
+            if (hash === '#pricing') switchOpTab('tab-pricing', document.getElementById('nav-pricing'));
+            if (hash === '#orders') switchOpTab('tab-orders', document.getElementById('nav-orders'));
+            if (hash === '#inventory') switchOpTab('tab-inventory', document.getElementById('nav-inventory'));
+
+            loadAdminOrders();
+        };
+
+        // NHẬP HÀNG: HOÀN THÀNH PHIẾU -> KHÓA SỬA
+        function openImportModal(mode) {
+            document.getElementById('modal-imp-title').innerText = (mode === 'edit') ? '✏️ Sửa Phiếu Nhập PN2025-02 (Chưa hoàn thành)' : '➕ Thêm Phiếu Nhập Hàng Mới';
+            document.getElementById('modal-import').style.display = 'flex';
+        }
+
+        function completeImport(id) {
+            if (confirm('Sau khi Hoàn thành phiếu nhập, bạn sẽ KHÔNG THỂ sửa phiếu này nữa. Xác nhận hoàn thành?')) {
+                const badge = document.getElementById('imp-status-' + id);
+                badge.innerText = 'Đã hoàn thành';
+                badge.className = 'badge badge-done';
+                document.getElementById('imp-actions-' + id).innerHTML = '<button class="btn btn-disabled" disabled>🔒 Đã khóa sửa</button>';
+                showToast('Đã hoàn thành phiếu nhập hàng và khóa tính năng sửa!', 'success');
+            }
+        }
+
+        // GIÁ BÁN & LỢI NHUẬN
+        function calcPrice(input, cost, targetId) {
+            const percent = parseFloat(input.value) || 0;
+            const sellPrice = Math.round(cost * (1 + percent / 100));
+            document.getElementById(targetId).innerText = sellPrice.toLocaleString('vi-VN') + ' ₫';
+        }
+
+        function applyBulkProfit() {
+            const cat = document.getElementById('bulk-cat-select').value;
+            const percent = document.getElementById('bulk-percent-input').value;
+            showToast(`Đã cập nhật tỉ lệ lợi nhuận ${percent}% cho toàn bộ sản phẩm thuộc loại "${cat}"!`, 'success');
+        }
+
+        // QUẢN LÝ ĐƠN HÀNG TỪ LOCALSTORAGE (ĐỒNG BỘ 100% VỚI CART.HTML)
+        let adminOrders = JSON.parse(localStorage.getItem('sgu_orders')) || [
+            {
+                id: '#DH2025-089',
+                cust: 'Nguyễn Văn A',
+                date: '24/10/2025',
+                items: 'Nike Air Max Red (x1), Adidas Ultraboost (x1)',
+                total: '4.340.000 ₫',
+                status: 'Mới đặt',
+                address: '273 An Dương Vương, Q.5, TP.HCM'
+            },
+            {
+                id: '#DH2025-042',
+                cust: 'Trần Thị Bích',
+                date: '12/10/2025',
+                items: 'Air Jordan 1 Retro High (x1)',
+                total: '3.200.000 ₫',
+                status: 'Đã giao',
+                address: '120 Nguyễn Huệ, Q.1, TP.HCM'
+            }
+        ];
+
+        function loadAdminOrders() {
+            const table = document.getElementById('admin-orders-table');
+            table.innerHTML = adminOrders.map((ord, idx) => `
+                <tr data-status="${ord.status}">
+                    <td><strong>${ord.id}</strong></td>
+                    <td><strong>${ord.cust || 'Nguyễn Văn A'}</strong></td>
+                    <td>${ord.date}</td>
+                    <td><strong style="color:var(--primary);">${ord.total}</strong></td>
+                    <td><span class="badge ${getBadgeClass(ord.status)}" id="adm-badge-${idx}">${ord.status}</span></td>
+                    <td>
+                        <select class="form-control" style="display:inline-block; width:135px;" onchange="changeOrderStatus(this, ${idx})">
+                            <option value="Mới đặt" ${ord.status === 'Mới đặt' ? 'selected' : ''}>Mới đặt</option>
+                            <option value="Đã xử lý" ${ord.status === 'Đã xử lý' ? 'selected' : ''}>Đã xử lý</option>
+                            <option value="Đã giao" ${ord.status === 'Đã giao' ? 'selected' : ''}>Đã giao</option>
+                            <option value="Hủy" ${ord.status === 'Hủy' ? 'selected' : ''}>Hủy</option>
+                        </select>
+                        <button class="btn btn-dark" style="margin-left:6px;" onclick="viewOrderDetail(${idx})">👁️ Chi tiết</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getBadgeClass(status) {
+            if (status === 'Đã giao') return 'badge-done';
+            if (status === 'Hủy') return 'badge-danger';
+            if (status === 'Đã xử lý') return 'badge-pending';
+            return 'badge-info';
+        }
+
+        function changeOrderStatus(selectEl, idx) {
+            const val = selectEl.value;
+            adminOrders[idx].status = val;
+            localStorage.setItem('sgu_orders', JSON.stringify(adminOrders));
+            const badge = document.getElementById('adm-badge-' + idx);
+            badge.innerText = val;
+            badge.className = 'badge ' + getBadgeClass(val);
+            selectEl.closest('tr').dataset.status = val;
+            showToast(`Đã cập nhật đơn ${adminOrders[idx].id} thành "${val}"!`, 'success');
+        }
+
+        function filterAdminOrders() {
+            const filter = document.getElementById('order-filter-status').value;
+            document.querySelectorAll('#admin-orders-table tr').forEach(row => {
+                row.style.display = (filter === 'ALL' || row.dataset.status === filter) ? '' : 'none';
+            });
+        }
+
+        function viewOrderDetail(idx) {
+            const ord = adminOrders[idx];
+            document.getElementById('ord-detail-id').innerText = ord.id;
+            document.getElementById('ord-detail-cust').innerText = ord.cust || 'Nguyễn Văn A';
+            document.getElementById('ord-detail-addr').innerText = ord.address || '273 An Dương Vương, Q.5, TP.HCM';
+            document.getElementById('ord-detail-total').innerText = ord.total;
+            document.getElementById('modal-order-detail').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
+</body>
+</html>

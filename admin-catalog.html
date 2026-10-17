@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin SGU SNEAKER - Quản Trị Danh Mục & Người Dùng</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48;
+            --primary-hover: #be123c;
+            --primary-light: #ffe4e6;
+            --dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body { background: var(--light); color: var(--dark); line-height: 1.5; }
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; outline: none; transition: 0.2s; }
+
+        /* MÀN HÌNH ĐĂNG NHẬP ADMIN RIÊNG BIỆT (Mục I.1) */
+        #admin-login-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .login-card {
+            background: #fff;
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .login-card h2 { color: var(--dark); font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+        .login-card p { color: var(--gray); font-size: 13px; margin-bottom: 24px; }
+
+        /* ADMIN DASHBOARD LAYOUT */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--sidebar-bg);
+            color: #fff;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .brand {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .brand span { color: var(--primary); }
+        .menu-group-title {
+            padding: 20px 24px 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 24px;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 600;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--primary);
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content { padding: 30px 36px; }
+        .top-bar {
+            background: #fff;
+            padding: 16px 28px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-box {
+            background: #fff;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 26px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--light);
+        }
+        .card-header h3 { font-size: 18px; font-weight: 800; color: var(--dark); }
+
+        /* BUTTONS */
+        .btn {
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-dark { background: var(--dark); color: #fff; }
+        .btn-warning { background: #fef3c7; color: #b45309; }
+        .btn-warning:hover { background: #fde68a; }
+        .btn-danger { background: #fee2e2; color: #b91c1c; }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-success { background: #dcfce7; color: #15803d; }
+        .btn-success:hover { background: #bbf7d0; }
+
+        /* FORM CONTROLS */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+        }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: #f8fafc; font-weight: 700; color: var(--dark); }
+        .thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-active { background: #dcfce7; color: #15803d; }
+        .badge-locked { background: #fee2e2; color: #b91c1c; }
+
+        /* TOAST */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            background: #fff;
+            color: var(--dark);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 5px solid var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.warning { border-left-color: var(--warning); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 560px;
+            border-radius: var(--radius-md);
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <!-- =========================================================
+         MỤC I.1: TRANG ĐĂNG NHẬP ADMIN (KHÔNG DÙNG CHUNG VỚI KHÁCH)
+         ========================================================= -->
+    <div id="admin-login-screen">
+        <div class="login-card">
+            <h2>🔐 CỔNG QUẢN TRỊ VIÊN</h2>
+            <p>Hệ thống quản lý cửa hàng SGU Sneaker dành riêng cho Chủ cửa hàng & Quản lý.</p>
+            <div class="form-group">
+                <label>Tài khoản Quản trị</label>
+                <input type="text" id="admin-user" class="form-control" value="admin_sgu">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="admin-pass" class="form-control" value="123456">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;" onclick="loginAdmin()">
+                Đăng Nhập Vào Hệ Thống Admin →
+            </button>
+            <div style="margin-top: 18px; text-align: center; font-size: 13px;">
+                <a href="index.html" style="color: var(--gray); text-decoration: underline;">← Quay lại trang Cửa hàng</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BỐ CỤC CHÍNH DASHBOARD ADMIN -->
+    <div class="admin-layout">
+        <!-- SIDEBAR MENU -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">SGU<span>ADMIN</span></div>
+
+                <div class="menu-group-title">Phần 1: Danh Mục & Khách Hàng</div>
+                <div class="menu-item active" id="nav-users" onclick="switchAdminTab('tab-users', this)">
+                    👥 1. Quản lý Khách hàng
+                </div>
+                <div class="menu-item" id="nav-cats" onclick="switchAdminTab('tab-cats', this)">
+                    📂 2. Quản lý Loại sản phẩm
+                </div>
+                <div class="menu-item" id="nav-prods" onclick="switchAdminTab('tab-prods', this)">
+                    👟 3. Quản lý Danh mục Giày
+                </div>
+
+                <div class="menu-group-title">Phần 2: Kho, Giá & Đơn Hàng</div>
+                <a href="admin-operations.html#imports" class="menu-item">📥 4. Quản lý Nhập sản phẩm</a>
+                <a href="admin-operations.html#pricing" class="menu-item">💰 5. Quản lý Giá bán & Lợi nhuận</a>
+                <a href="admin-operations.html#orders" class="menu-item">📦 6. Quản lý Đơn đặt hàng</a>
+                <a href="admin-operations.html#inventory" class="menu-item">📊 7. Quản lý Tồn kho</a>
+            </div>
+
+            <div style="padding: 0 24px;">
+                <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="logoutAdmin()">🚪 Đăng xuất Admin</button>
+                <a href="index.html" class="btn btn-dark" style="display:block; text-align:center;">🌐 Xem Web Cửa Hàng</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <strong>Bảng điều khiển Quản trị</strong> | Quản trị viên: <span style="color: var(--primary); font-weight: 700;">Admin SGU</span>
+                </div>
+                <div>
+                    <button class="btn btn-dark" onclick="document.getElementById('admin-login-screen').style.display='flex'">
+                        🔒 Khóa màn hình Admin
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.2: QUẢN LÝ NGƯỜI DÙNG / KHÁCH HÀNG (0.75đ) ================= -->
+            <div id="tab-users" class="admin-tab" style="display: block;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>👥 Quản lý Người dùng / Khách hàng</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Hiển thị danh sách khách hàng, Reset mật khẩu và Khóa / Mở khóa tài khoản</span>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Họ và tên</th>
+                                <th>Email / Tài khoản</th>
+                                <th>Số điện thoại</th>
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <tr>
+                                <td><strong>KH001</strong></td>
+                                <td><strong>Nguyễn Văn A</strong></td>
+                                <td>nguyenvana@gmail.com</td>
+                                <td>0909123456</td>
+                                <td>273 An Dương Vương, Q.5, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh1">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Nguyễn Văn A')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh1" onclick="toggleLock('kh1', 'Nguyễn Văn A')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH002</strong></td>
+                                <td><strong>Trần Thị Bích</strong></td>
+                                <td>tranthibich@gmail.com</td>
+                                <td>0918222333</td>
+                                <td>120 Nguyễn Huệ, Q.1, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh2">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Trần Thị Bích')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh2" onclick="toggleLock('kh2', 'Trần Thị Bích')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH003</strong></td>
+                                <td><strong>Lê Hoàng Nam</strong></td>
+                                <td>lehoangnam@gmail.com</td>
+                                <td>0987654321</td>
+                                <td>45 Lê Lợi, Q.Gò Vấp, TP.HCM</td>
+                                <td><span class="badge badge-locked" id="badge-kh3">Đã khóa</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Lê Hoàng Nam')">🔑 Reset Pass</button>
+                                    <button class="btn btn-success" id="btn-lock-kh3" onclick="toggleLock('kh3', 'Lê Hoàng Nam')">🔓 Mở khóa TK</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.3: QUẢN LÝ LOẠI SẢN PHẨM (0.5đ) ================= -->
+            <div id="tab-cats" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <h3>📂 Quản lý Loại sản phẩm (Thêm, Sửa, Xóa / Ẩn)</h3>
+                    </div>
+
+                    <!-- Khung thêm / sửa loại -->
+                    <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 14px; background: #f8fafc; padding: 18px; border-radius: var(--radius-sm); margin-bottom: 24px; align-items: end;">
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Mã loại giày *</label>
+                            <input type="text" id="cat-code" class="form-control" placeholder="VD: LOAI05">
+                        </div>
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Tên loại giày *</label>
+                            <input type="text" id="cat-name" class="form-control" placeholder="VD: Giày Sandal Thể Thao...">
+                        </div>
+                        <button class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã loại</th>
+                                <th>Tên loại giày</th>
+                                <th>Số lượng mẫu</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cat-table-body">
+                            <tr>
+                                <td><strong>LOAI01</strong></td>
+                                <td class="cat-name">Giày Sneaker</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI01', 'Giày Sneaker')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI02</strong></td>
+                                <td class="cat-name">Giày Chạy Bộ</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI02', 'Giày Chạy Bộ')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI03</strong></td>
+                                <td class="cat-name">Giày Đá Bóng</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI03', 'Giày Đá Bóng')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI04</strong></td>
+                                <td class="cat-name">Giày Tây Nam</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI04', 'Giày Tây Nam')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.4: QUẢN LÝ DANH MỤC SẢN PHẨM (0.75đ) ================= -->
+            <div id="tab-prods" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <h3>👟 Quản lý Danh mục Sản phẩm Giày</h3>
+                        <button class="btn btn-primary" onclick="openAddProductModal()">+ Thêm sản phẩm giày mới</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hình</th>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Mô tả tóm tắt</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prod-table-body">
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP001', 'Nike Air Max Red 2025', 'Giày Sneaker', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80', 'Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP002', 'Adidas Ultraboost Light Pro', 'Giày Chạy Bộ', 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80', 'Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP003', 'Air Jordan 1 Retro High', 'Giày Sneaker', 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80', 'Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL THÊM / SỬA SẢN PHẨM GIÀY (Mục I.4 - HIỂN THỊ ĐÚNG THÔNG TIN TRƯỚC KHI SỬA) -->
+    <div class="modal-overlay" id="modal-product">
+        <div class="modal-box">
+            <h3 id="modal-prod-title" style="margin-bottom: 18px; font-weight: 800;">Thêm sản phẩm giày mới</h3>
+            <div class="form-group">
+                <label>Loại sản phẩm giày *</label>
+                <select id="prod-cat" class="form-control">
+                    <option value="Giày Sneaker">Giày Sneaker</option>
+                    <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                    <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                    <option value="Giày Tây Nam">Giày Tây Nam</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Mã sản phẩm *</label>
+                <input type="text" id="prod-code" class="form-control" placeholder="VD: SP007">
+            </div>
+            <div class="form-group">
+                <label>Tên sản phẩm giày *</label>
+                <input type="text" id="prod-name" class="form-control" placeholder="VD: Nike Dunk Low Panda...">
+            </div>
+            <div class="form-group">
+                <label>Hình ảnh sản phẩm (URL)</label>
+                <input type="text" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="form-group">
+                <label>Mô tả chi tiết sản phẩm</label>
+                <textarea id="prod-desc" class="form-control" rows="3" placeholder="Chất liệu da, công nghệ đế đệm..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button class="btn btn-dark" onclick="closeModal('modal-product')">Đóng</button>
+                <button class="btn btn-primary" onclick="saveProductModal()">💾 Lưu Sản Phẩm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function loginAdmin() {
+            document.getElementById('admin-login-screen').style.display = 'none';
+            showToast('Đăng nhập Quản trị viên thành công!', 'success');
+        }
+        function logoutAdmin() {
+            document.getElementById('admin-login-screen').style.display = 'flex';
+        }
+
+        function switchAdminTab(tabId, navEl) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            navEl.classList.add('active');
+        }
+
+        // QUẢN LÝ KHÁCH HÀNG
+        function resetUserPassword(name) {
+            showToast(`Đã reset mật khẩu của khách hàng "${name}" về: 123456`, 'success');
+        }
+
+        function toggleLock(id, name) {
+            const badge = document.getElementById('badge-' + id);
+            const btn = document.getElementById('btn-lock-' + id);
+            if (badge.innerText === 'Đang hoạt động') {
+                badge.innerText = 'Đã khóa';
+                badge.className = 'badge badge-locked';
+                btn.innerText = '🔓 Mở khóa TK';
+                btn.className = 'btn btn-success';
+                showToast(`Đã KHÓA tài khoản của: ${name}`, 'warning');
+            } else {
+                badge.innerText = 'Đang hoạt động';
+                badge.className = 'badge badge-active';
+                btn.innerText = '🔒 Khóa TK';
+                btn.className = 'btn btn-danger';
+                showToast(`Đã MỞ KHÓA tài khoản của: ${name}`, 'success');
+            }
+        }
+
+        // QUẢN LÝ LOẠI GIÀY
+        function editCategory(code, name) {
+            document.getElementById('cat-code').value = code;
+            document.getElementById('cat-name').value = name;
+            showToast(`Đã tải dữ liệu loại "${name}" lên form chỉnh sửa!`, 'success');
+        }
+
+        function saveCategory() {
+            const code = document.getElementById('cat-code').value.trim();
+            const name = document.getElementById('cat-name').value.trim();
+            if (!code || !name) {
+                showToast('Vui lòng nhập đầy đủ Mã loại và Tên loại giày!', 'warning');
+                return;
+            }
+            showToast(`Đã lưu thành công loại giày: ${code} - ${name}!`, 'success');
+            document.getElementById('cat-code').value = '';
+            document.getElementById('cat-name').value = '';
+        }
+
+        // QUẢN LÝ SẢN PHẨM (Mục I.4: HIỂN THỊ ĐÚNG THÔNG TIN TRƯỚC KHI SỬA)
+        function openAddProductModal() {
+            document.getElementById('modal-prod-title').innerText = '➕ Thêm sản phẩm giày mới';
+            document.getElementById('prod-code').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-img').value = '';
+            document.getElementById('prod-desc').value = '';
+            document.getElementById('modal-product').style.display = 'flex';
+        }
+
+        function openEditProductModal(code, name, cat, img, desc) {
+            document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + code;
+            document.getElementById('prod-code').value = code;
+            document.getElementById('prod-name').value = name;
+            document.getElementById('prod-cat').value = cat;
+            document.getElementById('prod-img').value = img;
+            document.getElementById('prod-desc').value = desc;
+            document.getElementById('modal-product').style.display = 'flex';
+        }
+
+        function saveProductModal() {
+            const name = document.getElementById('prod-name').value;
+            if (!name) {
+                showToast('Vui lòng nhập tên sản phẩm giày!', 'warning');
+                return;
+            }
+            showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
+            closeModal('modal-product');
+        }
+
+        function toggleHideRow(btn) {
+            const row = btn.closest('tr');
+            const badge = row.querySelector('.badge');
+            if (badge.innerText.includes('Ẩn') || badge.innerText.includes('khóa')) {
+                badge.innerText = 'Đang hiển thị';
+                badge.className = 'badge badge-active';
+                showToast('Đã mở hiển thị sản phẩm!', 'success');
+            } else {
+                badge.innerText = 'Đã ẩn';
+                badge.className = 'badge badge-locked';
+                showToast('Đã ẩn sản phẩm khỏi website khách hàng!', 'warning');
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
+</body>
+</html>

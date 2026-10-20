@@ -1028,13 +1028,14 @@
         </div>
     </div>
 
-    <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG -->
+    <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG (MỤC I.5) -->
     <div class="modal-overlay" id="modal-import">
         <div class="modal-box">
             <h3 id="modal-imp-title" style="margin-bottom: 16px; font-weight:800;">Thêm Phiếu Nhập Hàng</h3>
+            <input type="hidden" id="imp-edit-id" value="">
             <div style="margin-bottom: 14px;">
                 <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Ngày nhập hàng *</label>
-                <input type="date" class="form-control" value="2025-10-24" style="width:100%;">
+                <input type="date" id="imp-date" class="form-control" value="2025-10-24" style="width:100%;">
             </div>
             <p style="font-size:13px; font-weight:700; margin-bottom: 8px;">Danh sách sản phẩm nhập:</p>
             <table>
@@ -1048,20 +1049,18 @@
                 <tbody>
                     <tr>
                         <td>
-                            <select class="form-control">
-                                <option>SP001 - Nike Air Max Red 2025</option>
-                                <option>SP002 - Adidas Ultraboost Pro</option>
-                                <option>SP003 - Air Jordan 1 Retro High</option>
+                            <select class="form-control" id="imp-prod-select">
+                                <option value="SP001">SP001 - Nike Air Max Red 2025</option>
                             </select>
                         </td>
-                        <td><input type="number" class="form-control" value="1800000"></td>
-                        <td><input type="number" class="form-control" value="10" style="width:80px;"></td>
+                        <td><input type="number" id="imp-price" class="form-control" value="1800000"></td>
+                        <td><input type="number" id="imp-qty" class="form-control" value="10" style="width:80px;"></td>
                     </tr>
                 </tbody>
             </table>
             <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
                 <button class="btn btn-dark" onclick="closeModal('modal-import')">Đóng</button>
-                <button class="btn btn-primary" onclick="showToast('Đã lưu phiếu nhập hàng ở trạng thái Chưa hoàn thành!', 'success'); closeModal('modal-import')">💾 Lưu phiếu tạm</button>
+                <button class="btn btn-primary" onclick="saveImportModal()">💾 Lưu phiếu nhập</button>
             </div>
         </div>
     </div>
@@ -1530,11 +1529,88 @@
             `).join('');
         }
 
+        let editingImportId = null;
+
         function openImportModal(mode, id) {
+            editingImportId = (mode === 'edit') ? id : null;
+            document.getElementById('imp-edit-id').value = editingImportId || '';
             document.getElementById('modal-imp-title').innerText = (mode === 'edit') 
                 ? `✏️ Sửa Phiếu Nhập ${id} (Chưa hoàn thành)` 
                 : '➕ Thêm Phiếu Nhập Hàng Mới';
+
+            // Đổ danh sách sản phẩm giày vào thẻ select
+            const select = document.getElementById('imp-prod-select');
+            if (select && window.SGU_CORE) {
+                const prods = SGU_CORE.getProducts();
+                select.innerHTML = prods.map(p => `<option value="${p.id}">${p.id} - ${p.name}</option>`).join('');
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('imp-date');
+            const priceInput = document.getElementById('imp-price');
+            const qtyInput = document.getElementById('imp-qty');
+
+            if (mode === 'edit' && id && window.SGU_CORE) {
+                const imports = SGU_CORE.getImports();
+                const found = imports.find(x => x.id === id);
+                if (found) {
+                    if (dateInput) dateInput.value = found.date || today;
+                    if (priceInput) priceInput.value = found.unitCost || 1800000;
+                    if (qtyInput) qtyInput.value = found.qty || 10;
+                    if (select && found.prodId) select.value = found.prodId;
+                }
+            } else {
+                if (dateInput) dateInput.value = today;
+                if (priceInput) priceInput.value = 1800000;
+                if (qtyInput) qtyInput.value = 10;
+            }
+
             document.getElementById('modal-import').style.display = 'flex';
+        }
+
+        function saveImportModal() {
+            if (!window.SGU_CORE) return;
+            const imports = SGU_CORE.getImports();
+            const dateVal = document.getElementById('imp-date').value || new Date().toISOString().split('T')[0];
+            const prodSelect = document.getElementById('imp-prod-select');
+            const prodId = prodSelect ? prodSelect.value : 'SP001';
+            const prods = SGU_CORE.getProducts();
+            const prod = prods.find(p => p.id === prodId) || prods[0];
+            const price = parseInt(document.getElementById('imp-price').value) || 1800000;
+            const qty = parseInt(document.getElementById('imp-qty').value) || 10;
+            const total = price * qty;
+            const totalStr = SGU_CORE.formatVND(total);
+
+            if (editingImportId) {
+                const target = imports.find(x => x.id === editingImportId);
+                if (target) {
+                    target.date = dateVal;
+                    target.items = `${prod ? prod.name : 'Giày Sneaker'} (x${qty})`;
+                    target.total = totalStr;
+                    target.unitCost = price;
+                    target.qty = qty;
+                    target.prodId = prodId;
+                }
+                showToast(`Đã cập nhật thành công phiếu nhập ${editingImportId}!`, 'success');
+            } else {
+                const newId = 'PN' + String(imports.length + 1).padStart(3, '0');
+                imports.unshift({
+                    id: newId,
+                    date: dateVal,
+                    items: `${prod ? prod.name : 'Giày Sneaker'} (x${qty})`,
+                    total: totalStr,
+                    status: 'Chưa hoàn thành',
+                    canEdit: true,
+                    unitCost: price,
+                    qty: qty,
+                    prodId: prodId
+                });
+                showToast(`Đã tạo mới phiếu nhập ${newId} ở trạng thái Chưa hoàn thành!`, 'success');
+            }
+
+            SGU_CORE.saveImports(imports);
+            loadAdminImports();
+            closeModal('modal-import');
         }
 
         function completeImport(id) {
@@ -1553,10 +1629,11 @@
 
             // Tự động cộng tồn kho vào sản phẩm
             const prods = SGU_CORE.getProducts();
-            if (prods.length > 0) {
-                // Tăng 10 đôi cho SP001
-                prods[0].stock = (prods[0].stock || 0) + 10;
-                prods[0].stockImport = (prods[0].stockImport || 0) + 10;
+            const targetProd = imp.prodId ? prods.find(p => p.id === imp.prodId) : prods[0];
+            const addQty = imp.qty || 10;
+            if (targetProd) {
+                targetProd.stock = (targetProd.stock || 0) + addQty;
+                targetProd.stockImport = (targetProd.stockImport || 0) + addQty;
                 SGU_CORE.saveProducts(prods);
             }
 

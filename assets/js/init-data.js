@@ -9,7 +9,7 @@
  */
 
 (function () {
-    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v2';
+    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v3';
 
     // 1. DANH MỤC PHÂN LOẠI GIÀY (Rubric I.3 & II.2)
     const initialCategories = [
@@ -291,18 +291,24 @@
         {
             id: 'PN2025-01',
             date: '10/10/2025',
-            items: 'Adidas Ultraboost Light Pro (SL: 15 đôi - Giá nhập: 1.400.000₫)',
+            items: 'Adidas Ultraboost Light Pro (x15)',
             total: '21.000.000 ₫',
             status: 'Đã hoàn thành',
-            canEdit: false
+            canEdit: false,
+            unitCost: 1400000,
+            qty: 15,
+            prodId: 'SP002'
         },
         {
             id: 'PN2025-02',
             date: '20/10/2025',
-            items: 'Nike Air Max Red 2025 (SL: 10 đôi - Giá nhập: 1.800.000₫)',
+            items: 'Nike Air Max Red 2025 (x10)',
             total: '18.000.000 ₫',
             status: 'Chưa hoàn thành',
-            canEdit: true
+            canEdit: true,
+            unitCost: 1800000,
+            qty: 10,
+            prodId: 'SP001'
         }
     ];
 

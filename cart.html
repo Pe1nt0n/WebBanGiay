@@ -532,25 +532,6 @@
                             Chủ TK: <strong>CỬA HÀNG SGU SNEAKER</strong> | Cú pháp: <em>SGU SĐT</em>
                         </div>
 
-                        <label class="option-card" id="pay-card-online" onclick="selectPaymentMethod('ONLINE')">
-                            <input type="radio" name="pay_mode" value="ONLINE">
-                            <div>
-                                <strong style="font-size: 14px;">Thanh toán thẻ Online (Visa / ATM / MoMo)</strong>
-                                <p style="font-size: 13px; color: var(--gray); margin-top: 4px;">Cổng thanh toán an toàn mã hóa SSL 256-bit</p>
-                            </div>
-                        </label>
-
-                        <div id="online-box" style="display: none; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px;">
-                            <div class="form-group">
-                                <label>Số thẻ Visa / MasterCard</label>
-                                <input type="text" class="form-control" placeholder="4111 2222 3333 4444">
-                            </div>
-                            <div class="form-row">
-                                <input type="text" class="form-control" placeholder="MM/YY">
-                                <input type="text" class="form-control" placeholder="CVV">
-                            </div>
-                        </div>
-
                         <!-- TỔNG KẾT TIỀN -->
                         <div style="margin-top: 20px;">
                             <div class="summary-row">
@@ -840,7 +821,7 @@
                     </div>
                     <div>
                         <div class="item-name">${item.name}</div>
-                        <div class="item-meta">Mã: <strong>${item.code}</strong> | Size: <strong>${item.size || 40}</strong> | Màu: <strong>${item.color || 'Mặc định'}</strong></div>
+                        <div class="item-meta">Mã: <strong>${item.code}</strong> | Size: <strong>${item.size || 40}</strong></div>
                         <div class="item-price">${Number(item.price).toLocaleString('vi-VN')} ₫</div>
                     </div>
                     <div class="qty-controls">
@@ -916,10 +897,7 @@
         function selectPaymentMethod(mode) {
             document.getElementById('pay-card-cod').classList.toggle('selected', mode === 'COD');
             document.getElementById('pay-card-bank').classList.toggle('selected', mode === 'BANK');
-            document.getElementById('pay-card-online').classList.toggle('selected', mode === 'ONLINE');
-
             document.getElementById('bank-box').style.display = mode === 'BANK' ? 'block' : 'none';
-            document.getElementById('online-box').style.display = mode === 'ONLINE' ? 'block' : 'none';
         }
 
         // ==========================================================
@@ -962,7 +940,7 @@
             const payMode = document.querySelector('input[name="pay_mode"]:checked').value;
             const payText = payMode === 'COD' 
                 ? 'Tiền mặt khi nhận hàng (COD)' 
-                : (payMode === 'BANK' ? 'Chuyển khoản VietQR 24/7' : 'Thanh toán trực tuyến (Thẻ Online)');
+                : 'Chuyển khoản VietQR 24/7';
 
             const orderId = '#DH2025-' + Math.floor(100 + Math.random() * 900);
             const today = new Date().toLocaleDateString('vi-VN');

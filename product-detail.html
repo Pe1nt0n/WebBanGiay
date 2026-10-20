@@ -608,25 +608,11 @@
     <!-- MAIN PRODUCT DETAIL -->
     <div class="detail-wrapper">
         <div class="product-main-grid">
-            <!-- CỘT 1: HÌNH ẢNH & THUMBNAILS -->
+            <!-- CỘT 1: HÌNH ẢNH SẢN PHẨM -->
             <div class="gallery-box">
                 <div class="main-img-box">
-                    <span class="badge-hot-tag">HOT DEAL -15%</span>
-                    <img id="main-shoe-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Nike Air Max Red">
-                </div>
-                <div class="thumb-row">
-                    <div class="thumb-card active" onclick="switchImage(this, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80')">
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80" alt="Angle 1">
-                    </div>
-                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80')">
-                        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80" alt="Angle 2">
-                    </div>
-                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80')">
-                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80" alt="Angle 3">
-                    </div>
-                    <div class="thumb-card" onclick="switchImage(this, 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80')">
-                        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=200&q=80" alt="Angle 4">
-                    </div>
+                    <span class="badge-hot-tag">CHÍNH HÃNG 100%</span>
+                    <img id="main-shoe-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Shoe Product Image">
                 </div>
             </div>
 
@@ -641,7 +627,7 @@
 
                 <div class="rating-sold-row">
                     <span class="stars">⭐⭐⭐⭐⭐</span>
-                    <span><strong>4.9 / 5</strong> (128 nhận xét)</span>
+                    <span><strong>4.9 / 5</strong></span>
                     <span>•</span>
                     <span>Đã bán: <strong>486 đôi</strong></span>
                 </div>
@@ -655,18 +641,6 @@
                 <p class="prod-short-desc" id="detail-desc">
                     Mẫu sneaker biểu tượng được trang bị hệ thống đệm khí Air Max nâng cấp, mang lại độ êm vượt trội, chống sốc tối ưu và nâng đỡ từng bước chân. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su bám đường hoàn hảo.
                 </p>
-
-                <!-- CHỌN MÀU SẮC -->
-                <div class="option-group">
-                    <div class="option-header">
-                        <span>Chọn Màu Sắc: <strong id="selected-color-name" style="color:var(--primary);">Đỏ Phối Trắng</strong></span>
-                    </div>
-                    <div class="color-chips" id="detail-color-chips">
-                        <button class="chip selected" onclick="selectColor(this, 'Đỏ Phối Trắng')">🔴 Đỏ Trắng</button>
-                        <button class="chip" onclick="selectColor(this, 'Đen Cam Neon')">⚫ Đen Neon</button>
-                        <button class="chip" onclick="selectColor(this, 'Trắng Băng Tuyết')">⚪ Trắng Tuyết</button>
-                    </div>
-                </div>
 
                 <!-- CHỌN SIZE GIÀY -->
                 <div class="option-group">
@@ -710,12 +684,11 @@
             </div>
         </div>
 
-        <!-- TABS THÔNG TIN KỸ THUẬT & ĐÁNH GIÁ -->
+        <!-- TABS THÔNG TIN KỸ THUẬT & MÔ TẢ (RUBRIC II.2) -->
         <div class="tabs-section">
             <div class="tab-headers">
                 <div class="tab-title active" onclick="switchDetailTab('tab-desc', this)">Mô Tả & Công Nghệ</div>
                 <div class="tab-title" onclick="switchDetailTab('tab-specs', this)">Thông Số Kỹ Thuật</div>
-                <div class="tab-title" onclick="switchDetailTab('tab-reviews', this)">Đánh Giá Từ Khách Hàng (128)</div>
             </div>
 
             <!-- TAB 1: MÔ TẢ -->
@@ -743,37 +716,6 @@
                     <tr><td>Trọng lượng</td><td>Khoảng 320g / chiếc (Size 41)</td></tr>
                     <tr><td>Xuất xứ</td><td>Chính hãng nhập khẩu / Việt Nam gia công xuất khẩu</td></tr>
                 </table>
-            </div>
-
-            <!-- TAB 3: ĐÁNH GIÁ -->
-            <div id="tab-reviews" class="tab-pane" style="display: none;">
-                <div style="display: flex; gap: 30px; align-items: center; background: #f8fafc; padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 40px; font-weight: 800; color: var(--primary);">4.9</div>
-                        <div style="color: #f59e0b;">⭐⭐⭐⭐⭐</div>
-                        <div style="font-size: 13px; color: var(--gray);">128 đánh giá thực tế</div>
-                    </div>
-                    <div style="font-size: 14px; color: #475569;">
-                        100% đánh giá từ khách hàng đã đặt mua và nhận hàng thành công qua hệ thống SGU Sneaker.
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong>Trần Văn Bình</strong> <span style="font-size: 12px; color: var(--gray);">14/10/2025</span>
-                        </div>
-                        <div style="color: #f59e0b; font-size: 13px;">⭐⭐⭐⭐⭐ - Đã mua Size 41</div>
-                        <p style="font-size: 13.5px; color: #475569; margin-top: 4px;">Giày form rất chuẩn, đi êm chân hơn mong đợi. Giao hàng tại Q.5 chỉ mất 1 ngày!</p>
-                    </div>
-                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong>Lê Thị Thu Thảo</strong> <span style="font-size: 12px; color: var(--gray);">08/10/2025</span>
-                        </div>
-                        <div style="color: #f59e0b; font-size: 13px;">⭐⭐⭐⭐⭐ - Đã mua Size 38</div>
-                        <p style="font-size: 13.5px; color: #475569; margin-top: 4px;">Màu đỏ trắng bên ngoài rất nổi bật, vải thoáng khí mang đi tập gym rất thích.</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -843,7 +785,6 @@
         // DỮ LIỆU ĐỘNG TỪ BỘ KHỞI TẠO DÙNG CHUNG (SGU_CORE)
         let currentProduct = null;
         let currentSelectedSize = 40;
-        let currentSelectedColor = 'Đỏ Phối Trắng';
 
         window.onload = function() {
             initProductDetail();
@@ -925,19 +866,6 @@
                 }
             }
 
-            // Render màu sắc động
-            const colors = p.colors && p.colors.length > 0 ? p.colors : ['Đỏ Phối Trắng', 'Đen Neon', 'Trắng Tuyết'];
-            currentSelectedColor = colors[0];
-            const colorContainer = document.getElementById('detail-color-chips');
-            if (colorContainer) {
-                colorContainer.innerHTML = colors.map((col, idx) => `
-                    <button class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectColor(this, '${col}')">
-                        ${getColorEmoji(col)} ${col}
-                    </button>
-                `).join('');
-                document.getElementById('selected-color-name').innerText = currentSelectedColor;
-            }
-
             // Render kích cỡ size động
             const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
             currentSelectedSize = sizes.includes(40) ? 40 : sizes[0];
@@ -950,18 +878,6 @@
 
             // Render sản phẩm liên quan
             renderRelatedProducts(p);
-        }
-
-        function getColorEmoji(colorName) {
-            const lower = colorName.toLowerCase();
-            if (lower.includes('đỏ') || lower.includes('red')) return '🔴';
-            if (lower.includes('đen') || lower.includes('black')) return '⚫';
-            if (lower.includes('trắng') || lower.includes('white')) return '⚪';
-            if (lower.includes('xanh') || lower.includes('blue')) return '🔵';
-            if (lower.includes('vàng') || lower.includes('yellow')) return '🟡';
-            if (lower.includes('cam') || lower.includes('orange')) return '🟠';
-            if (lower.includes('nâu') || lower.includes('brown')) return '🟤';
-            return '👟';
         }
 
         // RENDER SẢN PHẨM LIÊN QUAN TỪ SGU_CORE
@@ -992,20 +908,6 @@
                     <a href="product-detail.html?id=${item.id}" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
                 </div>
             `).join('');
-        }
-
-        function switchImage(thumbEl, imgSrc) {
-            document.querySelectorAll('.thumb-card').forEach(t => t.classList.remove('active'));
-            thumbEl.classList.add('active');
-            document.getElementById('main-shoe-img').src = imgSrc;
-        }
-
-        function selectColor(btn, colorName) {
-            document.querySelectorAll('#detail-color-chips .chip').forEach(c => c.classList.remove('selected'));
-            btn.classList.add('selected');
-            currentSelectedColor = colorName;
-            document.getElementById('selected-color-name').innerText = colorName;
-            showToast(`Đã chọn phối màu: ${colorName}`, 'success');
         }
 
         function selectSize(btn, sizeVal) {
@@ -1086,7 +988,6 @@
                     code: p.id,
                     img: p.img,
                     size: currentSelectedSize,
-                    color: currentSelectedColor,
                     qty: qty
                 });
             }

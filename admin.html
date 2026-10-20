@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin SGU SNEAKER - Hệ Thống Quản Trị Cửa Hàng Toàn Diện</title>
+    <!-- Bộ Dữ Liệu Khởi Tạo Dùng Chung -->
+    <script src="./assets/js/init-data.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -546,6 +548,10 @@
                         <button class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
                     </div>
 
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm loại giày..." oninput="filterTableAsYouType(this, 'cat-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
                     <table>
                         <thead>
                             <tr>
@@ -685,8 +691,8 @@
 
                     <div class="filter-bar">
                         <div>
-                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu</label>
-                            <input type="text" class="form-control" placeholder="VD: PN2025-02">
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu hoặc sản phẩm</label>
+                            <input type="text" class="form-control" placeholder="VD: PN2025-02 hoặc tên giày..." oninput="filterTableAsYouType(this, 'imports-table-body')">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
@@ -706,7 +712,7 @@
                                 <th>Thao tác quản trị</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="imports-table-body">
                             <tr>
                                 <td><strong>PN2025-02</strong></td>
                                 <td>22/10/2025</td>
@@ -760,6 +766,10 @@
                         <button class="btn btn-primary" onclick="applyBulkProfit()">Áp Dụng Cho Toàn Loại</button>
                     </div>
 
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm sản phẩm định giá..." oninput="filterTableAsYouType(this, 'pricing-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
                     <table>
                         <thead>
                             <tr>
@@ -772,7 +782,7 @@
                                 <th>Cập nhật</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="pricing-table-body">
                             <tr>
                                 <td><strong>SP001</strong></td>
                                 <td><strong>Nike Air Max Red 2025</strong></td>
@@ -816,6 +826,10 @@
                     </div>
 
                     <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã đơn / Khách hàng</label>
+                            <input type="text" class="form-control" placeholder="VD: #DH2025 hoặc tên..." oninput="filterTableAsYouType(this, 'admin-orders-table')">
+                        </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
                             <input type="date" class="form-control" value="2025-10-01">
@@ -907,6 +921,10 @@
                         <button class="btn btn-primary" onclick="showToast('Đã kết xuất báo cáo Nhập - Xuất - Tồn kho!', 'success')">Xuất Báo Cáo</button>
                     </div>
 
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm sản phẩm trong kho..." oninput="filterTableAsYouType(this, 'inventory-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
                     <table>
                         <thead>
                             <tr>
@@ -920,7 +938,7 @@
                                 <th>Tình trạng</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="inventory-table-body">
                             <tr>
                                 <td><strong>SP001</strong></td>
                                 <td><strong>Nike Air Max Red 2025</strong></td>
@@ -1207,7 +1225,7 @@
 
         window.onload = function() {
             checkAdminSession();
-            loadAdminOrders();
+            loadAllAdminModules();
 
             // Đọc Hash từ URL nếu người dùng bookmark hoặc mở link trực tiếp
             const hash = window.location.hash;
@@ -1219,30 +1237,107 @@
             else if (hash === '#inventory') switchAdminTab('tab-inventory', document.getElementById('nav-inventory'));
         };
 
-        // QUẢN LÝ KHÁCH HÀNG
-        function resetUserPassword(name) {
-            showToast(`Đã reset mật khẩu của khách hàng "${name}" về: 123456`, 'success');
+        function loadAllAdminModules() {
+            loadAdminUsers();
+            loadAdminCategories();
+            loadAdminProducts();
+            loadAdminImports();
+            loadAdminPricing();
+            loadAdminOrders();
+            loadAdminInventory();
         }
 
-        function toggleLock(id, name) {
-            const badge = document.getElementById('badge-' + id);
-            const btn = document.getElementById('btn-lock-' + id);
-            if (badge.innerText === 'Đang hoạt động') {
-                badge.innerText = 'Đã khóa';
-                badge.className = 'badge badge-locked';
-                btn.innerText = '🔓 Mở khóa TK';
-                btn.className = 'btn btn-success';
-                showToast(`Đã KHÓA tài khoản của: ${name}`, 'warning');
-            } else {
-                badge.innerText = 'Đang hoạt động';
-                badge.className = 'badge badge-active';
-                btn.innerText = '🔒 Khóa TK';
-                btn.className = 'btn btn-danger';
-                showToast(`Đã MỞ KHÓA tài khoản của: ${name}`, 'success');
+        // ==========================================================
+        // 1. QUẢN LÝ KHÁCH HÀNG (MỤC I.2)
+        // ==========================================================
+        function loadAdminUsers() {
+            const table = document.getElementById('user-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const users = SGU_CORE.getUsers();
+
+            table.innerHTML = users.map(u => `
+                <tr id="user-row-${u.id}">
+                    <td><strong>${u.id}</strong></td>
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.phone || '0909123456'}</td>
+                    <td style="max-width:220px; font-size:13px;">${u.address || 'TP.HCM'}</td>
+                    <td>
+                        <span class="badge ${u.isLocked ? 'badge-locked' : 'badge-active'}" id="badge-${u.id}">
+                            ${u.isLocked ? 'Đã khóa' : 'Đang hoạt động'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning" onclick="resetUserPassword('${u.id}', '${u.name}')">🔑 Reset Pass</button>
+                        <button class="btn ${u.isLocked ? 'btn-success' : 'btn-danger'}" id="btn-lock-${u.id}" onclick="toggleLock('${u.id}', '${u.name}')">
+                            ${u.isLocked ? '🔓 Mở khóa TK' : '🔒 Khóa TK'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function resetUserPassword(userId, name) {
+            if (!window.SGU_CORE) return;
+            const users = SGU_CORE.getUsers();
+            const u = users.find(x => x.id === userId);
+            if (u) {
+                u.pass = '123456';
+                SGU_CORE.saveUsers(users);
+                showToast(`Đã reset mật khẩu của khách hàng "${name}" về mặc định: 123456`, 'success');
             }
         }
 
-        // QUẢN LÝ LOẠI GIÀY
+        function toggleLock(userId, name) {
+            if (!window.SGU_CORE) return;
+            const users = SGU_CORE.getUsers();
+            const u = users.find(x => x.id === userId);
+            if (!u) return;
+
+            u.isLocked = !u.isLocked;
+            SGU_CORE.saveUsers(users);
+
+            // Nếu tài khoản đang được lưu làm sgu_user hiện tại, cập nhật ngay lập tức
+            const cur = SGU_CORE.getCurrentUser();
+            if (cur && (cur.id === userId || cur.email === u.email)) {
+                cur.isLocked = u.isLocked;
+                SGU_CORE.setCurrentUser(cur);
+            }
+
+            loadAdminUsers();
+            if (u.isLocked) {
+                showToast(`Đã KHÓA tài khoản của: ${name}! Khách hàng này sẽ không thể đăng nhập bên website người dùng.`, 'warning');
+            } else {
+                showToast(`Đã MỞ KHÓA tài khoản của: ${name}! Khách hàng đã có thể đăng nhập bình thường.`, 'success');
+            }
+        }
+
+        // ==========================================================
+        // 2. QUẢN LÝ LOẠI GIÀY (MỤC I.3)
+        // ==========================================================
+        function loadAdminCategories() {
+            const table = document.getElementById('cat-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const cats = SGU_CORE.getCategories();
+            const prods = SGU_CORE.getProducts();
+
+            table.innerHTML = cats.map(c => {
+                const count = prods.filter(p => p.catCode === c.code || p.category === c.name).length;
+                return `
+                    <tr>
+                        <td><strong>${c.code}</strong></td>
+                        <td class="cat-name">${c.name}</td>
+                        <td>${count} sản phẩm</td>
+                        <td><span class="badge ${c.active ? 'badge-active' : 'badge-locked'}">${c.active ? 'Đang hiển thị' : 'Tạm ẩn'}</span></td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editCategory('${c.code}', '${c.name}')">✏️ Sửa</button>
+                            <button class="btn btn-danger" onclick="toggleHideCategory('${c.code}')">${c.active ? '👁️ Ẩn / Xóa' : '🔓 Hiển thị'}</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function editCategory(code, name) {
             document.getElementById('cat-code').value = code;
             document.getElementById('cat-name').value = name;
@@ -1256,111 +1351,305 @@
                 showToast('Vui lòng nhập đầy đủ Mã loại và Tên loại giày!', 'warning');
                 return;
             }
+
+            if (!window.SGU_CORE) return;
+            const cats = SGU_CORE.getCategories();
+            const existing = cats.find(c => c.code.toLowerCase() === code.toLowerCase());
+            if (existing) {
+                existing.name = name;
+            } else {
+                cats.push({ code: code, name: name, count: 0, active: true });
+            }
+
+            SGU_CORE.saveCategories(cats);
+            loadAdminCategories();
             showToast(`Đã lưu thành công loại giày: ${code} - ${name}!`, 'success');
             document.getElementById('cat-code').value = '';
             document.getElementById('cat-name').value = '';
         }
 
-        // QUẢN LÝ SẢN PHẨM
+        function toggleHideCategory(code) {
+            if (!window.SGU_CORE) return;
+            const cats = SGU_CORE.getCategories();
+            const c = cats.find(x => x.code === code);
+            if (c) {
+                c.active = !c.active;
+                SGU_CORE.saveCategories(cats);
+                loadAdminCategories();
+                showToast(`Đã ${c.active ? 'hiển thị lại' : 'tạm ẩn'} danh mục "${c.name}"!`, c.active ? 'success' : 'warning');
+            }
+        }
+
+        // ==========================================================
+        // 3. QUẢN LÝ SẢN PHẨM GIÀY (MỤC I.4)
+        // ==========================================================
+        let editingProductId = null;
+
+        function loadAdminProducts() {
+            const table = document.getElementById('prod-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+
+            table.innerHTML = prods.map(p => `
+                <tr>
+                    <td><img src="${p.img}" class="thumb" alt="${p.name}"></td>
+                    <td><strong>${p.id}</strong></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td style="max-width:240px; font-size:13px;">${p.desc ? p.desc.substring(0, 65) + '...' : ''}</td>
+                    <td><span class="badge ${p.active ? 'badge-active' : 'badge-locked'}">${p.active ? 'Đang bán' : 'Đã ẩn'}</span></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="openEditProductModal('${p.id}')">✏️ Sửa</button>
+                        <button class="btn btn-danger" onclick="toggleHideProduct('${p.id}')">${p.active ? '🗑️ Ẩn' : '🔓 Bật'}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         function openAddProductModal() {
+            editingProductId = null;
             document.getElementById('modal-prod-title').innerText = '➕ Thêm sản phẩm giày mới';
-            document.getElementById('prod-code').value = '';
+            const prods = SGU_CORE ? SGU_CORE.getProducts() : [];
+            document.getElementById('prod-code').value = 'SP' + String(prods.length + 1).padStart(3, '0');
+            document.getElementById('prod-code').readOnly = false;
             document.getElementById('prod-name').value = '';
-            document.getElementById('prod-img').value = '';
+            document.getElementById('prod-img').value = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80';
             document.getElementById('prod-desc').value = '';
-            previewShoeImage('');
+            previewShoeImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80');
             document.getElementById('modal-product').style.display = 'flex';
         }
 
-        function openEditProductModal(code, name, cat, img, desc) {
-            document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + code;
-            document.getElementById('prod-code').value = code;
-            document.getElementById('prod-name').value = name;
-            document.getElementById('prod-cat').value = cat;
-            document.getElementById('prod-img').value = img;
-            document.getElementById('prod-desc').value = desc;
-            previewShoeImage(img);
+        function openEditProductModal(id) {
+            editingProductId = id;
+            const prods = SGU_CORE ? SGU_CORE.getProducts() : [];
+            const p = prods.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + p.id;
+            document.getElementById('prod-code').value = p.id;
+            document.getElementById('prod-code').readOnly = true;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-cat').value = p.category;
+            document.getElementById('prod-img').value = p.img;
+            document.getElementById('prod-desc').value = p.desc || '';
+            previewShoeImage(p.img);
             document.getElementById('modal-product').style.display = 'flex';
         }
 
         function saveProductModal() {
-            const name = document.getElementById('prod-name').value;
-            if (!name) {
-                showToast('Vui lòng nhập tên sản phẩm giày!', 'warning');
+            const code = document.getElementById('prod-code').value.trim();
+            const name = document.getElementById('prod-name').value.trim();
+            const cat = document.getElementById('prod-cat').value;
+            const img = document.getElementById('prod-img').value.trim();
+            const desc = document.getElementById('prod-desc').value.trim();
+
+            if (!code || !name) {
+                showToast('Vui lòng nhập Mã và Tên sản phẩm giày!', 'warning');
                 return;
             }
-            showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
+
+            if (!window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+            const existing = prods.find(p => p.id === code);
+
+            if (existing) {
+                existing.name = name;
+                existing.category = cat;
+                existing.img = img;
+                existing.desc = desc;
+            } else {
+                prods.unshift({
+                    id: code,
+                    name: name,
+                    brand: cat.includes('Sneaker') ? 'Nike' : (cat.includes('Chạy') ? 'Adidas' : 'SGU'),
+                    category: cat,
+                    catCode: 'LOAI01',
+                    costPrice: 1500000,
+                    profitPercent: 35,
+                    price: 2025000,
+                    oldPrice: 2400000,
+                    stock: 15,
+                    stockInitial: 15,
+                    stockImport: 0,
+                    stockExport: 0,
+                    sizes: [38, 39, 40, 41, 42, 43],
+                    colors: ['Đen Phối Trắng', 'Trắng Tuyết'],
+                    tag: 'NEW',
+                    reviews: 10,
+                    rating: 5.0,
+                    desc: desc,
+                    img: img,
+                    active: true
+                });
+            }
+
+            SGU_CORE.saveProducts(prods);
+            loadAdminProducts();
+            loadAdminPricing();
+            loadAdminInventory();
             closeModal('modal-product');
+            showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
         }
 
-        function toggleHideRow(btn) {
-            const row = btn.closest('tr');
-            const badge = row.querySelector('.badge');
-            if (badge.innerText.includes('Ẩn') || badge.innerText.includes('khóa')) {
-                badge.innerText = 'Đang hiển thị';
-                badge.className = 'badge badge-active';
-                showToast('Đã mở hiển thị sản phẩm!', 'success');
-            } else {
-                badge.innerText = 'Đã ẩn';
-                badge.className = 'badge badge-locked';
-                showToast('Đã ẩn sản phẩm khỏi website khách hàng!', 'warning');
+        function toggleHideProduct(id) {
+            if (!window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+            const p = prods.find(x => x.id === id);
+            if (p) {
+                p.active = !p.active;
+                SGU_CORE.saveProducts(prods);
+                loadAdminProducts();
+                showToast(`Đã ${p.active ? 'mở hiển thị' : 'ẩn'} sản phẩm ${p.name}!`, p.active ? 'success' : 'warning');
             }
         }
 
-        // QUẢN LÝ NHẬP HÀNG
-        function openImportModal(mode) {
-            document.getElementById('modal-imp-title').innerText = (mode === 'edit') ? '✏️ Sửa Phiếu Nhập PN2025-02 (Chưa hoàn thành)' : '➕ Thêm Phiếu Nhập Hàng Mới';
+        // ==========================================================
+        // 4. QUẢN LÝ NHẬP HÀNG (MỤC I.5)
+        // ==========================================================
+        function loadAdminImports() {
+            const table = document.getElementById('imports-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const imports = SGU_CORE.getImports();
+
+            table.innerHTML = imports.map(imp => `
+                <tr id="imp-row-${imp.id}">
+                    <td><strong>${imp.id}</strong></td>
+                    <td>${imp.date}</td>
+                    <td>${imp.items}</td>
+                    <td><strong style="color:var(--primary);">${imp.total}</strong></td>
+                    <td><span class="badge ${imp.status === 'Đã hoàn thành' ? 'badge-done' : 'badge-pending'}" id="imp-status-${imp.id}">${imp.status}</span></td>
+                    <td id="imp-actions-${imp.id}">
+                        ${imp.canEdit ? `
+                            <button class="btn btn-warning" onclick="openImportModal('edit', '${imp.id}')">✏️ Sửa phiếu</button>
+                            <button class="btn btn-success" onclick="completeImport('${imp.id}')">✅ Hoàn thành</button>
+                        ` : `
+                            <button class="btn btn-disabled" disabled title="Phiếu đã hoàn thành không thể sửa">🔒 Đã khóa sửa</button>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openImportModal(mode, id) {
+            document.getElementById('modal-imp-title').innerText = (mode === 'edit') 
+                ? `✏️ Sửa Phiếu Nhập ${id} (Chưa hoàn thành)` 
+                : '➕ Thêm Phiếu Nhập Hàng Mới';
             document.getElementById('modal-import').style.display = 'flex';
         }
 
         function completeImport(id) {
-            if (confirm('Sau khi Hoàn thành phiếu nhập, bạn sẽ KHÔNG THỂ sửa phiếu này nữa. Xác nhận hoàn thành?')) {
-                const badge = document.getElementById('imp-status-' + id);
-                badge.innerText = 'Đã hoàn thành';
-                badge.className = 'badge badge-done';
-                document.getElementById('imp-actions-' + id).innerHTML = '<button class="btn btn-disabled" disabled>🔒 Đã khóa sửa</button>';
-                showToast('Đã hoàn thành phiếu nhập hàng và khóa tính năng sửa!', 'success');
+            if (!confirm('Sau khi Hoàn thành phiếu nhập, bạn sẽ KHÔNG THỂ sửa phiếu này nữa và số lượng sẽ được cộng vào kho. Xác nhận hoàn thành?')) {
+                return;
             }
+
+            if (!window.SGU_CORE) return;
+            const imports = SGU_CORE.getImports();
+            const imp = imports.find(x => x.id === id);
+            if (!imp) return;
+
+            imp.status = 'Đã hoàn thành';
+            imp.canEdit = false;
+            SGU_CORE.saveImports(imports);
+
+            // Tự động cộng tồn kho vào sản phẩm
+            const prods = SGU_CORE.getProducts();
+            if (prods.length > 0) {
+                // Tăng 10 đôi cho SP001
+                prods[0].stock = (prods[0].stock || 0) + 10;
+                prods[0].stockImport = (prods[0].stockImport || 0) + 10;
+                SGU_CORE.saveProducts(prods);
+            }
+
+            loadAdminImports();
+            loadAdminInventory();
+            showToast(`Đã hoàn thành phiếu nhập ${id}, khóa tính năng sửa và cộng tồn kho thành công!`, 'success');
         }
 
-        // GIÁ BÁN & LỢI NHUẬN
+        // ==========================================================
+        // 5. THIẾT LẬP GIÁ BÁN & LỢI NHUẬN (MỤC I.6)
+        // ==========================================================
+        function loadAdminPricing() {
+            const table = document.getElementById('pricing-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+
+            table.innerHTML = prods.map(p => {
+                const cost = p.costPrice || 1500000;
+                const profit = p.profitPercent || 35;
+                return `
+                    <tr>
+                        <td><strong>${p.id}</strong></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.category}</td>
+                        <td>${SGU_CORE.formatVND(cost)}</td>
+                        <td>
+                            <input type="number" id="profit-val-${p.id}" class="form-control" value="${profit}" style="width:85px; display:inline-block;" oninput="calcPrice(this, ${cost}, 'sell-${p.id}')"> %
+                        </td>
+                        <td><strong style="color:var(--primary); font-size:16px;" id="sell-${p.id}">${SGU_CORE.formatVND(p.price)}</strong></td>
+                        <td><button class="btn btn-primary" onclick="savePricing('${p.id}')">Lưu</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function calcPrice(input, cost, targetId) {
             const percent = parseFloat(input.value) || 0;
             const sellPrice = Math.round(cost * (1 + percent / 100));
-            document.getElementById(targetId).innerText = sellPrice.toLocaleString('vi-VN') + ' ₫';
+            const target = document.getElementById(targetId);
+            if (target && window.SGU_CORE) {
+                target.innerText = SGU_CORE.formatVND(sellPrice);
+            }
+        }
+
+        function savePricing(prodId) {
+            if (!window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+            const p = prods.find(x => x.id === prodId);
+            if (!p) return;
+
+            const input = document.getElementById(`profit-val-${p.id}`);
+            const percent = parseFloat(input ? input.value : p.profitPercent) || 0;
+            const cost = p.costPrice || 1500000;
+            const newPrice = Math.round(cost * (1 + percent / 100));
+
+            p.profitPercent = percent;
+            p.price = newPrice;
+            SGU_CORE.saveProducts(prods);
+
+            showToast(`Đã lưu giá bán mới cho ${p.id} (${p.name}): ${SGU_CORE.formatVND(newPrice)}!`, 'success');
         }
 
         function applyBulkProfit() {
             const cat = document.getElementById('bulk-cat-select').value;
-            const percent = document.getElementById('bulk-percent-input').value;
-            showToast(`Đã cập nhật tỉ lệ lợi nhuận ${percent}% cho toàn bộ sản phẩm thuộc loại "${cat}"!`, 'success');
+            const percent = parseFloat(document.getElementById('bulk-percent-input').value) || 30;
+
+            if (!window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+            let count = 0;
+
+            prods.forEach(p => {
+                if (cat === 'ALL' || p.category === cat) {
+                    p.profitPercent = percent;
+                    p.price = Math.round((p.costPrice || 1500000) * (1 + percent / 100));
+                    count++;
+                }
+            });
+
+            SGU_CORE.saveProducts(prods);
+            loadAdminPricing();
+            loadAdminProducts();
+            showToast(`Đã cập nhật tỉ lệ lợi nhuận ${percent}% cho ${count} sản phẩm thuộc loại "${cat}"!`, 'success');
         }
 
-        // QUẢN LÝ ĐƠN HÀNG TỰ ĐỘNG TỪ LOCALSTORAGE (ĐỒNG BỘ 100% VỚI CART.HTML)
-        let adminOrders = JSON.parse(localStorage.getItem('sgu_orders')) || [
-            {
-                id: '#DH2025-089',
-                cust: 'Nguyễn Văn A',
-                date: '24/10/2025',
-                items: 'Nike Air Max Red (x1), Adidas Ultraboost (x1)',
-                total: '4.340.000 ₫',
-                status: 'Mới đặt',
-                address: '273 An Dương Vương, Q.5, TP.HCM'
-            },
-            {
-                id: '#DH2025-042',
-                cust: 'Trần Thị Bích',
-                date: '12/10/2025',
-                items: 'Air Jordan 1 Retro High (x1)',
-                total: '3.200.000 ₫',
-                status: 'Đã giao',
-                address: '120 Nguyễn Huệ, Q.1, TP.HCM'
-            }
-        ];
-
+        // ==========================================================
+        // 6. QUẢN LÝ ĐƠN HÀNG (MỤC I.7)
+        // ==========================================================
         function loadAdminOrders() {
             const table = document.getElementById('admin-orders-table');
-            table.innerHTML = adminOrders.map((ord, idx) => `
+            if (!table || !window.SGU_CORE) return;
+            const orders = SGU_CORE.getOrders();
+
+            table.innerHTML = orders.map((ord, idx) => `
                 <tr data-status="${ord.status}">
                     <td><strong>${ord.id}</strong></td>
                     <td><strong>${ord.cust || 'Nguyễn Văn A'}</strong></td>
@@ -1388,14 +1677,19 @@
         }
 
         function changeOrderStatus(selectEl, idx) {
+            if (!window.SGU_CORE) return;
+            const orders = SGU_CORE.getOrders();
             const val = selectEl.value;
-            adminOrders[idx].status = val;
-            localStorage.setItem('sgu_orders', JSON.stringify(adminOrders));
+            orders[idx].status = val;
+            SGU_CORE.saveOrders(orders);
+
             const badge = document.getElementById('adm-badge-' + idx);
-            badge.innerText = val;
-            badge.className = 'badge ' + getBadgeClass(val);
+            if (badge) {
+                badge.innerText = val;
+                badge.className = 'badge ' + getBadgeClass(val);
+            }
             selectEl.closest('tr').dataset.status = val;
-            showToast(`Đã cập nhật đơn ${adminOrders[idx].id} thành "${val}"!`, 'success');
+            showToast(`Đã cập nhật đơn ${orders[idx].id} thành "${val}"!`, 'success');
         }
 
         function filterAdminOrders() {
@@ -1406,12 +1700,67 @@
         }
 
         function viewOrderDetail(idx) {
-            const ord = adminOrders[idx];
+            if (!window.SGU_CORE) return;
+            const orders = SGU_CORE.getOrders();
+            const ord = orders[idx];
+            if (!ord) return;
+
             document.getElementById('ord-detail-id').innerText = ord.id;
             document.getElementById('ord-detail-cust').innerText = ord.cust || 'Nguyễn Văn A';
             document.getElementById('ord-detail-addr').innerText = ord.address || '273 An Dương Vương, Q.5, TP.HCM';
             document.getElementById('ord-detail-total').innerText = ord.total;
+
+            const itemsTbody = document.getElementById('ord-detail-items');
+            if (ord.itemsList && ord.itemsList.length > 0) {
+                itemsTbody.innerHTML = ord.itemsList.map(item => `
+                    <tr>
+                        <td><strong>${item.name}</strong> (Size ${item.size || 40})</td>
+                        <td>${Number(item.price).toLocaleString('vi-VN')} ₫</td>
+                        <td>${item.qty}</td>
+                        <td><strong>${(Number(item.price) * Number(item.qty)).toLocaleString('vi-VN')} ₫</strong></td>
+                    </tr>
+                `).join('');
+            } else {
+                itemsTbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">${ord.items}</td>
+                    </tr>
+                `;
+            }
+
             document.getElementById('modal-order-detail').style.display = 'flex';
+        }
+
+        // ==========================================================
+        // 7. BÁO CÁO TỒN KHO & CẢNH BÁO TỒN THẤP (MỤC I.8)
+        // ==========================================================
+        function loadAdminInventory() {
+            const table = document.getElementById('inventory-table-body');
+            if (!table || !window.SGU_CORE) return;
+            const prods = SGU_CORE.getProducts();
+
+            table.innerHTML = prods.map(p => {
+                const isCritical = p.stock < 5;
+                return `
+                    <tr style="${isCritical ? 'background: #fff1f2;' : ''}">
+                        <td><strong>${p.id}</strong></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.category}</td>
+                        <td>${p.stockInitial || 10}</td>
+                        <td style="color:#10b981; font-weight:700;">+${p.stockImport || 0}</td>
+                        <td style="color:#e11d48; font-weight:700;">-${p.stockExport || 0}</td>
+                        <td><strong style="${isCritical ? 'color:var(--primary); font-size:16px;' : ''}">${p.stock} đôi</strong></td>
+                        <td>
+                            ${isCritical ? `
+                                <span class="badge badge-danger">⚠️ Tồn kho nguy cấp</span>
+                                <button class="btn btn-warning" style="padding:4px 8px; font-size:11px; margin-left:6px;" onclick="quickImportProduct('${p.name}', 20)">+ Nhập hàng</button>
+                            ` : `
+                                <span class="badge badge-done">Đủ hàng</span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }

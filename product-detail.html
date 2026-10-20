@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi Tiết Giày - SGU SNEAKER Chính Hãng</title>
+    <!-- Bộ Dữ Liệu Khởi Tạo Dùng Chung -->
+    <script src="./assets/js/init-data.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -582,14 +584,15 @@
             </a>
 
             <div style="flex:1; max-width:420px; margin: 0 20px;">
-                <input type="text" class="search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." onkeydown="if(event.key==='Enter') window.location.href='index.html'">
+                <input type="text" class="search-input" id="detail-search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." onkeydown="if(event.key==='Enter') window.location.href='index.html?search=' + encodeURIComponent(this.value.trim())">
             </div>
 
             <div class="header-actions">
-                <a href="index.html" class="chip" style="padding: 8px 16px;">🏠 Trang Chủ</a>
+                <a href="index.html" class="chip" style="padding: 8px 16px;">🏠 Cửa Hàng</a>
+                <div id="header-user-status" style="display:flex; align-items:center; gap:8px;"></div>
                 <a href="cart.html" class="cart-btn">
                     <span>🛒 Giỏ Hàng</span>
-                    <span class="cart-badge" id="cart-counter">1</span>
+                    <span class="cart-badge" id="cart-counter">0</span>
                 </a>
             </div>
         </div>
@@ -631,7 +634,7 @@
             <div class="info-box">
                 <div class="prod-brand-row">
                     <span class="brand-pill" id="detail-brand">NIKE</span>
-                    <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
+                    <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span id="detail-stock-status" style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
                 </div>
 
                 <h1 class="prod-title" id="detail-title">Nike Air Max Red 2025 - Special Edition</h1>
@@ -658,7 +661,7 @@
                     <div class="option-header">
                         <span>Chọn Màu Sắc: <strong id="selected-color-name" style="color:var(--primary);">Đỏ Phối Trắng</strong></span>
                     </div>
-                    <div class="color-chips">
+                    <div class="color-chips" id="detail-color-chips">
                         <button class="chip selected" onclick="selectColor(this, 'Đỏ Phối Trắng')">🔴 Đỏ Trắng</button>
                         <button class="chip" onclick="selectColor(this, 'Đen Cam Neon')">⚫ Đen Neon</button>
                         <button class="chip" onclick="selectColor(this, 'Trắng Băng Tuyết')">⚪ Trắng Tuyết</button>
@@ -774,57 +777,11 @@
             </div>
         </div>
 
-        <!-- SẢN PHẨM LIÊN QUAN -->
+        <!-- SẢN PHẨM LIÊN QUAN (TỰ ĐỘNG LẤY TỪ SGU_CORE) -->
         <div class="related-section">
             <h2 class="section-title">Có Thể Bạn Cũng Thích</h2>
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=300&q=80" alt="Shoe 2">
-                    </div>
-                    <div>
-                        <div style="font-size:12px; color:var(--gray); font-weight:700;">ADIDAS</div>
-                        <h4 style="font-size:15px; margin: 4px 0 8px;">Adidas Ultraboost Light Pro</h4>
-                        <div style="font-weight:800; color:var(--primary); font-size:16px;">1.890.000 ₫</div>
-                    </div>
-                    <a href="product-detail.html?id=SP002" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
-                </div>
-
-                <div class="product-card">
-                    <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=300&q=80" alt="Shoe 3">
-                    </div>
-                    <div>
-                        <div style="font-size:12px; color:var(--gray); font-weight:700;">NIKE JORDAN</div>
-                        <h4 style="font-size:15px; margin: 4px 0 8px;">Air Jordan 1 Retro High</h4>
-                        <div style="font-weight:800; color:var(--primary); font-size:16px;">3.190.000 ₫</div>
-                    </div>
-                    <a href="product-detail.html?id=SP003" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
-                </div>
-
-                <div class="product-card">
-                    <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=300&q=80" alt="Shoe 4">
-                    </div>
-                    <div>
-                        <div style="font-size:12px; color:var(--gray); font-weight:700;">NIKE FOOTBALL</div>
-                        <h4 style="font-size:15px; margin: 4px 0 8px;">Nike Mercurial Vapor 15</h4>
-                        <div style="font-weight:800; color:var(--primary); font-size:16px;">2.150.000 ₫</div>
-                    </div>
-                    <a href="product-detail.html?id=SP004" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
-                </div>
-
-                <div class="product-card">
-                    <div class="card-img-box">
-                        <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=300&q=80" alt="Shoe 5">
-                    </div>
-                    <div>
-                        <div style="font-size:12px; color:var(--gray); font-weight:700;">BITI'S</div>
-                        <h4 style="font-size:15px; margin: 4px 0 8px;">Biti's Hunter X Street Army</h4>
-                        <div style="font-weight:800; color:var(--primary); font-size:16px;">950.000 ₫</div>
-                    </div>
-                    <a href="product-detail.html?id=SP005" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
-                </div>
+            <div class="product-grid" id="related-products-grid">
+                <!-- Javascript render dynamic related products -->
             </div>
         </div>
     </div>
@@ -883,80 +840,159 @@
     </footer>
 
     <script>
-        // DỮ LIỆU SẢN PHẨM
-        const sampleProducts = {
-            'SP001': {
-                name: 'Nike Air Max Red 2025 - Special Edition',
-                brand: 'NIKE',
-                category: 'Giày Sneaker',
-                sku: 'SP001',
-                price: '2.450.000 ₫',
-                oldPrice: '2.900.000 ₫',
-                numPrice: 2450000,
-                desc: 'Mẫu sneaker biểu tượng được trang bị hệ thống đệm khí Air Max nâng cấp, mang lại độ êm vượt trội, chống sốc tối ưu và nâng đỡ từng bước chân. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su bám đường hoàn hảo.',
-                img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80'
-            },
-            'SP002': {
-                name: 'Adidas Ultraboost Light Pro - Đệm Boost',
-                brand: 'ADIDAS',
-                category: 'Giày Chạy Bộ',
-                sku: 'SP002',
-                price: '1.890.000 ₫',
-                oldPrice: '2.300.000 ₫',
-                numPrice: 1890000,
-                desc: 'Công nghệ bọt Boost thế hệ mới siêu nhẹ, hỗ trợ hoàn trả năng lượng tối đa cho mỗi sải bước chạy bộ và vận động thể thao cường độ cao.',
-                img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80'
-            },
-            'SP003': {
-                name: 'Air Jordan 1 Retro High - Da Thật Cao Cấp',
-                brand: 'NIKE JORDAN',
-                category: 'Giày Sneaker',
-                sku: 'SP003',
-                price: '3.190.000 ₫',
-                oldPrice: '3.800.000 ₫',
-                numPrice: 3190000,
-                desc: 'Thiết kế cổ cao kinh điển mang tinh thần bóng rổ đường phố. Thân giày bằng da thật 100% bền bỉ, tôn dáng và cá tính.',
-                img: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80'
-            },
-            'SP004': {
-                name: 'Nike Mercurial Vapor 15 - Đế Đinh TF Sân Cỏ',
-                brand: 'NIKE FOOTBALL',
-                category: 'Giày Đá Bóng',
-                sku: 'SP004',
-                price: '2.150.000 ₫',
-                oldPrice: '2.500.000 ₫',
-                numPrice: 2150000,
-                desc: 'Dòng giày đá bóng chuyên nghiệp dành cho sân cỏ nhân tạo, trọng lượng siêu nhẹ giúp bứt tốc và kiểm soát bóng chính xác.',
-                img: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800&q=80'
-            }
-        };
-
+        // DỮ LIỆU ĐỘNG TỪ BỘ KHỞI TẠO DÙNG CHUNG (SGU_CORE)
+        let currentProduct = null;
         let currentSelectedSize = 40;
         let currentSelectedColor = 'Đỏ Phối Trắng';
-        let currentProductKey = 'SP001';
 
-        // TỰ ĐỘNG ĐỌC SẢN PHẨM TỪ QUERY STRING (?id=SP002)
         window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            if (id && sampleProducts[id]) {
-                currentProductKey = id;
-                const p = sampleProducts[id];
-                document.getElementById('detail-title').innerText = p.name;
-                document.getElementById('bc-name').innerText = p.name;
-                document.getElementById('detail-brand').innerText = p.brand;
-                document.getElementById('spec-brand').innerText = p.brand;
-                document.getElementById('detail-sku').innerText = p.sku;
-                document.getElementById('bc-category').innerText = p.category;
-                document.getElementById('detail-price').innerText = p.price;
-                document.getElementById('detail-old-price').innerText = p.oldPrice;
-                document.getElementById('detail-desc').innerText = p.desc;
-                document.getElementById('main-shoe-img').src = p.img;
-            }
-
-            // Đồng bộ counter giỏ hàng từ localStorage
+            initProductDetail();
+            initHeaderUserState();
             updateCartCounter();
         };
+
+        function initHeaderUserState() {
+            const user = (window.SGU_CORE && SGU_CORE.getCurrentUser) ? SGU_CORE.getCurrentUser() : null;
+            const container = document.getElementById('header-user-status');
+            if (!container) return;
+            if (user) {
+                container.innerHTML = `
+                    <div class="chip" style="background:#f0fdf4; border-color:#bbf7d0; color:#166534; padding:8px 14px; font-weight:700;">
+                        👤 ${user.name}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <a href="index.html#login" class="chip" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; padding:8px 14px; font-weight:700;">
+                        🔑 Đăng nhập
+                    </a>
+                `;
+            }
+        }
+
+        // TỰ ĐỘNG ĐỌC SẢN PHẨM TỪ QUERY STRING (?id=SP002) VÀ SGU_CORE
+        function initProductDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id') || 'SP001';
+
+            if (window.SGU_CORE && SGU_CORE.getProductById) {
+                currentProduct = SGU_CORE.getProductById(id);
+            }
+
+            if (!currentProduct) {
+                currentProduct = {
+                    id: 'SP001',
+                    name: 'Nike Air Max Red 2025 - Special Edition',
+                    brand: 'Nike',
+                    category: 'Giày Sneaker',
+                    catCode: 'LOAI01',
+                    price: 2450000,
+                    oldPrice: 2900000,
+                    stock: 18,
+                    sizes: [38, 39, 40, 41, 42, 43, 44],
+                    colors: ['Đỏ Phối Trắng', 'Đen Neon', 'Trắng Tuyết'],
+                    tag: 'HOT',
+                    reviews: 128,
+                    rating: 4.9,
+                    desc: 'Thiết kế đệm khí Air Max nâng cấp êm ái vượt trội, bảo vệ khớp gót chân tối đa. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su đúc chống trượt.',
+                    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80'
+                };
+            }
+
+            const p = currentProduct;
+
+            // Đổ dữ liệu thông tin chi tiết
+            document.getElementById('detail-title').innerText = p.name;
+            document.getElementById('bc-name').innerText = p.name;
+            document.getElementById('detail-brand').innerText = p.brand;
+            document.getElementById('spec-brand').innerText = p.brand;
+            document.getElementById('detail-sku').innerText = p.id;
+            document.getElementById('bc-category').innerText = p.category;
+            document.getElementById('detail-price').innerText = SGU_CORE.formatVND(p.price);
+            document.getElementById('detail-old-price').innerText = SGU_CORE.formatVND(p.oldPrice || (p.price * 1.2));
+            document.getElementById('detail-desc').innerText = p.desc;
+            document.getElementById('main-shoe-img').src = p.img;
+
+            // Tình trạng tồn kho (Rubric I.8)
+            const stockEl = document.getElementById('detail-stock-status');
+            if (stockEl) {
+                if (p.stock <= 0) {
+                    stockEl.innerHTML = '<span style="color:var(--primary); font-weight:700;">❌ Tạm hết hàng</span>';
+                } else if (p.stock < 5) {
+                    stockEl.innerHTML = `<span style="color:var(--accent); font-weight:700;">⚠️ Sắp hết (Chỉ còn ${p.stock} đôi!)</span>`;
+                } else {
+                    stockEl.innerHTML = `<span style="color:var(--success); font-weight:700;">● Còn hàng (${p.stock} sản phẩm sẵn có)</span>`;
+                }
+            }
+
+            // Render màu sắc động
+            const colors = p.colors && p.colors.length > 0 ? p.colors : ['Đỏ Phối Trắng', 'Đen Neon', 'Trắng Tuyết'];
+            currentSelectedColor = colors[0];
+            const colorContainer = document.getElementById('detail-color-chips');
+            if (colorContainer) {
+                colorContainer.innerHTML = colors.map((col, idx) => `
+                    <button class="chip ${idx === 0 ? 'selected' : ''}" onclick="selectColor(this, '${col}')">
+                        ${getColorEmoji(col)} ${col}
+                    </button>
+                `).join('');
+                document.getElementById('selected-color-name').innerText = currentSelectedColor;
+            }
+
+            // Render kích cỡ size động
+            const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
+            currentSelectedSize = sizes.includes(40) ? 40 : sizes[0];
+            const sizeContainer = document.getElementById('size-chips-box');
+            if (sizeContainer) {
+                sizeContainer.innerHTML = sizes.map(s => `
+                    <button class="chip ${s === currentSelectedSize ? 'selected' : ''}" onclick="selectSize(this, ${s})">${s}</button>
+                `).join('');
+            }
+
+            // Render sản phẩm liên quan
+            renderRelatedProducts(p);
+        }
+
+        function getColorEmoji(colorName) {
+            const lower = colorName.toLowerCase();
+            if (lower.includes('đỏ') || lower.includes('red')) return '🔴';
+            if (lower.includes('đen') || lower.includes('black')) return '⚫';
+            if (lower.includes('trắng') || lower.includes('white')) return '⚪';
+            if (lower.includes('xanh') || lower.includes('blue')) return '🔵';
+            if (lower.includes('vàng') || lower.includes('yellow')) return '🟡';
+            if (lower.includes('cam') || lower.includes('orange')) return '🟠';
+            if (lower.includes('nâu') || lower.includes('brown')) return '🟤';
+            return '👟';
+        }
+
+        // RENDER SẢN PHẨM LIÊN QUAN TỪ SGU_CORE
+        function renderRelatedProducts(currentProd) {
+            const grid = document.getElementById('related-products-grid');
+            if (!grid || !window.SGU_CORE) return;
+
+            const allProds = SGU_CORE.getProducts();
+            let related = allProds.filter(p => p.id !== currentProd.id && (p.catCode === currentProd.catCode || p.category === currentProd.category || p.brand === currentProd.brand));
+            
+            // Nếu không đủ 4 sản phẩm, bổ sung thêm các sản phẩm khác
+            if (related.length < 4) {
+                const rest = allProds.filter(p => p.id !== currentProd.id && !related.some(r => r.id === p.id));
+                related = related.concat(rest);
+            }
+            related = related.slice(0, 4);
+
+            grid.innerHTML = related.map(item => `
+                <div class="product-card">
+                    <div class="card-img-box">
+                        <img src="${item.img}" alt="${item.name}">
+                    </div>
+                    <div>
+                        <div style="font-size:12px; color:var(--gray); font-weight:700; text-transform:uppercase;">${item.brand || 'SGU'}</div>
+                        <h4 style="font-size:14px; margin: 4px 0 8px; font-weight:700; height:38px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${item.name}</h4>
+                        <div style="font-weight:800; color:var(--primary); font-size:15px;">${SGU_CORE.formatVND(item.price)}</div>
+                    </div>
+                    <a href="product-detail.html?id=${item.id}" class="chip" style="text-align:center; margin-top:12px; display:block;">Xem Chi Tiết</a>
+                </div>
+            `).join('');
+        }
 
         function switchImage(thumbEl, imgSrc) {
             document.querySelectorAll('.thumb-card').forEach(t => t.classList.remove('active'));
@@ -965,7 +1001,7 @@
         }
 
         function selectColor(btn, colorName) {
-            document.querySelectorAll('.color-chips .chip').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('#detail-color-chips .chip').forEach(c => c.classList.remove('selected'));
             btn.classList.add('selected');
             currentSelectedColor = colorName;
             document.getElementById('selected-color-name').innerText = colorName;
@@ -973,7 +1009,7 @@
         }
 
         function selectSize(btn, sizeVal) {
-            document.querySelectorAll('.size-chips .chip').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('#size-chips-box .chip').forEach(c => c.classList.remove('selected'));
             btn.classList.add('selected');
             currentSelectedSize = sizeVal;
             showToast(`Đã chọn kích cỡ Size ${sizeVal}`, 'success');
@@ -983,7 +1019,11 @@
             const input = document.getElementById('qty-input');
             let val = parseInt(input.value) + delta;
             if (val < 1) val = 1;
-            if (val > 20) val = 20;
+            const max = currentProduct ? currentProduct.stock : 20;
+            if (val > max) {
+                showToast(`Kho hiện chỉ còn tối đa ${max} sản phẩm!`, 'warning');
+                val = max;
+            }
             input.value = val;
         }
 
@@ -1001,49 +1041,89 @@
             document.getElementById('modal-size-guide').style.display = 'none';
         }
 
-        // THÊM VÀO GIỎ HÀNG (LƯU LOCALSTORAGE ĐỒNG BỘ CART.HTML)
+        // THÊM VÀO GIỎ HÀNG (KIỂM TRA ĐĂNG NHẬP & TỒN KHO - RUBRIC I.2, II.1, II.2)
         function addToCartDetailed() {
-            const p = sampleProducts[currentProductKey];
-            const qty = parseInt(document.getElementById('qty-input').value) || 1;
+            if (!window.SGU_CORE) return;
 
-            let cart = JSON.parse(localStorage.getItem('sgu_cart')) || [];
-            const existing = cart.find(i => i.code === p.sku && i.size === currentSelectedSize);
+            // 1. Kiểm tra đăng nhập
+            const currentUser = SGU_CORE.getCurrentUser();
+            if (!currentUser) {
+                showToast('Vui lòng đăng nhập tại Trang Chủ để thêm sản phẩm vào giỏ hàng!', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html#login';
+                }, 1500);
+                return;
+            }
+
+            // 2. Kiểm tra tài khoản có bị khóa không
+            if (currentUser.isLocked) {
+                showToast('Tài khoản của bạn đã bị KHÓA bởi Quản trị viên! Vui lòng liên hệ CSKH.', 'danger');
+                return;
+            }
+
+            // 3. Kiểm tra số lượng tồn kho
+            const p = currentProduct;
+            if (p.stock <= 0) {
+                showToast('Sản phẩm này tạm thời đã hết hàng trong kho!', 'warning');
+                return;
+            }
+
+            const qty = parseInt(document.getElementById('qty-input').value) || 1;
+            if (qty > p.stock) {
+                showToast(`Số lượng đặt (${qty}) vượt quá tồn kho (${p.stock})!`, 'warning');
+                return;
+            }
+
+            // 4. Lưu giỏ hàng vào SGU_CORE
+            let cart = SGU_CORE.getCart();
+            const existing = cart.find(i => i.code === p.id && i.size === currentSelectedSize);
             if (existing) {
                 existing.qty += qty;
             } else {
                 cart.push({
                     name: p.name,
-                    price: p.numPrice,
-                    code: p.sku,
+                    price: p.price,
+                    code: p.id,
                     img: p.img,
                     size: currentSelectedSize,
                     color: currentSelectedColor,
                     qty: qty
                 });
             }
-            localStorage.setItem('sgu_cart', JSON.stringify(cart));
+
+            SGU_CORE.saveCart(cart);
             updateCartCounter();
             showToast(`Đã thêm ${qty} đôi "${p.name} (Size ${currentSelectedSize})" vào giỏ hàng!`, 'success');
         }
 
         function buyNowDetailed() {
+            const currentUser = (window.SGU_CORE && SGU_CORE.getCurrentUser) ? SGU_CORE.getCurrentUser() : null;
+            if (!currentUser) {
+                showToast('Vui lòng đăng nhập tại Trang Chủ để tiếp tục mua sắm!', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html#login';
+                }, 1500);
+                return;
+            }
             addToCartDetailed();
             setTimeout(() => {
                 window.location.href = 'cart.html';
-            }, 500);
+            }, 600);
         }
 
         function updateCartCounter() {
-            const cart = JSON.parse(localStorage.getItem('sgu_cart')) || [];
-            const count = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cart-counter').innerText = count;
+            if (window.SGU_CORE && SGU_CORE.getCartCount) {
+                document.getElementById('cart-counter').innerText = SGU_CORE.getCartCount();
+            }
         }
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <span>${msg}</span>`;
+            const icon = type === 'success' ? '✅' : (type === 'warning' ? '⚠️' : '❌');
+            toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.animation = 'slideIn 0.3s ease reverse forwards';

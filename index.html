@@ -1257,9 +1257,12 @@
     </footer>
 
     <!-- ================= JAVASCRIPT XỬ LÝ TOÀN BỘ LOGIC ================= -->
+    <script src="./assets/js/init-data.js"></script>
     <script>
-        // 1. DỮ LIỆU SẢN PHẨM MẪU (12 SẢN PHẨM PHONG PHÚ, ĐẦY ĐỦ THUỘC TÍNH)
-        const productsData = [
+        // 1. DỮ LIỆU SẢN PHẨM MẪU (ĐỒNG BỘ LOCALSTORAGE QUA SGU_CORE)
+        const productsData = (window.SGU_CORE && SGU_CORE.getProducts) 
+            ? SGU_CORE.getProducts().filter(p => p.active !== false)
+            : [
             {
                 id: 'SP001',
                 name: 'Nike Air Max Red Edition 2025',
@@ -1459,6 +1462,22 @@
         window.addEventListener('DOMContentLoaded', () => {
             initUserState();
             updateCartBadge();
+
+            // Đọc Query params nếu có tìm kiếm từ header các trang khác
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQ = urlParams.get('search');
+            if (searchQ) {
+                const basicInput = document.getElementById('basic-search-input');
+                const advInput = document.getElementById('adv-name');
+                if (basicInput) basicInput.value = searchQ;
+                if (advInput) advInput.value = searchQ;
+            }
+
+            // Mở modal đăng nhập nếu có hash #login
+            if (window.location.hash === '#login' && !currentUser) {
+                openModal('modal-login');
+            }
+
             applyFilters();
         });
 
@@ -1500,13 +1519,33 @@
                 showToast('Vui lòng nhập tài khoản và mật khẩu!', 'warning');
                 return;
             }
-            currentUser = {
-                name: userEmail.includes('@') ? userEmail.split('@')[0] : userEmail,
-                email: userEmail,
-                phone: '0909123456',
-                address: '273 An Dương Vương, Phường 3, Quận 5, TP.HCM'
-            };
-            localStorage.setItem('sgu_user', JSON.stringify(currentUser));
+
+            // KIỂM TRA TÀI KHOẢN VỚI DANH SÁCH USER (RUBRIC I.2 & II.1)
+            const users = (window.SGU_CORE && SGU_CORE.getUsers) ? SGU_CORE.getUsers() : [];
+            const found = users.find(u => (u.email.toLowerCase() === userEmail.toLowerCase() || u.name.toLowerCase() === userEmail.toLowerCase()) && u.pass === pass);
+
+            if (found) {
+                // RÀNG BUỘC: NẾU BỊ KHÓA BỞI ADMIN THÌ KHÔNG CHO ĐĂNG NHẬP (RUBRIC I.2)
+                if (found.isLocked) {
+                    showToast('Tài khoản của bạn đã bị KHÓA bởi Quản trị viên! Vui lòng liên hệ CSKH.', 'danger');
+                    return;
+                }
+                currentUser = found;
+            } else {
+                // Nếu chưa có trong hệ thống, cho phép tạo session demo
+                currentUser = {
+                    id: 'KH' + Math.floor(100 + Math.random() * 900),
+                    name: userEmail.includes('@') ? userEmail.split('@')[0] : userEmail,
+                    email: userEmail,
+                    phone: '0909123456',
+                    address: '273 An Dương Vương, Phường 3, Quận 5, TP.HCM',
+                    isLocked: false
+                };
+            }
+
+            if (window.SGU_CORE) SGU_CORE.setCurrentUser(currentUser);
+            else localStorage.setItem('sgu_user', JSON.stringify(currentUser));
+
             initUserState();
             closeModal('modal-login');
             showToast(`Chào mừng ${currentUser.name} quay trở lại! Bạn đã có thể đặt hàng.`, 'success');
@@ -1521,8 +1560,32 @@
                 showToast('Vui lòng điền đủ các thông tin đăng ký!', 'warning');
                 return;
             }
-            currentUser = { name, email: name.toLowerCase().replace(/\s+/g, '') + '@gmail.com', phone, address };
+            if (pass.length < 6) {
+                showToast('Mật khẩu đăng ký phải có ít nhất 6 ký tự!', 'warning');
+                return;
+            }
+
+            const email = name.toLowerCase().replace(/\s+/g, '') + Math.floor(10 + Math.random() * 90) + '@gmail.com';
+            const newUser = {
+                id: 'KH00' + (Math.floor(Math.random() * 80) + 10),
+                name,
+                email,
+                phone,
+                address,
+                pass,
+                isLocked: false
+            };
+
+            // LƯU VÀO DANH SÁCH USERS ĐỂ ADMIN QUẢN LÝ (RUBRIC I.2)
+            if (window.SGU_CORE) {
+                const users = SGU_CORE.getUsers();
+                users.push(newUser);
+                SGU_CORE.saveUsers(users);
+                SGU_CORE.setCurrentUser(newUser);
+            }
+            currentUser = newUser;
             localStorage.setItem('sgu_user', JSON.stringify(currentUser));
+
             initUserState();
             closeModal('modal-register');
             showToast('Đăng ký tài khoản thành công! Tặng bạn mã giảm giá SGUNEW20.', 'success');
@@ -1530,18 +1593,31 @@
 
         function handleLogout() {
             currentUser = null;
-            localStorage.removeItem('sgu_user');
+            if (window.SGU_CORE) SGU_CORE.setCurrentUser(null);
+            else localStorage.removeItem('sgu_user');
             initUserState();
             showToast('Đã đăng xuất tài khoản thành công.', 'success');
         }
 
         function handleUpdateProfile() {
             if (!currentUser) return;
-            currentUser.name = document.getElementById('prof-name').value;
-            currentUser.email = document.getElementById('prof-email').value;
-            currentUser.phone = document.getElementById('prof-phone').value;
-            currentUser.address = document.getElementById('prof-address').value;
-            localStorage.setItem('sgu_user', JSON.stringify(currentUser));
+            currentUser.name = document.getElementById('prof-name').value.trim();
+            currentUser.email = document.getElementById('prof-email').value.trim();
+            currentUser.phone = document.getElementById('prof-phone').value.trim();
+            currentUser.address = document.getElementById('prof-address').value.trim();
+
+            if (window.SGU_CORE) {
+                SGU_CORE.setCurrentUser(currentUser);
+                const users = SGU_CORE.getUsers();
+                const idx = users.findIndex(u => u.id === currentUser.id || u.email === currentUser.email);
+                if (idx !== -1) {
+                    users[idx] = { ...users[idx], ...currentUser };
+                    SGU_CORE.saveUsers(users);
+                }
+            } else {
+                localStorage.setItem('sgu_user', JSON.stringify(currentUser));
+            }
+
             initUserState();
             closeModal('modal-profile');
             showToast('Đã cập nhật thông tin cá nhân mới!', 'success');
@@ -1791,12 +1867,11 @@
         }
 
         function updateCartBadge() {
-            const cart = JSON.parse(localStorage.getItem('sgu_cart')) || [
-                { name: 'Nike Air Max Red 2025', price: 2450000, qty: 1 },
-                { name: 'Adidas Ultraboost Pro', price: 1890000, qty: 1 }
-            ];
-            const count = cart.reduce((acc, curr) => acc + (curr.qty || 1), 0);
-            document.getElementById('cart-count').innerText = count;
+            const count = (window.SGU_CORE && SGU_CORE.getCartCount) 
+                ? SGU_CORE.getCartCount() 
+                : (JSON.parse(localStorage.getItem('sgu_cart')) || []).reduce((acc, curr) => acc + (curr.qty || 1), 0);
+            const badge = document.getElementById('cart-count');
+            if (badge) badge.innerText = count;
         }
 
         function goToCart() {

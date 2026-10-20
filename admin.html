@@ -252,6 +252,80 @@
         .toast.warning { border-left-color: var(--warning); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+        /* KPI STAT CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: #fff;
+            padding: 18px 22px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        .kpi-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .kpi-icon.revenue { background: #dcfce7; color: #15803d; }
+        .kpi-icon.orders { background: #dbeafe; color: #1d4ed8; }
+        .kpi-icon.products { background: #fef3c7; color: #b45309; }
+        .kpi-icon.alert { background: #fee2e2; color: #b91c1c; }
+        .kpi-title { font-size: 12.5px; color: var(--gray); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .kpi-val { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .kpi-badge { font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .kpi-badge.up { color: #10b981; }
+        .kpi-badge.warn { color: #ef4444; }
+
+        /* SIDEBAR BADGE */
+        .sidebar-badge {
+            margin-left: auto;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .sidebar-badge.danger { background: #ef4444; color: #fff; }
+        .sidebar-badge.warning { background: #f59e0b; color: #fff; }
+
+        /* INSTANT LIVE SEARCH BAR */
+        .table-search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-search-bar input {
+            padding: 8px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            width: 250px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .table-search-bar input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(225,29,72,0.1);
+        }
+
         /* MODAL */
         .modal-overlay {
             position: fixed;
@@ -327,10 +401,12 @@
                     💰 5. Quản lý Giá bán & Lợi nhuận
                 </div>
                 <div class="menu-item" id="nav-orders" onclick="switchAdminTab('tab-orders', this)">
-                    📦 6. Quản lý Đơn đặt hàng
+                    <span>📦 6. Quản lý Đơn đặt hàng</span>
+                    <span class="sidebar-badge danger" id="sidebar-order-count">3</span>
                 </div>
                 <div class="menu-item" id="nav-inventory" onclick="switchAdminTab('tab-inventory', this)">
-                    📊 7. Quản lý Tồn kho & Cảnh báo
+                    <span>📊 7. Quản lý Tồn kho</span>
+                    <span class="sidebar-badge warning" id="sidebar-alert-count">2</span>
                 </div>
             </div>
 
@@ -354,6 +430,37 @@
                 </div>
             </div>
 
+            <!-- BỘ THẺ KPI THỐNG KÊ NHANH (METRIC CARDS) - ĐỈNH CAO UI/UX ADMIN -->
+            <div class="kpi-grid">
+                <div class="kpi-card" onclick="switchAdminTab('tab-orders', document.getElementById('nav-orders'))" title="Bấm để xem danh sách Đơn đặt hàng">
+                    <div class="kpi-icon revenue">💰</div>
+                    <div class="kpi-title">Doanh Thu Dự Kiến</div>
+                    <div class="kpi-val" id="kpi-revenue">42.500.000 ₫</div>
+                    <div class="kpi-badge up">▲ +15% so với tháng trước</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-orders', document.getElementById('nav-orders'))" title="Bấm để xem các đơn mới cần xử lý">
+                    <div class="kpi-icon orders">📦</div>
+                    <div class="kpi-title">Đơn Hàng Cần Xử Lý</div>
+                    <div class="kpi-val" id="kpi-pending-orders" style="color:var(--info);">3 đơn mới</div>
+                    <div class="kpi-badge" style="color:var(--info);">⚡ Cần xác nhận giao hàng</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-prods', document.getElementById('nav-prods'))" title="Bấm để xem danh mục sản phẩm">
+                    <div class="kpi-icon products">👟</div>
+                    <div class="kpi-title">Mẫu Giày Đang Bán</div>
+                    <div class="kpi-val" id="kpi-total-prods">16 mẫu</div>
+                    <div class="kpi-badge" style="color:var(--dark);">4 phân loại đang hiển thị</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-inventory', document.getElementById('nav-inventory'))" title="Bấm để xem cảnh báo tồn kho">
+                    <div class="kpi-icon alert">⚠️</div>
+                    <div class="kpi-title">Cảnh Báo Tồn Kho</div>
+                    <div class="kpi-val" id="kpi-low-stock" style="color:var(--danger);">2 mẫu</div>
+                    <div class="kpi-badge warn">🚨 Dưới ngưỡng an toàn (&lt; 5 đôi)</div>
+                </div>
+            </div>
+
             <!-- ================= MỤC I.2: QUẢN LÝ NGƯỜI DÙNG / KHÁCH HÀNG (0.75đ) ================= -->
             <div id="tab-users" class="admin-tab" style="display: block;">
                 <div class="card-box">
@@ -361,6 +468,9 @@
                         <div>
                             <h3>👥 Quản lý Người dùng / Khách hàng</h3>
                             <span style="font-size: 13px; color: var(--gray);">Hiển thị danh sách khách hàng, Reset mật khẩu và Khóa / Mở khóa tài khoản</span>
+                        </div>
+                        <div class="table-search-bar">
+                            <input type="text" placeholder="🔍 Tìm tên, email, SĐT khách..." oninput="filterTableAsYouType(this, 'user-table-body')">
                         </div>
                     </div>
                     <table>
@@ -496,8 +606,16 @@
             <div id="tab-prods" class="admin-tab" style="display: none;">
                 <div class="card-box">
                     <div class="card-header">
-                        <h3>👟 Quản lý Danh mục Sản phẩm Giày</h3>
-                        <button class="btn btn-primary" onclick="openAddProductModal()">+ Thêm sản phẩm giày mới</button>
+                        <div>
+                            <h3>👟 Quản lý Danh mục Sản phẩm Giày</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Thêm mới, sửa thông tin và ẩn/hiện sản phẩm khỏi web khách hàng</span>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div class="table-search-bar">
+                                <input type="text" placeholder="🔍 Tìm tên, mã giày, loại..." oninput="filterTableAsYouType(this, 'prod-table-body')">
+                            </div>
+                            <button class="btn btn-primary" onclick="openAddProductModal()">+ Thêm sản phẩm giày mới</button>
+                        </div>
                     </div>
 
                     <table>
@@ -749,6 +867,14 @@
                         • <strong>SP004 - Nike Mercurial Vapor 15</strong> hiện chỉ còn <strong>3 đôi</strong> trong kho!<br>
                         👉 <em>Vui lòng lập thêm phiếu nhập hàng mới ở mục <strong>Quản lý nhập sản phẩm</strong> để đảm bảo nguồn cung.</em>
                     </p>
+                    <div style="margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-danger" style="background:#b91c1c; color:#fff;" onclick="quickImportProduct('SP003 - Air Jordan 1 Retro High', 15)">
+                            ⚡ Lập phiếu nhập nhanh cho SP003 (+15 đôi)
+                        </button>
+                        <button class="btn btn-warning" onclick="quickImportProduct('SP004 - Nike Mercurial Vapor 15', 10)">
+                            ⚡ Lập phiếu nhập nhanh cho SP004 (+10 đôi)
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card-box">
@@ -865,7 +991,13 @@
             </div>
             <div class="form-group">
                 <label>Hình ảnh sản phẩm (URL)</label>
-                <input type="text" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/...">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <input type="text" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/..." oninput="previewShoeImage(this.value)">
+                    <div style="width: 58px; height: 58px; border-radius: 8px; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; flex-shrink: 0;" id="box-preview-img">
+                        <img id="img-preview-thumb" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                        <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center;">Xem ảnh</span>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label>Mô tả chi tiết sản phẩm</label>
@@ -946,7 +1078,8 @@
             <div style="text-align:right; margin-top:18px; font-weight:800; color:var(--primary); font-size:18px;">
                 Tổng tiền: <span id="ord-detail-total">2.450.000 ₫</span>
             </div>
-            <div style="text-align:right; margin-top:20px;">
+            <div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-primary" onclick="printInvoice()">🖨️ In Hóa Đơn</button>
                 <button class="btn btn-dark" onclick="closeModal('modal-order-detail')">Đóng cửa sổ</button>
             </div>
         </div>
@@ -964,6 +1097,55 @@
                 toast.style.animation = 'slideIn 0.3s ease reverse forwards';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        // TÌM KIẾM TỨC THÌ TRÊN BẢNG (SEARCH AS YOU TYPE)
+        function filterTableAsYouType(input, tableBodyId) {
+            const query = input.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#' + tableBodyId + ' tr');
+            rows.forEach(r => {
+                const text = r.innerText.toLowerCase();
+                r.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // XEM TRƯỚC HÌNH ẢNH SẢN PHẨM TRỰC TIẾP TRONG FORM
+        function previewShoeImage(url) {
+            const img = document.getElementById('img-preview-thumb');
+            const placeholder = document.getElementById('preview-placeholder');
+            if (url && (url.startsWith('http') || url.startsWith('./') || url.startsWith('assets/'))) {
+                img.src = url;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+
+        // THAO TÁC NHANH: TẠO PHIẾU NHẬP HÀNG TỪ CẢNH BÁO TỒN KHO
+        function quickImportProduct(prodName, qty) {
+            switchAdminTab('tab-imports', document.getElementById('nav-imports'));
+            openImportModal('new');
+            const selects = document.querySelectorAll('#modal-import select');
+            if (selects.length > 0) {
+                for (let opt of selects[0].options) {
+                    if (opt.text.includes(prodName.split(' - ')[0])) {
+                        opt.selected = true;
+                        break;
+                    }
+                }
+            }
+            const qtyInputs = document.querySelectorAll('#modal-import input[type="number"]');
+            if (qtyInputs.length >= 2) {
+                qtyInputs[1].value = qty;
+            }
+            showToast(`Đã nạp sẵn sản phẩm "${prodName}" vào phiếu nhập (+${qty} đôi)!`, 'success');
+        }
+
+        // IN HÓA ĐƠN ĐƠN HÀNG
+        function printInvoice() {
+            window.print();
         }
 
         // ĐỒNG BỘ PHIÊN ĐĂNG NHẬP BẰNG SESSIONSTORAGE (KHÔNG BAO GIỜ BỊ HỎI LẠI TRỪ KHI ĐĂNG XUẤT)
@@ -1086,6 +1268,7 @@
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-img').value = '';
             document.getElementById('prod-desc').value = '';
+            previewShoeImage('');
             document.getElementById('modal-product').style.display = 'flex';
         }
 
@@ -1096,6 +1279,7 @@
             document.getElementById('prod-cat').value = cat;
             document.getElementById('prod-img').value = img;
             document.getElementById('prod-desc').value = desc;
+            previewShoeImage(img);
             document.getElementById('modal-product').style.display = 'flex';
         }
 

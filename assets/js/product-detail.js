@@ -22,6 +22,9 @@ function initHeaderUserState() {
             <div class="chip" style="background:#f0fdf4; border-color:#bbf7d0; color:#166534; padding:8px 14px; font-weight:700;">
                 👤 ${user.name}
             </div>
+            <button class="chip" style="background:#fff1f2; border-color:#fecdd3; color:#be123c; padding:8px 12px; font-weight:700; cursor:pointer;" onclick="handleHeaderLogout()">
+                🚪 Đăng xuất
+            </button>
         `;
     } else {
         container.innerHTML = `
@@ -30,6 +33,18 @@ function initHeaderUserState() {
             </a>
         `;
     }
+}
+
+function handleHeaderLogout() {
+    if (window.SGU_CORE && SGU_CORE.setCurrentUser) {
+        SGU_CORE.setCurrentUser(null);
+    } else {
+        localStorage.removeItem('sgu_user');
+        localStorage.setItem('sgu_cart', JSON.stringify([]));
+    }
+    initHeaderUserState();
+    updateCartCounter();
+    showToast('Đã đăng xuất khỏi tài khoản!', 'warning');
 }
 
 // TỰ ĐỘNG ĐỌC SẢN PHẨM TỪ QUERY STRING (?id=SP002) VÀ SGU_CORE
@@ -56,7 +71,7 @@ function initProductDetail() {
             reviews: 128,
             rating: 4.9,
             desc: 'Thiết kế đệm khí Air Max nâng cấp êm ái vượt trội, bảo vệ khớp gót chân tối đa. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su đúc chống trượt.',
-            img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80'
+            img: './assets/images/products/sp001.jpg'
         };
     }
 

@@ -208,3 +208,17 @@ th { background: #f8fafc; font-weight: 700; color: var(--secondary); }
     .cart-item { grid-template-columns: 70px 1fr; gap: 12px; }
     .qty-controls { grid-column: 1 / -1; justify-content: flex-end; }
 }
+
+/* PRINT STYLES FOR INVOICE */
+@media print {
+    body * { visibility: hidden; }
+    #modal-history-detail, #modal-history-detail * { visibility: visible; }
+    #modal-history-detail {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #fff;
+    }
+    .btn-outline, button { display: none !important; }
+}

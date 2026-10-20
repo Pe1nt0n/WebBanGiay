@@ -59,6 +59,22 @@ function initUserData() {
             ${currentUser.address || '273 An Dương Vương, Q.5, TP.HCM'}
         `;
     }
+
+    const logoutBtn = document.getElementById('cart-logout-btn');
+    if (logoutBtn) logoutBtn.style.display = currentUser ? 'inline-block' : 'none';
+}
+
+function handleCartLogout() {
+    if (window.SGU_CORE && SGU_CORE.setCurrentUser) {
+        SGU_CORE.setCurrentUser(null);
+    } else {
+        localStorage.removeItem('sgu_user');
+        localStorage.setItem('sgu_cart', JSON.stringify([]));
+    }
+    showToast('Đã đăng xuất tài khoản! Đang chuyển về Trang Chủ...', 'warning');
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
 }
 
 function loadCartData() {

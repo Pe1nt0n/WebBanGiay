@@ -301,39 +301,39 @@
                         </thead>
                         <tbody id="prod-table-body">
                             <tr>
-                                <td><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><img src="./assets/images/products/sp001.jpg" class="thumb" alt="Shoe"></td>
                                 <td><strong>SP001</strong></td>
                                 <td><strong>Nike Air Max Red 2025</strong></td>
                                 <td>Giày Sneaker</td>
                                 <td>Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.</td>
                                 <td><span class="badge badge-active">Đang bán</span></td>
                                 <td>
-                                    <button class="btn btn-warning" onclick="openEditProductModal('SP001', 'Nike Air Max Red 2025', 'Giày Sneaker', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80', 'Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.')">✏️ Sửa</button>
-                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP001')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP001')">🗑️ Xóa / Ẩn</button>
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><img src="./assets/images/products/sp002.jpg" class="thumb" alt="Shoe"></td>
                                 <td><strong>SP002</strong></td>
                                 <td><strong>Adidas Ultraboost Light Pro</strong></td>
                                 <td>Giày Chạy Bộ</td>
                                 <td>Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.</td>
                                 <td><span class="badge badge-active">Đang bán</span></td>
                                 <td>
-                                    <button class="btn btn-warning" onclick="openEditProductModal('SP002', 'Adidas Ultraboost Light Pro', 'Giày Chạy Bộ', 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=200&q=80', 'Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.')">✏️ Sửa</button>
-                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP002')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP002')">🗑️ Xóa / Ẩn</button>
                                 </td>
                             </tr>
                             <tr>
-                                <td><img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80" class="thumb" alt="Shoe"></td>
+                                <td><img src="./assets/images/products/sp003.jpg" class="thumb" alt="Shoe"></td>
                                 <td><strong>SP003</strong></td>
                                 <td><strong>Air Jordan 1 Retro High</strong></td>
                                 <td>Giày Sneaker</td>
                                 <td>Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.</td>
                                 <td><span class="badge badge-active">Đang bán</span></td>
                                 <td>
-                                    <button class="btn btn-warning" onclick="openEditProductModal('SP003', 'Air Jordan 1 Retro High', 'Giày Sneaker', 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&q=80', 'Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.')">✏️ Sửa</button>
-                                    <button class="btn btn-danger" onclick="toggleHideRow(this)">🗑️ Xóa / Ẩn</button>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP003')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP003')">🗑️ Xóa / Ẩn</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -673,7 +673,7 @@
             <div class="form-group">
                 <label>Hình ảnh sản phẩm (URL)</label>
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <input type="text" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/..." oninput="previewShoeImage(this.value)">
+                    <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg" oninput="previewShoeImage(this.value)">
                     <div style="width: 58px; height: 58px; border-radius: 8px; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; flex-shrink: 0;" id="box-preview-img">
                         <img id="img-preview-thumb" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
                         <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center;">Xem ảnh</span>

@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="hero-banner-shoe">
-                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=85" alt="Nike Hero Shoe">
+                <img src="./assets/images/hero-shoe.jpg" alt="Nike Hero Shoe">
             </div>
         </div>
     </div>
@@ -215,69 +215,7 @@
         </section>
     </main>
 
-    <!-- ================= MODAL 1: CHI TIẾT SẢN PHẨM GIÀY (Mục II.2) ================= -->
-    <div class="modal-overlay" id="modal-detail">
-        <div class="modal-box large">
-            <button class="close-modal" onclick="closeModal('modal-detail')">✕</button>
-            <div class="detail-layout">
-                <div>
-                    <div class="detail-img-box">
-                        <img id="detail-img" src="" alt="Shoe detail">
-                    </div>
-                </div>
-                <div>
-                    <div class="detail-meta-row">
-                        <span id="detail-cat" style="background: var(--primary-light); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px;">Sneaker</span>
-                        <span>Mã SP: <strong id="detail-code">SP001</strong></span>
-                        <span style="color: var(--success); font-weight: 700;">● Còn hàng</span>
-                    </div>
-
-                    <h2 id="detail-name" style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Nike Air Max Red</h2>
-                    <div class="rating-box">
-                        <span class="stars">⭐⭐⭐⭐⭐</span>
-                        <span class="reviews-count">(128 đánh giá từ người mua)</span>
-                    </div>
-
-                    <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 15px;">
-                        <span id="detail-price" style="font-size: 26px; font-weight: 800; color: var(--primary);">2.450.000 ₫</span>
-                        <span id="detail-old-price" style="font-size: 16px; color: #94a3b8; text-decoration: line-through;">2.900.000 ₫</span>
-                    </div>
-
-                    <p id="detail-desc" style="font-size: 14px; color: #475569; margin-bottom: 16px; line-height: 1.6;">
-                        Thiết kế đệm khí êm ái, thoáng khí kết hợp đế cao su chống trượt cao cấp. Phù hợp đi học, đi chơi và tập luyện thể thao.
-                    </p>
-
-                    <table class="detail-specs-table">
-                        <tr><td>Thương hiệu</td><td id="detail-brand">Nike</td></tr>
-                        <tr><td>Chất liệu</td><td>Vải dệt Flyknit thoáng khí + Đế cao su non</td></tr>
-                        <tr><td>Bảo hành</td><td>Chính hãng 12 tháng - 1 đổi 1 trong 30 ngày</td></tr>
-                    </table>
-
-                    <div class="form-group">
-                        <label>Chọn Size giày bạn mang:</label>
-                        <div class="size-grid" style="grid-template-columns: repeat(5, 1fr);" id="detail-sizes">
-                            <button class="size-chip" onclick="selectDetailSize(this, 39)">39</button>
-                            <button class="size-chip selected" onclick="selectDetailSize(this, 40)">40</button>
-                            <button class="size-chip" onclick="selectDetailSize(this, 41)">41</button>
-                            <button class="size-chip" onclick="selectDetailSize(this, 42)">42</button>
-                            <button class="size-chip" onclick="selectDetailSize(this, 43)">43</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
-                        <button class="btn-primary" style="flex: 1; padding: 14px; font-size: 15px;" onclick="addToCartFromDetail()">
-                            🛒 THÊM VÀO GIỎ HÀNG NGAY
-                        </button>
-                        <button class="btn-outline" style="padding: 14px 18px;" onclick="goToCart()">
-                            Mua ngay →
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= MODAL 2: ĐĂNG NHẬP KHÁCH HÀNG (Mục II.1) ================= -->
+    <!-- ================= MODAL 1: ĐĂNG NHẬP KHÁCH HÀNG (Mục II.1) ================= -->
     <div class="modal-overlay" id="modal-login">
         <div class="modal-box">
             <button class="close-modal" onclick="closeModal('modal-login')">✕</button>

@@ -151,6 +151,51 @@ function loadAllAdminModules() {
     loadAdminPricing();
     loadAdminOrders();
     loadAdminInventory();
+    updateAdminKPIs();
+}
+
+// BỘ THẺ KPI THỐNG KÊ TỰ ĐỘNG CẬP NHẬT TỪ SGU_CORE
+function updateAdminKPIs() {
+    if (!window.SGU_CORE) return;
+    const orders = SGU_CORE.getOrders();
+    const prods = SGU_CORE.getProducts();
+
+    // 1. Doanh thu (tổng đơn không hủy)
+    const totalRev = orders
+        .filter(o => o.status !== 'Hủy')
+        .reduce((sum, o) => {
+            const num = parseInt((o.total || '0').replace(/\D/g, '')) || 0;
+            return sum + num;
+        }, 0);
+    const revEl = document.getElementById('kpi-revenue');
+    if (revEl) revEl.innerText = SGU_CORE.formatVND(totalRev);
+
+    // 2. Đơn cần xử lý (Mới đặt hoặc Đã xử lý)
+    const pendingOrders = orders.filter(o => o.status === 'Mới đặt' || o.status === 'Đã xử lý').length;
+    const pendingEl = document.getElementById('kpi-pending-orders');
+    if (pendingEl) pendingEl.innerText = `${pendingOrders} đơn mới`;
+
+    const sideOrderBadge = document.getElementById('sidebar-order-count');
+    if (sideOrderBadge) {
+        sideOrderBadge.innerText = pendingOrders;
+        sideOrderBadge.style.display = pendingOrders > 0 ? 'inline-block' : 'none';
+    }
+
+    // 3. Mẫu giày đang bán
+    const activeProds = prods.filter(p => p.active !== false).length;
+    const prodEl = document.getElementById('kpi-total-prods');
+    if (prodEl) prodEl.innerText = `${activeProds} mẫu`;
+
+    // 4. Cảnh báo tồn kho (< 5 đôi)
+    const lowStockProds = prods.filter(p => (p.stock || 0) < 5).length;
+    const lowStockEl = document.getElementById('kpi-low-stock');
+    if (lowStockEl) lowStockEl.innerText = `${lowStockProds} mẫu`;
+
+    const sideAlertBadge = document.getElementById('sidebar-alert-count');
+    if (sideAlertBadge) {
+        sideAlertBadge.innerText = lowStockProds;
+        sideAlertBadge.style.display = lowStockProds > 0 ? 'inline-block' : 'none';
+    }
 }
 
 // ==========================================================
@@ -319,9 +364,9 @@ function openAddProductModal() {
     document.getElementById('prod-code').value = 'SP' + String(prods.length + 1).padStart(3, '0');
     document.getElementById('prod-code').readOnly = false;
     document.getElementById('prod-name').value = '';
-    document.getElementById('prod-img').value = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80';
+    document.getElementById('prod-img').value = './assets/images/products/sp001.jpg';
     document.getElementById('prod-desc').value = '';
-    previewShoeImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80');
+    previewShoeImage('./assets/images/products/sp001.jpg');
     document.getElementById('modal-product').style.display = 'flex';
 }
 
@@ -393,6 +438,7 @@ function saveProductModal() {
     loadAdminProducts();
     loadAdminPricing();
     loadAdminInventory();
+    updateAdminKPIs();
     closeModal('modal-product');
     showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
 }
@@ -405,6 +451,7 @@ function toggleHideProduct(id) {
         p.active = !p.active;
         SGU_CORE.saveProducts(prods);
         loadAdminProducts();
+        updateAdminKPIs();
         showToast(`Đã ${p.active ? 'mở hiển thị' : 'ẩn'} sản phẩm ${p.name}!`, p.active ? 'success' : 'warning');
     }
 }
@@ -546,6 +593,7 @@ function completeImport(id) {
 
     loadAdminImports();
     loadAdminInventory();
+    updateAdminKPIs();
     showToast(`Đã hoàn thành phiếu nhập ${id}, khóa tính năng sửa và cộng tồn kho thành công!`, 'success');
 }
 
@@ -673,6 +721,7 @@ function changeOrderStatus(selectEl, idx) {
         badge.className = 'badge ' + getBadgeClass(val);
     }
     selectEl.closest('tr').dataset.status = val;
+    updateAdminKPIs();
     showToast(`Đã cập nhật đơn ${orders[idx].id} thành "${val}"!`, 'success');
 }
 

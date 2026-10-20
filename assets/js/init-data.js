@@ -5,21 +5,22 @@
  * Mục đích: 
  * - Tự động nạp dữ liệu mẫu ban đầu vào LocalStorage nếu chưa có
  * - Đảm bảo máy Giảng viên chấm bài offline/local path không bị lỗi trắng trang
+ * - Tích hợp hình ảnh cục bộ từ thư mục ./assets/images/products/
  * - Đồng bộ dữ liệu xuyên suốt giữa 4 file: index.html, product-detail.html, cart.html, admin.html
  */
 
 (function () {
-    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v3';
+    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v5';
 
     // 1. DANH MỤC PHÂN LOẠI GIÀY (Rubric I.3 & II.2)
     const initialCategories = [
-        { code: 'LOAI01', name: 'Giày Sneaker', count: 6, active: true },
+        { code: 'LOAI01', name: 'Giày Sneaker', count: 4, active: true },
         { code: 'LOAI02', name: 'Giày Chạy Bộ', count: 4, active: true },
-        { code: 'LOAI03', name: 'Giày Đá Bóng', count: 3, active: true },
-        { code: 'LOAI04', name: 'Giày Tây Nam', count: 3, active: true }
+        { code: 'LOAI03', name: 'Giày Đá Bóng', count: 2, active: true },
+        { code: 'LOAI04', name: 'Giày Tây Nam', count: 2, active: true }
     ];
 
-    // 2. DANH MỤC 16 SẢN PHẨM GIÀY MẪU (Rubric I.4, I.6, I.8, II.2)
+    // 2. DANH MỤC 12 SẢN PHẨM GIÀY MẪU (Rubric I.4, I.6, I.8, II.2)
     const initialProducts = [
         {
             id: 'SP001',
@@ -36,12 +37,11 @@
             stockImport: 15,
             stockExport: 7,
             sizes: [38, 39, 40, 41, 42, 43, 44],
-            colors: ['Đỏ Phối Trắng', 'Đen Neon', 'Trắng Tuyết'],
             tag: 'HOT',
             reviews: 128,
             rating: 4.9,
             desc: 'Thiết kế đệm khí Air Max nâng cấp êm ái vượt trội, bảo vệ khớp gót chân tối đa. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su đúc chống trượt.',
-            img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80',
+            img: './assets/images/products/sp001.jpg',
             active: true
         },
         {
@@ -53,156 +53,237 @@
             costPrice: 1400000,
             profitPercent: 35,
             price: 1890000,
-            oldPrice: 2300000,
-            stock: 14,
-            stockInitial: 8,
-            stockImport: 15,
-            stockExport: 9,
-            sizes: [39, 40, 41, 42, 43],
-            colors: ['Trắng Cam', 'Đen Tuyển', 'Xanh Dương'],
-            tag: 'NEW',
-            reviews: 95,
-            rating: 4.8,
-            desc: 'Công nghệ bọt Boost thế hệ mới siêu nhẹ, hỗ trợ hoàn trả năng lượng tối đa cho mỗi sải bước chạy bộ và thể thao.',
-            img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80',
-            active: true
-        },
-        {
-            id: 'SP003',
-            name: 'Air Jordan 1 Retro High - Da Thật Cao Cấp',
-            brand: 'Nike Jordan',
-            category: 'Giày Sneaker',
-            catCode: 'LOAI01',
-            costPrice: 2400000,
-            profitPercent: 33,
-            price: 3190000,
-            oldPrice: 3800000,
-            stock: 2, // < 5: CẢNH BÁO TỒN KHO NGUY CẤP (Rubric I.8)
-            stockInitial: 5,
-            stockImport: 0,
-            stockExport: 3,
-            sizes: [40, 41, 42, 43],
-            colors: ['Đỏ Đen Chicago', 'Xanh Royal', 'Trắng Xám'],
-            tag: 'SALE',
-            reviews: 210,
-            rating: 5.0,
-            desc: 'Thiết kế cổ cao kinh điển mang tinh thần bóng rổ đường phố. Thân giày bằng da thật 100% bền bỉ, tôn dáng và cá tính.',
-            img: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800&q=80',
-            active: true
-        },
-        {
-            id: 'SP004',
-            name: 'Nike Mercurial Vapor 15 - Đinh TF Cỏ Nhân Tạo',
-            brand: 'Nike',
-            category: 'Giày Đá Bóng',
-            catCode: 'LOAI03',
-            costPrice: 1600000,
-            profitPercent: 34,
-            price: 2150000,
-            oldPrice: 2500000,
-            stock: 3, // < 5: CẢNH BÁO TỒN KHO NGUY CẤP (Rubric I.8)
-            stockInitial: 6,
-            stockImport: 0,
-            stockExport: 3,
-            sizes: [39, 40, 41, 42],
-            colors: ['Vàng Chuối Neon', 'Hồng Pastel', 'Xanh Băng'],
-            tag: 'HOT',
-            reviews: 84,
-            rating: 4.7,
-            desc: 'Dòng giày đá bóng chuyên nghiệp dành cho sân cỏ nhân tạo, trọng lượng siêu nhẹ giúp bứt tốc và kiểm soát bóng chính xác.',
-            img: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800&q=80',
-            active: true
-        },
-        {
-            id: 'SP005',
-            name: 'Biti\'s Hunter X Street Army - Phong Cách Bụi',
-            brand: 'Biti\'s',
-            category: 'Giày Sneaker',
-            catCode: 'LOAI01',
-            costPrice: 700000,
-            profitPercent: 35,
-            price: 950000,
-            oldPrice: 1100000,
-            stock: 22,
-            stockInitial: 15,
-            stockImport: 20,
-            stockExport: 13,
-            sizes: [38, 39, 40, 41, 42, 43],
-            colors: ['Xanh Rêu Lính', 'Đen Nhám', 'Xám Bê Tông'],
-            tag: 'NEW',
-            reviews: 142,
-            rating: 4.8,
-            desc: 'Đế đệm LiteFlex độc quyền đàn hồi êm ái, định hình phong cách đường phố trẻ trung hiện đại của thương hiệu Việt.',
-            img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80',
-            active: true
-        },
-        {
-            id: 'SP006',
-            name: 'Puma Velocity Nitro 2 - Đệm Khí Nitro',
-            brand: 'Puma',
-            category: 'Giày Chạy Bộ',
-            catCode: 'LOAI02',
-            costPrice: 1100000,
-            profitPercent: 35,
-            price: 1490000,
-            oldPrice: 1800000,
-            stock: 16,
-            stockInitial: 10,
-            stockImport: 12,
-            stockExport: 6,
-            sizes: [39, 40, 41, 42, 43],
-            colors: ['Cam San Hô', 'Đen Trắng', 'Xanh Lam'],
-            tag: 'HOT',
-            reviews: 67,
-            rating: 4.6,
-            desc: 'Lớp bọt Nitro Foam siêu nảy kết hợp công nghệ bám Pumagrip thích hợp mọi cung đường chạy cự ly dài.',
-            img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=800&q=80',
-            active: true
-        },
-        {
-            id: 'SP007',
-            name: 'Oxford Classic Leather - Giày Tây Da Bò Ý',
-            brand: 'SGU Classic',
-            category: 'Giày Tây Nam',
-            catCode: 'LOAI04',
-            costPrice: 1350000,
-            profitPercent: 40,
-            price: 1890000,
-            oldPrice: 2250000,
+            oldPrice: 2400000,
             stock: 12,
             stockInitial: 8,
             stockImport: 10,
             stockExport: 6,
-            sizes: [39, 40, 41, 42, 43, 44],
-            colors: ['Nâu Hạt Dẻ', 'Đen Bóng'],
+            sizes: [39, 40, 41, 42, 43],
             tag: 'NEW',
-            reviews: 52,
+            reviews: 95,
+            rating: 4.8,
+            desc: 'Hạt đệm Boost hoàn trả năng lượng tối đa trên từng sải bước. Thân giày Primeknit co giãn 360 độ ôm sát bàn chân, đế ngoài cao su Continental bền bỉ.',
+            img: './assets/images/products/sp002.jpg',
+            active: true
+        },
+        {
+            id: 'SP003',
+            name: 'Air Jordan 1 Retro High Chicago - Da Thật',
+            brand: 'Jordan',
+            category: 'Giày Sneaker',
+            catCode: 'LOAI01',
+            costPrice: 2400000,
+            profitPercent: 33,
+            price: 3200000,
+            oldPrice: 3800000,
+            stock: 4, // TỒN THẤP ĐỂ TEST CẢNH BÁO TỒN KHO MỤC I.8
+            stockInitial: 6,
+            stockImport: 4,
+            stockExport: 6,
+            sizes: [40, 41, 42, 43, 44],
+            tag: 'SALE',
+            reviews: 215,
+            rating: 5.0,
+            desc: 'Biểu tượng văn hóa bóng rổ và sneakerhead toàn cầu. Chất liệu da bò tự nhiên cao cấp, phối màu Chicago kinh điển, cổ cao tôn dáng.',
+            img: './assets/images/products/sp003.jpg',
+            active: true
+        },
+        {
+            id: 'SP004',
+            name: 'Nike Mercurial Vapor 15 Elite FG - Cỏ Tự Nhiên',
+            brand: 'Nike',
+            category: 'Giày Đá Bóng',
+            catCode: 'LOAI03',
+            costPrice: 1900000,
+            profitPercent: 42,
+            price: 2700000,
+            oldPrice: 3200000,
+            stock: 14,
+            stockInitial: 10,
+            stockImport: 10,
+            stockExport: 6,
+            sizes: [39, 40, 41, 42, 43],
+            tag: 'HOT',
+            reviews: 64,
+            rating: 4.7,
+            desc: 'Tích hợp túi khí Zoom Air chuyên biệt 3/4 chiều dài dành cho bóng đá, tăng tốc bứt phá và độ bám sân vượt trội.',
+            img: './assets/images/products/sp004.jpg',
+            active: true
+        },
+        {
+            id: 'SP005',
+            name: 'Puma Velocity Nitro 2 Running - Siêu Êm',
+            brand: 'Puma',
+            category: 'Giày Chạy Bộ',
+            catCode: 'LOAI02',
+            costPrice: 1100000,
+            profitPercent: 41,
+            price: 1550000,
+            oldPrice: 1950000,
+            stock: 22,
+            stockInitial: 15,
+            stockImport: 15,
+            stockExport: 8,
+            sizes: [38, 39, 40, 41, 42],
+            tag: 'NEW',
+            reviews: 82,
+            rating: 4.6,
+            desc: 'Công nghệ bọt đệm Nitro siêu nhẹ và đàn hồi phản hồi lực cực nhạy, thích hợp cho việc tập chạy cự ly từ 5km đến Marathon.',
+            img: './assets/images/products/sp005.jpg',
+            active: true
+        },
+        {
+            id: 'SP006',
+            name: 'Giày Tây Oxford Nam Da Bò Ý Classic SGU',
+            brand: 'SGU Classic',
+            category: 'Giày Tây Nam',
+            catCode: 'LOAI04',
+            costPrice: 1500000,
+            profitPercent: 40,
+            price: 2100000,
+            oldPrice: 2600000,
+            stock: 3, // TỒN THẤP ĐỂ TEST CẢNH BÁO TỒN KHO MỤC I.8
+            stockInitial: 5,
+            stockImport: 5,
+            stockExport: 7,
+            sizes: [39, 40, 41, 42, 43],
+            tag: 'NEW',
+            reviews: 41,
+            rating: 4.8,
+            desc: 'Được đóng thủ công từ da bò lớp một nhập khẩu Italy bóng mịn, đế phíp kết hợp cao su chống trượt tạo vẻ lịch lãm sang trọng.',
+            img: './assets/images/products/sp006.jpg',
+            active: true
+        },
+        {
+            id: 'SP007',
+            name: 'Nike Dunk Low Retro Panda - Phối Màu Đen Trắng',
+            brand: 'Nike',
+            category: 'Giày Sneaker',
+            catCode: 'LOAI01',
+            costPrice: 1700000,
+            profitPercent: 35,
+            price: 2300000,
+            oldPrice: 2750000,
+            stock: 16,
+            stockInitial: 10,
+            stockImport: 12,
+            stockExport: 6,
+            sizes: [38, 39, 40, 41, 42, 43],
+            tag: 'HOT',
+            reviews: 310,
             rating: 4.9,
-            desc: 'Chế tác từ da bò nguyên tấm nhập khẩu Ý. Đường may thủ công tỉ mỉ, phom dáng chuẩn mực cho quý ông công sở và dự tiệc.',
-            img: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=800&q=80',
+            desc: 'Cơn sốt đường phố với phối màu đen trắng Black/White kinh điển dễ dàng phối đồ với mọi phong cách.',
+            img: './assets/images/products/sp007.jpg',
             active: true
         },
         {
             id: 'SP008',
-            name: 'Adidas Predator Elite FT - Kiểm Soát Bóng',
+            name: 'Adidas Predator Elite FT FG - Kiểm Soát Bóng',
             brand: 'Adidas',
             category: 'Giày Đá Bóng',
             catCode: 'LOAI03',
-            costPrice: 2000000,
-            profitPercent: 35,
-            price: 2700000,
-            oldPrice: 3200000,
-            stock: 8,
-            stockInitial: 5,
+            costPrice: 2200000,
+            profitPercent: 34,
+            price: 2950000,
+            oldPrice: 3500000,
+            stock: 9,
+            stockInitial: 6,
             stockImport: 8,
             stockExport: 5,
             sizes: [40, 41, 42, 43],
-            colors: ['Đen Đỏ Predator', 'Trắng Bạc'],
             tag: 'SALE',
             reviews: 73,
             rating: 4.9,
             desc: 'Gai cao su Strikeskin hỗ trợ xoáy bóng hoàn hảo cùng khung đế Controlframe 2.0 tạo độ ổn định khi đổi hướng.',
-            img: 'https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=800&q=80',
+            img: './assets/images/products/sp008.jpg',
+            active: true
+        },
+        {
+            id: 'SP009',
+            name: 'Nike ZoomX Vaporfly NEXT% 3 - Đĩa Đệm Carbon',
+            brand: 'Nike',
+            category: 'Giày Chạy Bộ',
+            catCode: 'LOAI02',
+            costPrice: 3100000,
+            profitPercent: 35,
+            price: 4185000,
+            oldPrice: 4800000,
+            stock: 7,
+            stockInitial: 5,
+            stockImport: 5,
+            stockExport: 3,
+            sizes: [39, 40, 41, 42, 43],
+            tag: 'HOT',
+            reviews: 88,
+            rating: 5.0,
+            desc: 'Vũ khí bứt phá kỷ lục marathon. Bọt ZoomX siêu nảy kết hợp tấm đĩa sợi carbon Flyplate tạo lực đẩy về phía trước tối đa.',
+            img: './assets/images/products/sp009.jpg',
+            active: true
+        },
+        {
+            id: 'SP010',
+            name: 'Giày Tây Loafer Da Bóng Penny - Quý Ông Lịch Lãm',
+            brand: 'SGU Classic',
+            category: 'Giày Tây Nam',
+            catCode: 'LOAI04',
+            costPrice: 1300000,
+            profitPercent: 38,
+            price: 1790000,
+            oldPrice: 2200000,
+            stock: 11,
+            stockInitial: 8,
+            stockImport: 8,
+            stockExport: 5,
+            sizes: [39, 40, 41, 42],
+            tag: 'SALE',
+            reviews: 35,
+            rating: 4.7,
+            desc: 'Thiết kế giày lười Penny Loafer tiện lợi, da bò nguyên tấm đánh xi bóng bẩy, lót giày êm ái thoáng khí suốt ngày dài công sở.',
+            img: './assets/images/products/sp010.jpg',
+            active: true
+        },
+        {
+            id: 'SP011',
+            name: 'Puma RS-X Triple White - Phong Cách Chunky',
+            brand: 'Puma',
+            category: 'Giày Sneaker',
+            catCode: 'LOAI01',
+            costPrice: 1200000,
+            profitPercent: 40,
+            price: 1680000,
+            oldPrice: 2100000,
+            stock: 15,
+            stockInitial: 10,
+            stockImport: 10,
+            stockExport: 5,
+            sizes: [38, 39, 40, 41, 42, 43],
+            tag: 'NEW',
+            reviews: 58,
+            rating: 4.7,
+            desc: 'Phong cách Chunky Sneaker hầm hố và năng động. Hệ thống đệm Running System độc quyền của Puma tạo cảm giác êm ái đàn hồi.',
+            img: './assets/images/products/sp011.jpg',
+            active: true
+        },
+        {
+            id: 'SP012',
+            name: 'Adidas Adizero Boston 12 Pro - Luyện Tập Tốc Độ',
+            brand: 'Adidas',
+            category: 'Giày Chạy Bộ',
+            catCode: 'LOAI02',
+            costPrice: 1900000,
+            profitPercent: 36,
+            price: 2580000,
+            oldPrice: 3100000,
+            stock: 13,
+            stockInitial: 8,
+            stockImport: 10,
+            stockExport: 5,
+            sizes: [39, 40, 41, 42, 43],
+            tag: 'HOT',
+            reviews: 79,
+            rating: 4.8,
+            desc: 'Thanh sợi thủy tinh Energyrods 2.0 hạn chế tiêu hao năng lượng, kết hợp hai lớp đệm Lightstrike Pro và Lightstrike 2.0 siêu bền.',
+            img: './assets/images/products/sp012.jpg',
             active: true
         }
     ];
@@ -245,74 +326,84 @@
             cust: 'Nguyễn Văn A',
             email: 'nguyenvana@gmail.com',
             date: '20/10/2025',
-            items: 'Nike Air Max Red 2025 (x1), Adidas Ultraboost (x1)',
+            items: 'Nike Air Max Red 2025 (x1), Adidas Ultraboost Light Pro (x1)',
             total: '4.340.000 ₫',
             status: 'Mới đặt',
             address: '273 An Dương Vương, Phường 3, Quận 5, TP.HCM',
-            payment: 'Tiền mặt khi nhận hàng (COD)'
+            payment: 'Tiền mặt khi nhận hàng (COD)',
+            itemsList: [
+                { code: 'SP001', name: 'Nike Air Max Red 2025 - Special Edition', price: 2450000, size: 41, qty: 1 },
+                { code: 'SP002', name: 'Adidas Ultraboost Light Pro - Bọt Boost', price: 1890000, size: 40, qty: 1 }
+            ]
         },
         {
             id: '#DH2025-072',
             cust: 'Nguyễn Văn A',
             email: 'nguyenvana@gmail.com',
             date: '15/10/2025',
-            items: 'Biti\'s Hunter X Street Army (x1)',
-            total: '950.000 ₫',
-            status: 'Đã xử lý',
+            items: 'Puma Velocity Nitro 2 Running (x1)',
+            total: '1.550.000 ₫',
+            status: 'Đã giao',
             address: '273 An Dương Vương, Phường 3, Quận 5, TP.HCM',
-            payment: 'Chuyển khoản VietQR'
+            payment: 'Chuyển khoản VietQR 24/7',
+            itemsList: [
+                { code: 'SP005', name: 'Puma Velocity Nitro 2 Running - Siêu Êm', price: 1550000, size: 40, qty: 1 }
+            ]
         },
         {
-            id: '#DH2025-042',
+            id: '#DH2025-061',
             cust: 'Trần Thị Bích',
             email: 'tranthibich@gmail.com',
-            date: '10/10/2025',
-            items: 'Air Jordan 1 Retro High (x1)',
-            total: '3.190.000 ₫',
-            status: 'Đã giao',
+            date: '12/10/2025',
+            items: 'Air Jordan 1 Retro High Chicago (x1)',
+            total: '3.200.000 ₫',
+            status: 'Đã xử lý',
             address: '120 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM',
-            payment: 'Tiền mặt khi nhận hàng (COD)'
-        },
-        {
-            id: '#DH2025-015',
-            cust: 'Lê Hoàng Nam',
-            email: 'lehoangnam@gmail.com',
-            date: '05/10/2025',
-            items: 'Nike Mercurial Vapor 15 (x1)',
-            total: '2.150.000 ₫',
-            status: 'Hủy',
-            address: '45 Lê Lợi, Phường 4, Quận Gò Vấp, TP.HCM',
-            payment: 'Thanh toán thẻ trực tuyến'
+            payment: 'Tiền mặt khi nhận hàng (COD)',
+            itemsList: [
+                { code: 'SP003', name: 'Air Jordan 1 Retro High Chicago - Da Thật', price: 3200000, size: 42, qty: 1 }
+            ]
         }
     ];
 
-    // 5. PHIẾU NHẬP HÀNG MẪU (Rubric I.5)
+    // 5. DANH MỤC PHIẾU NHẬP HÀNG MẪU (Rubric I.5)
     const initialImports = [
         {
-            id: 'PN2025-01',
-            date: '10/10/2025',
-            items: 'Adidas Ultraboost Light Pro (x15)',
-            total: '21.000.000 ₫',
+            id: 'PN001',
+            date: '18/10/2025',
+            items: 'Nike Air Max Red 2025 (x15 đôi)',
+            total: '27.000.000 ₫',
+            status: 'Đã hoàn thành',
+            canEdit: false,
+            unitCost: 1800000,
+            qty: 15,
+            prodId: 'SP001'
+        },
+        {
+            id: 'PN002',
+            date: '19/10/2025',
+            items: 'Adidas Ultraboost Light Pro (x10 đôi)',
+            total: '14.000.000 ₫',
             status: 'Đã hoàn thành',
             canEdit: false,
             unitCost: 1400000,
-            qty: 15,
+            qty: 10,
             prodId: 'SP002'
         },
         {
-            id: 'PN2025-02',
+            id: 'PN003',
             date: '20/10/2025',
-            items: 'Nike Air Max Red 2025 (x10)',
-            total: '18.000.000 ₫',
+            items: 'Air Jordan 1 Retro High (x10 đôi)',
+            total: '24.000.000 ₫',
             status: 'Chưa hoàn thành',
             canEdit: true,
-            unitCost: 1800000,
+            unitCost: 2400000,
             qty: 10,
-            prodId: 'SP001'
+            prodId: 'SP003'
         }
     ];
 
-    // HÀM KHỞI TẠO TỰ ĐỘNG
+    // TỰ ĐỘNG KHỞI TẠO NẾU CHƯA CÓ TRONG LOCALSTORAGE
     function initDatabase() {
         if (!localStorage.getItem(STORAGE_KEY_INIT)) {
             localStorage.setItem('sgu_categories', JSON.stringify(initialCategories));
@@ -320,23 +411,27 @@
             localStorage.setItem('sgu_users', JSON.stringify(initialUsers));
             localStorage.setItem('sgu_orders', JSON.stringify(initialOrders));
             localStorage.setItem('sgu_imports', JSON.stringify(initialImports));
-            localStorage.setItem('sgu_cart', JSON.stringify([]));
-
-            // Đăng nhập mặc định cho user đầu tiên để sẵn sàng dùng giỏ hàng
-            localStorage.setItem('sgu_user', JSON.stringify(initialUsers[0]));
-
-            // Đánh dấu đã nạp
+            localStorage.setItem('sgu_user', JSON.stringify(initialUsers[0])); // Mặc định đăng nhập user 1
+            localStorage.setItem('sgu_cart', JSON.stringify([
+                {
+                    code: 'SP001',
+                    name: 'Nike Air Max Red 2025 - Special Edition',
+                    price: 2450000,
+                    size: 41,
+                    qty: 1,
+                    img: './assets/images/products/sp001.jpg'
+                }
+            ]));
             localStorage.setItem(STORAGE_KEY_INIT, 'true');
-            console.log('✅ SGU SNEAKER DATA: Khởi tạo dữ liệu mẫu LocalStorage thành công!');
+            console.log('%c[SGU Sneaker Core] LocalStorage initialized with local assets!', 'color:#10b981; font-weight:bold;');
         }
     }
 
-    // Chạy khởi tạo ngay lập tức
     initDatabase();
 
-    // EXPORT API DÙNG CHUNG RA TOÀN BỘ WINDOW
+    // EXPORT GLOBAL CORE API CHO TOÀN BỘ WEBSITE
     window.SGU_CORE = {
-        // Lấy danh sách sản phẩm
+        // Quản lý sản phẩm
         getProducts: function () {
             return JSON.parse(localStorage.getItem('sgu_products')) || initialProducts;
         },
@@ -407,6 +502,18 @@
         // Tiện ích format tiền VNĐ
         formatVND: function (number) {
             return Number(number || 0).toLocaleString('vi-VN') + ' ₫';
+        },
+
+        // Tiện ích chuẩn hóa tiếng Việt không dấu (hỗ trợ search thông minh)
+        removeVietnameseTones: function (str) {
+            if (!str) return '';
+            return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/Đ/g, 'D')
+                .toLowerCase()
+                .trim();
         }
     };
 })();

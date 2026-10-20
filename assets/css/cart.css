@@ -1,0 +1,210 @@
+/* ==========================================================================
+   SGU SNEAKER - GIỎ HÀNG, ĐẶT HÀNG & LỊCH SỬ (CART PAGE STYLES)
+   Thành viên 3 - Barem II.3 & II.4
+   ========================================================================== */
+
+.checkout-container {
+    max-width: 1200px;
+    margin: 30px auto 60px;
+    padding: 0 24px;
+}
+
+/* STEPS PROGRESS BAR */
+.steps-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 35px;
+    background: #fff;
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
+}
+.step-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--gray);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1.5px solid transparent;
+}
+.step-btn:hover { background: var(--gray-light); color: var(--secondary); }
+.step-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+}
+.step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+.step-btn.active .step-num {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+}
+
+/* CHECKOUT GRID */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 30px;
+}
+.card-box {
+    background: #fff;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 26px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+.card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* CART ITEM ROW */
+.cart-item {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item-img {
+    width: 90px;
+    height: 90px;
+    border-radius: var(--radius-sm);
+    background: #f1f5f9;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.cart-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.item-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: var(--secondary); }
+.item-meta { font-size: 13px; color: var(--gray); margin-bottom: 6px; }
+.item-price { font-weight: 800; color: var(--primary); font-size: 16px; }
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.qty-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--secondary);
+}
+.qty-btn:hover { border-color: var(--primary); color: var(--primary); }
+.qty-input {
+    width: 44px;
+    height: 32px;
+    text-align: center;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+}
+.btn-remove {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+.btn-remove:hover { background: #fecaca; }
+
+/* RADIO CARDS (ADDRESS & PAYMENT) */
+.option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #fff;
+}
+.option-card:hover { border-color: #cbd5e1; }
+.option-card.selected {
+    border-color: var(--primary);
+    background: #fff1f2;
+}
+.option-card input { margin-top: 3px; accent-color: var(--primary); width: 18px; height: 18px; }
+
+/* ORDER SUMMARY */
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #475569;
+}
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    padding-top: 16px;
+    border-top: 2px dashed var(--border);
+    margin-top: 14px;
+}
+
+/* TABLES IN CART */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+th { background: #f8fafc; font-weight: 700; color: var(--secondary); }
+
+/* SUCCESS BANNER */
+.order-success-card {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #6ee7b7;
+    border-radius: var(--radius-md);
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+.order-success-card h2 { color: #065f46; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.order-success-card p { color: #047857; font-size: 15px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .checkout-grid { grid-template-columns: 1fr; }
+    .cart-item { grid-template-columns: 70px 1fr; gap: 12px; }
+    .qty-controls { grid-column: 1 / -1; justify-content: flex-end; }
+}

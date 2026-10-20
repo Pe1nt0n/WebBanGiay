@@ -768,16 +768,15 @@
             if (window.SGU_CORE && SGU_CORE.getCurrentUser) {
                 currentUser = SGU_CORE.getCurrentUser();
             }
+
             if (!currentUser) {
-                // Khởi tạo mặc định nếu chưa có
-                currentUser = {
-                    id: 'KH001',
-                    name: 'Nguyễn Văn A',
-                    email: 'nguyenvana@gmail.com',
-                    phone: '0909123456',
-                    address: '273 An Dương Vương, Phường 3, Quận 5, TP. Hồ Chí Minh',
-                    isLocked: false
-                };
+                document.getElementById('cart-username').innerText = 'Khách (Chưa đăng nhập)';
+                document.getElementById('user-history-name').innerText = 'Khách vãng lai';
+                document.getElementById('addr-default-text').innerHTML = `
+                    <em>Chưa có thông tin mặc định. Vui lòng chọn "Nhập địa chỉ mới" bên dưới hoặc đăng nhập tại Trang Chủ.</em>
+                `;
+                selectAddressMode('new');
+                return;
             }
 
             document.getElementById('cart-username').innerText = currentUser.name;

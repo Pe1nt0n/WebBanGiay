@@ -314,6 +314,7 @@
             localStorage.setItem('sgu_users', JSON.stringify(initialUsers));
             localStorage.setItem('sgu_orders', JSON.stringify(initialOrders));
             localStorage.setItem('sgu_imports', JSON.stringify(initialImports));
+            localStorage.setItem('sgu_cart', JSON.stringify([]));
 
             // Đăng nhập mặc định cho user đầu tiên để sẵn sàng dùng giỏ hàng
             localStorage.setItem('sgu_user', JSON.stringify(initialUsers[0]));
@@ -364,6 +365,7 @@
                 localStorage.setItem('sgu_user', JSON.stringify(user));
             } else {
                 localStorage.removeItem('sgu_user');
+                localStorage.setItem('sgu_cart', JSON.stringify([]));
             }
         },
 
@@ -375,6 +377,7 @@
             localStorage.setItem('sgu_cart', JSON.stringify(cart));
         },
         getCartCount: function () {
+            if (!this.getCurrentUser()) return 0;
             const cart = this.getCart();
             return cart.reduce((sum, i) => sum + (i.qty || 1), 0);
         },

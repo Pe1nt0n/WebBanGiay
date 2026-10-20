@@ -853,8 +853,7 @@
     <div id="toast-container"></div>
 
     <!-- PROMO TOPBAR -->
-    <div class="promo-bar">
-        <div>🔥 <strong>Ưu Đãi Đặc Biệt:</strong> Giảm ngay 20% cho thành viên mới với mã <span style="color:#fb7185; font-weight:700;">SGUNEW20</span> | <a href="product-detail.html?id=SP001" style="color:#f43f5e; font-weight:700;">👟 Xem Demo Trang Chi Tiết SP (Mới)</a></div>
+    <div class="promo-bar" style="justify-content: flex-end;">
         <div class="promo-bar-right">
             <span>📞 CSKH: 1900 1234</span>
             <a href="admin.html" style="color: #cbd5e1; font-weight:600;">🔐 Cổng Quản Trị Admin ↗</a>
@@ -866,7 +865,6 @@
         <div class="header-container">
             <a href="index.html" class="logo">
                 👟 SGU<span>SNEAKER</span>
-                <span class="logo-badge">Official</span>
             </a>
 
             <!-- TÌM KIẾM CƠ BẢN (Mục II.2) -->
@@ -898,7 +896,7 @@
                 <!-- NÚT GIỎ HÀNG -->
                 <button class="cart-btn" onclick="goToCart()">
                     🛒 <span>Giỏ hàng</span>
-                    <span class="cart-badge" id="cart-count">2</span>
+                    <span class="cart-badge" id="cart-count">0</span>
                 </button>
             </div>
         </div>
@@ -1547,6 +1545,7 @@
             else localStorage.setItem('sgu_user', JSON.stringify(currentUser));
 
             initUserState();
+            updateCartBadge();
             closeModal('modal-login');
             showToast(`Chào mừng ${currentUser.name} quay trở lại! Bạn đã có thể đặt hàng.`, 'success');
         }
@@ -1587,15 +1586,22 @@
             localStorage.setItem('sgu_user', JSON.stringify(currentUser));
 
             initUserState();
+            updateCartBadge();
             closeModal('modal-register');
-            showToast('Đăng ký tài khoản thành công! Tặng bạn mã giảm giá SGUNEW20.', 'success');
+            showToast('Đăng ký tài khoản thành công! Chào mừng bạn đến với SGU Sneaker.', 'success');
         }
 
         function handleLogout() {
             currentUser = null;
-            if (window.SGU_CORE) SGU_CORE.setCurrentUser(null);
-            else localStorage.removeItem('sgu_user');
+            if (window.SGU_CORE) {
+                SGU_CORE.setCurrentUser(null);
+                SGU_CORE.saveCart([]);
+            } else {
+                localStorage.removeItem('sgu_user');
+                localStorage.setItem('sgu_cart', JSON.stringify([]));
+            }
             initUserState();
+            updateCartBadge();
             showToast('Đã đăng xuất tài khoản thành công.', 'success');
         }
 
@@ -1867,11 +1873,16 @@
         }
 
         function updateCartBadge() {
+            const badge = document.getElementById('cart-count');
+            if (!badge) return;
+            if (!currentUser) {
+                badge.innerText = '0';
+                return;
+            }
             const count = (window.SGU_CORE && SGU_CORE.getCartCount) 
                 ? SGU_CORE.getCartCount() 
                 : (JSON.parse(localStorage.getItem('sgu_cart')) || []).reduce((acc, curr) => acc + (curr.qty || 1), 0);
-            const badge = document.getElementById('cart-count');
-            if (badge) badge.innerText = count;
+            badge.innerText = count;
         }
 
         function goToCart() {

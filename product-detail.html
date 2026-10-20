@@ -569,9 +569,9 @@
     <div id="toast-container"></div>
 
     <!-- PROMO BAR -->
-    <div class="promo-bar">
-        <div>🎉 Khuyến mãi Tháng 10: Giảm ngay 15% cho tất cả Sneaker | Mã: <strong>SGU15</strong></div>
+    <div class="promo-bar" style="justify-content: flex-end;">
         <div>
+            <span>📞 CSKH: 1900 1234</span> &nbsp;|&nbsp;
             <a href="admin.html" style="color: #cbd5e1; text-decoration:none;">🔐 Cổng Quản Trị Admin →</a>
         </div>
     </div>
@@ -1112,8 +1112,15 @@
         }
 
         function updateCartCounter() {
+            const counter = document.getElementById('cart-counter');
+            if (!counter) return;
+            const user = (window.SGU_CORE && SGU_CORE.getCurrentUser) ? SGU_CORE.getCurrentUser() : null;
+            if (!user) {
+                counter.innerText = '0';
+                return;
+            }
             if (window.SGU_CORE && SGU_CORE.getCartCount) {
-                document.getElementById('cart-counter').innerText = SGU_CORE.getCartCount();
+                counter.innerText = SGU_CORE.getCartCount();
             }
         }
 

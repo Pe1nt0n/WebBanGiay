@@ -121,17 +121,17 @@ const productsData = (window.SGU_CORE && SGU_CORE.getProducts)
     },
     {
         id: 'SP009',
-        name: 'Nike ZoomX Vaporfly NEXT% 3 - Đĩa Đệm Carbon',
+        name: 'Nike Pegasus 40 FlyEase - Chạy Bộ Đa Năng',
         category: 'Giày Chạy Bộ',
         brand: 'Nike',
-        price: 4185000,
-        oldPrice: 4800000,
+        price: 2835000,
+        oldPrice: 3400000,
         sizes: [39, 40, 41, 42, 43],
         rating: 5,
         reviews: 88,
         tag: 'HOT',
         img: './assets/images/products/sp009.jpg',
-        desc: 'Vũ khí bứt phá kỷ lục marathon. Bọt ZoomX siêu nảy kết hợp tấm đĩa sợi carbon Flyplate tạo lực đẩy về phía trước tối đa.'
+        desc: 'Dòng giày chạy bộ huyền thoại của Nike với công nghệ đệm kép Zoom Air ở mũi và gót chân. Thân giày FlyEase có khóa kéo tiện lợi, bứt tốc êm ái bền bỉ.'
     },
     {
         id: 'SP010',

@@ -33,7 +33,7 @@ function previewShoeImage(url) {
     const img = document.getElementById('img-preview-thumb');
     const placeholder = document.getElementById('preview-placeholder');
     if (!img || !placeholder) return;
-    if (url && (url.startsWith('http') || url.startsWith('./') || url.startsWith('assets/'))) {
+    if (url && (url.startsWith('http') || url.startsWith('./') || url.startsWith('assets/') || url.startsWith('data:image/'))) {
         img.src = url;
         img.style.display = 'block';
         placeholder.style.display = 'none';
@@ -41,6 +41,120 @@ function previewShoeImage(url) {
         img.style.display = 'none';
         placeholder.style.display = 'block';
     }
+}
+
+// ==========================================================
+// BỘ TIỆN ÍCH CHỌN ẢNH THÔNG MINH CHO ADMIN
+// ==========================================================
+const sampleShoeImages = [
+    { code: 'SP001', name: 'Nike Air Max Red', img: './assets/images/products/sp001.jpg' },
+    { code: 'SP002', name: 'Adidas Ultraboost', img: './assets/images/products/sp002.jpg' },
+    { code: 'SP003', name: 'Jordan 1 Chicago', img: './assets/images/products/sp003.jpg' },
+    { code: 'SP004', name: 'Nike Mercurial Vapor', img: './assets/images/products/sp004.jpg' },
+    { code: 'SP005', name: 'Puma Velocity Nitro', img: './assets/images/products/sp005.jpg' },
+    { code: 'SP006', name: 'Oxford Da Bò Ý', img: './assets/images/products/sp006.jpg' },
+    { code: 'SP007', name: 'Nike Dunk Panda', img: './assets/images/products/sp007.jpg' },
+    { code: 'SP008', name: 'Adidas Predator Elite', img: './assets/images/products/sp008.jpg' },
+    { code: 'SP009', name: 'Nike Pegasus 40', img: './assets/images/products/sp009.jpg' },
+    { code: 'SP010', name: 'Penny Loafer Da Bóng', img: './assets/images/products/sp010.jpg' },
+    { code: 'SP011', name: 'Puma RS-X Triple White', img: './assets/images/products/sp011.jpg' },
+    { code: 'SP012', name: 'Adidas Adizero Pro', img: './assets/images/products/sp012.jpg' }
+];
+
+function renderSampleGallery() {
+    const container = document.getElementById('preset-gallery-items');
+    if (!container) return;
+
+    container.innerHTML = sampleShoeImages.map(item => `
+        <div class="preset-item" onclick="selectSampleImage('${item.img}')" title="${item.code} - ${item.name}">
+            <img src="${item.img}" alt="${item.name}">
+            <span>${item.code}</span>
+        </div>
+    `).join('');
+}
+
+function toggleSampleGallery() {
+    const card = document.getElementById('sample-gallery-card');
+    if (!card) return;
+    const isShowing = card.style.display !== 'none';
+    card.style.display = isShowing ? 'none' : 'block';
+}
+
+function selectSampleImage(imgUrl) {
+    const input = document.getElementById('prod-img');
+    if (input) input.value = imgUrl;
+    previewShoeImage(imgUrl);
+
+    // Đánh dấu active trong grid
+    document.querySelectorAll('.preset-item').forEach(el => {
+        const itemImg = el.querySelector('img');
+        if (itemImg && itemImg.getAttribute('src') === imgUrl) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
+
+    showToast('Đã chọn ảnh mẫu giày thành công!', 'success');
+}
+
+function handleProductFileUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('Vui lòng chỉ chọn file hình ảnh (JPG, PNG, WebP)!', 'warning');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhẹ hơn!', 'warning');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Url = e.target.result;
+        const input = document.getElementById('prod-img');
+        if (input) input.value = base64Url;
+        previewShoeImage(base64Url);
+        showToast(`Đã tải ảnh "${file.name}" lên từ máy tính!`, 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function initImageDragAndDrop() {
+    const box = document.getElementById('box-preview-img');
+    if (!box) return;
+
+    box.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        box.style.borderColor = 'var(--primary)';
+        box.style.background = '#fff1f2';
+    });
+
+    box.addEventListener('dragleave', () => {
+        box.style.borderColor = '#cbd5e1';
+        box.style.background = '#f8fafc';
+    });
+
+    box.addEventListener('drop', (e) => {
+        e.preventDefault();
+        box.style.borderColor = '#cbd5e1';
+        box.style.background = '#f8fafc';
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const base64Url = evt.target.result;
+                const input = document.getElementById('prod-img');
+                if (input) input.value = base64Url;
+                previewShoeImage(base64Url);
+                showToast(`Đã thả ảnh "${file.name}" vào sản phẩm!`, 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
 // THAO TÁC NHANH: TẠO PHIẾU NHẬP HÀNG TỪ CẢNH BÁO TỒN KHO
@@ -152,6 +266,8 @@ function loadAllAdminModules() {
     loadAdminOrders();
     loadAdminInventory();
     updateAdminKPIs();
+    renderSampleGallery();
+    initImageDragAndDrop();
 }
 
 // BỘ THẺ KPI THỐNG KÊ TỰ ĐỘNG CẬP NHẬT TỪ SGU_CORE
@@ -398,6 +514,10 @@ function openAddProductModal() {
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'none';
 
+    // Thu gọn kho ảnh mẫu
+    const galleryCard = document.getElementById('sample-gallery-card');
+    if (galleryCard) galleryCard.style.display = 'none';
+
     document.getElementById('modal-product').style.display = 'flex';
 }
 
@@ -406,6 +526,20 @@ function openEditProductModal(id) {
     const prods = SGU_CORE ? SGU_CORE.getProducts() : [];
     const p = prods.find(x => x.id === id);
     if (!p) return;
+
+    // Thu gọn kho ảnh mẫu
+    const galleryCard = document.getElementById('sample-gallery-card');
+    if (galleryCard) galleryCard.style.display = 'none';
+
+    // Đánh dấu ảnh mẫu đang dùng nếu trùng
+    document.querySelectorAll('.preset-item').forEach(el => {
+        const itemImg = el.querySelector('img');
+        if (itemImg && itemImg.getAttribute('src') === p.img) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
 
     document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + p.id;
     document.getElementById('prod-code').value = p.id;

@@ -684,12 +684,42 @@
                 <input type="text" id="prod-name" class="form-control" placeholder="VD: Nike Dunk Low Panda...">
             </div>
             <div class="form-group">
-                <label>Hình ảnh sản phẩm (URL)</label>
+                <label style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Hình ảnh sản phẩm *</span>
+                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">Tải từ máy tính, chọn ảnh mẫu hoặc dán URL</span>
+                </label>
+
+                <!-- TOOLBAR TIỆN ÍCH CHỌN ẢNH -->
+                <div class="image-picker-toolbar" style="margin-bottom: 8px;">
+                    <button type="button" class="btn-picker-tool" onclick="document.getElementById('file-upload-input').click()">
+                        📁 Tải ảnh từ máy tính
+                    </button>
+                    <button type="button" class="btn-picker-tool" onclick="toggleSampleGallery()">
+                        🖼️ Chọn từ kho ảnh mẫu (12 mẫu)
+                    </button>
+                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;" onchange="handleProductFileUpload(event)">
+                </div>
+
+                <!-- BẢNG CHỌN ẢNH MẪU CÓ SẴN (COLLAPSIBLE) -->
+                <div id="sample-gallery-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
+                    <div class="preset-gallery-title">
+                        <span>Kho ảnh giày có sẵn trong cửa hàng (Click để chọn ngay):</span>
+                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:14px; font-weight:700;" onclick="toggleSampleGallery()">✕ Đóng</button>
+                    </div>
+                    <div class="preset-gallery-grid" id="preset-gallery-items">
+                        <!-- JS render 12 thumbnails -->
+                    </div>
+                </div>
+
+                <!-- ĐƯỜNG DẪN VÀ PREVIEW BOX -->
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg" oninput="previewShoeImage(this.value)">
-                    <div style="width: 58px; height: 58px; border-radius: 8px; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; flex-shrink: 0;" id="box-preview-img">
-                        <img id="img-preview-thumb" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
-                        <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center;">Xem ảnh</span>
+                    <div style="flex: 1;">
+                        <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc link ảnh..." oninput="previewShoeImage(this.value)">
+                        <div style="font-size: 11px; color: var(--gray); margin-top: 4px;">Hoặc kéo & thả file ảnh trực tiếp vào ô vuông bên phải.</div>
+                    </div>
+                    <div class="image-preview-large-box" id="box-preview-img" title="Click hoặc Kéo thả ảnh vào đây để tải" onclick="document.getElementById('file-upload-input').click()">
+                        <img id="img-preview-thumb" src="" style="display: none;">
+                        <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center; line-height: 1.2;">📁 Chọn<br>ảnh</span>
                     </div>
                 </div>
             </div>

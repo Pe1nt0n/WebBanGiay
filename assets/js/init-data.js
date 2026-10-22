@@ -11,7 +11,7 @@
  */
 
 (function () {
-    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v10';
+    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v11';
 
     // 1. DANH MỤC PHÂN LOẠI GIÀY
     const initialCategories = [
@@ -183,8 +183,8 @@
         },
         {
             id: 'SP006',
-            name: 'Giày Tây Oxford Nam Da Bò Ý Classic SGU',
-            brand: 'SGU Classic',
+            name: 'Giày Tây Oxford Nam Da Bò Ý Clarks Craft',
+            brand: 'Clarks',
             category: 'Giày Tây Nam',
             catCode: 'LOAI04',
             costPrice: 1500000,
@@ -304,8 +304,8 @@
         },
         {
             id: 'SP010',
-            name: 'Giày Tây Loafer Da Bóng Penny - Quý Ông Lịch Lãm',
-            brand: 'SGU Classic',
+            name: 'Giày Tây Loafer Da Bóng Clarks Penny - Quý Ông Lịch Lãm',
+            brand: 'Clarks',
             category: 'Giày Tây Nam',
             catCode: 'LOAI04',
             costPrice: 1300000,

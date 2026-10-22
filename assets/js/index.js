@@ -79,9 +79,9 @@ const productsData = (window.SGU_CORE && SGU_CORE.getProducts)
     },
     {
         id: 'SP006',
-        name: 'Giày Tây Oxford Nam Da Bò Ý Classic SGU',
+        name: 'Giày Tây Oxford Nam Da Bò Ý Clarks Craft',
         category: 'Giày Tây Nam',
-        brand: 'SGU Classic',
+        brand: 'Clarks',
         price: 2100000,
         oldPrice: 2600000,
         sizes: [39, 40, 41, 42, 43],
@@ -135,9 +135,9 @@ const productsData = (window.SGU_CORE && SGU_CORE.getProducts)
     },
     {
         id: 'SP010',
-        name: 'Giày Tây Loafer Da Bóng Penny - Quý Ông Lịch Lãm',
+        name: 'Giày Tây Loafer Da Bóng Clarks Penny - Quý Ông Lịch Lãm',
         category: 'Giày Tây Nam',
-        brand: 'SGU Classic',
+        brand: 'Clarks',
         price: 1790000,
         oldPrice: 2200000,
         sizes: [39, 40, 41, 42],
@@ -192,6 +192,7 @@ let currentUser = (window.SGU_CORE && SGU_CORE.getCurrentUser)
 window.addEventListener('DOMContentLoaded', () => {
     initUserState();
     renderCategoryMenu();
+    renderBrandFilterList();
     updateCartBadge();
 
     // Đọc Query params nếu có tìm kiếm từ header các trang khác
@@ -415,6 +416,31 @@ function renderCategoryMenu() {
     }
 }
 
+// RENDER BỘ LỌC THƯƠNG HIỆU ĐỘNG TỪ DANH SÁCH SẢN PHẨM HIỆN CÓ
+function renderBrandFilterList() {
+    const container = document.getElementById('brand-filter-list');
+    if (!container) return;
+
+    // Các thương hiệu tiêu chuẩn + thương hiệu mới do Admin thêm
+    const defaultBrands = ['Nike', 'Adidas', 'Jordan', 'Puma', 'Clarks'];
+    const prods = (window.SGU_CORE && SGU_CORE.getProducts) ? SGU_CORE.getProducts() : productsData;
+    const prodBrands = (prods || []).map(p => p.brand).filter(Boolean);
+    const uniqueBrands = Array.from(new Set([...defaultBrands, ...prodBrands]));
+
+    // Lưu lại trạng thái checkbox đang chọn nếu có
+    const checkedBoxes = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value);
+    const hasAnyCheckboxes = document.querySelectorAll('input[name="brand"]').length > 0;
+
+    container.innerHTML = uniqueBrands.map(b => {
+        const isChecked = hasAnyCheckboxes ? checkedBoxes.includes(b) : true;
+        return `
+            <label class="brand-label">
+                <input type="checkbox" name="brand" value="${b}" ${isChecked ? 'checked' : ''} onchange="applyFilters()"> ${b}
+            </label>
+        `;
+    }).join('');
+}
+
 // BỘ LỌC VÀ TÌM KIẾM SẢN PHẨM (Mục II.2)
 function filterByCategory(cat, element) {
     document.querySelectorAll('#category-menu .category-item').forEach(el => el.classList.remove('active'));
@@ -451,12 +477,12 @@ function applyFilters() {
     // Lấy danh sách thương hiệu được tích chọn
     const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value);
     const allBrandBoxes = document.querySelectorAll('input[name="brand"]');
-    const isAllBrandsChecked = selectedBrands.length === allBrandBoxes.length;
+    const allOrNone = selectedBrands.length === 0 || selectedBrands.length === allBrandBoxes.length;
 
     filteredProducts = productsData.filter(prod => {
         const matchKeyword = !normKey || norm(prod.name).includes(normKey) || norm(prod.desc).includes(normKey) || norm(prod.brand).includes(normKey);
         const matchCategory = (cat === 'Tất cả') || (prod.category === cat);
-        const matchBrand = selectedBrands.length === 0 || selectedBrands.includes(prod.brand) || (isAllBrandsChecked && !['Nike', 'Adidas', 'Jordan', 'Puma', 'SGU Classic'].includes(prod.brand));
+        const matchBrand = allOrNone || selectedBrands.includes(prod.brand);
         const matchPrice = (prod.price >= minPrice && prod.price <= maxPrice);
         const matchSize = (selectedSize === 'ALL') || (prod.sizes && prod.sizes.includes(parseInt(selectedSize)));
 

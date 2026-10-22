@@ -673,7 +673,7 @@ function openEditProductModal(id) {
     // Set Brand
     const brandSelect = document.getElementById('prod-brand');
     const customBrandInput = document.getElementById('prod-brand-custom');
-    const standardBrands = ['Nike', 'Adidas', 'Jordan', 'Puma', 'SGU Classic'];
+    const standardBrands = ['Nike', 'Adidas', 'Jordan', 'Puma', 'Clarks', 'Converse'];
     
     if (brandSelect) {
         if (standardBrands.includes(p.brand)) {

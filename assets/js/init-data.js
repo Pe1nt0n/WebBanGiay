@@ -554,6 +554,12 @@
             const list = this.getProducts();
             return list.find(p => p.id === id) || list[0];
         },
+        deleteProduct: function (id) {
+            let prods = this.getProducts();
+            prods = prods.filter(p => p.id !== id);
+            this.saveProducts(prods);
+            return prods;
+        },
 
         // Quản lý tồn kho theo size
         getSizeStock: function (prodId) {

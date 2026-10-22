@@ -293,10 +293,11 @@
                                 <th>Hình</th>
                                 <th>Mã SP</th>
                                 <th>Tên sản phẩm giày</th>
+                                <th>Thương hiệu</th>
                                 <th>Phân loại</th>
                                 <th>Mô tả tóm tắt</th>
                                 <th>Trạng thái</th>
-                                <th>Thao tác</th>
+                                <th style="width: 200px; text-align: center;">Thao tác quản trị</th>
                             </tr>
                         </thead>
                         <tbody id="prod-table-body">
@@ -663,6 +664,18 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Thương hiệu giày (Brand) *</label>
+                <select id="prod-brand" class="form-control" onchange="handleBrandSelectChange(this.value)">
+                    <option value="Nike">Nike</option>
+                    <option value="Adidas">Adidas</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Puma">Puma</option>
+                    <option value="SGU Classic">SGU Classic</option>
+                    <option value="custom">+ Thêm thương hiệu khác...</option>
+                </select>
+                <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu (VD: Converse, Vans, New Balance...)" style="display: none; margin-top: 8px;">
+            </div>
+            <div class="form-group">
                 <label>Mã sản phẩm *</label>
                 <input type="text" id="prod-code" class="form-control" placeholder="VD: SP007">
             </div>
@@ -684,9 +697,12 @@
                 <label>Mô tả chi tiết sản phẩm</label>
                 <textarea id="prod-desc" class="form-control" rows="3" placeholder="Chất liệu da, công nghệ đế đệm..."></textarea>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
-                <button class="btn btn-dark" onclick="closeModal('modal-product')">Đóng</button>
-                <button class="btn btn-primary" onclick="saveProductModal()">💾 Lưu Sản Phẩm</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                <button type="button" class="btn btn-danger" id="btn-modal-delete-prod" style="display: none;" onclick="deleteCurrentEditingProduct()">🗑️ Xóa Sản Phẩm Này</button>
+                <div style="display: flex; gap: 12px; margin-left: auto;">
+                    <button class="btn btn-dark" onclick="closeModal('modal-product')">Đóng</button>
+                    <button class="btn btn-primary" onclick="saveProductModal()">💾 Lưu Sản Phẩm</button>
+                </div>
             </div>
         </div>
     </div>

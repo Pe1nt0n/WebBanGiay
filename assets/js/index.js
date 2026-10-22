@@ -450,11 +450,13 @@ function applyFilters() {
 
     // Lấy danh sách thương hiệu được tích chọn
     const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value);
+    const allBrandBoxes = document.querySelectorAll('input[name="brand"]');
+    const isAllBrandsChecked = selectedBrands.length === allBrandBoxes.length;
 
     filteredProducts = productsData.filter(prod => {
         const matchKeyword = !normKey || norm(prod.name).includes(normKey) || norm(prod.desc).includes(normKey) || norm(prod.brand).includes(normKey);
         const matchCategory = (cat === 'Tất cả') || (prod.category === cat);
-        const matchBrand = selectedBrands.length === 0 || selectedBrands.includes(prod.brand);
+        const matchBrand = selectedBrands.length === 0 || selectedBrands.includes(prod.brand) || (isAllBrandsChecked && !['Nike', 'Adidas', 'Jordan', 'Puma', 'SGU Classic'].includes(prod.brand));
         const matchPrice = (prod.price >= minPrice && prod.price <= maxPrice);
         const matchSize = (selectedSize === 'ALL') || (prod.sizes && prod.sizes.includes(parseInt(selectedSize)));
 

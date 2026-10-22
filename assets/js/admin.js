@@ -346,15 +346,31 @@ function loadAdminProducts() {
             <td><img src="${p.img}" class="thumb" alt="${p.name}"></td>
             <td><strong>${p.id}</strong></td>
             <td><strong>${p.name}</strong></td>
+            <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:700;">${p.brand || 'Khác'}</span></td>
             <td>${p.category}</td>
-            <td style="max-width:240px; font-size:13px;">${p.desc ? p.desc.substring(0, 65) + '...' : ''}</td>
+            <td style="max-width:200px; font-size:13px; color:var(--gray);">${p.desc ? p.desc.substring(0, 55) + '...' : ''}</td>
             <td><span class="badge ${p.active ? 'badge-active' : 'badge-locked'}">${p.active ? 'Đang bán' : 'Đã ẩn'}</span></td>
-            <td>
-                <button class="btn btn-warning" onclick="openEditProductModal('${p.id}')">✏️ Sửa</button>
-                <button class="btn btn-danger" onclick="toggleHideProduct('${p.id}')">${p.active ? '🗑️ Ẩn' : '🔓 Bật'}</button>
+            <td style="text-align: center; white-space: nowrap;">
+                <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;" onclick="openEditProductModal('${p.id}')" title="Chỉnh sửa thông tin">✏️ Sửa</button>
+                <button class="btn ${p.active ? 'btn-outline' : 'btn-success'}" style="padding: 5px 10px; font-size: 12px; margin: 0 4px;" onclick="toggleHideProduct('${p.id}')" title="${p.active ? 'Tạm ẩn khỏi trang bán' : 'Bật hiển thị lại'}">
+                    ${p.active ? '👁️ Ẩn' : '🔓 Bật'}
+                </button>
+                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteProduct('${p.id}')" title="Xóa vĩnh viễn khỏi hệ thống">🗑️ Xóa</button>
             </td>
         </tr>
     `).join('');
+}
+
+function handleBrandSelectChange(val) {
+    const customInput = document.getElementById('prod-brand-custom');
+    if (!customInput) return;
+    if (val === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+    } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+    }
 }
 
 function openAddProductModal() {
@@ -364,9 +380,24 @@ function openAddProductModal() {
     document.getElementById('prod-code').value = 'SP' + String(prods.length + 1).padStart(3, '0');
     document.getElementById('prod-code').readOnly = false;
     document.getElementById('prod-name').value = '';
+    
+    // Reset Brand selection
+    const brandSelect = document.getElementById('prod-brand');
+    const customBrandInput = document.getElementById('prod-brand-custom');
+    if (brandSelect) brandSelect.value = 'Nike';
+    if (customBrandInput) {
+        customBrandInput.style.display = 'none';
+        customBrandInput.value = '';
+    }
+
     document.getElementById('prod-img').value = './assets/images/products/sp001.jpg';
     document.getElementById('prod-desc').value = '';
     previewShoeImage('./assets/images/products/sp001.jpg');
+
+    // Ẩn nút xóa khi đang thêm mới
+    const deleteBtn = document.getElementById('btn-modal-delete-prod');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+
     document.getElementById('modal-product').style.display = 'flex';
 }
 
@@ -381,9 +412,36 @@ function openEditProductModal(id) {
     document.getElementById('prod-code').readOnly = true;
     document.getElementById('prod-name').value = p.name;
     document.getElementById('prod-cat').value = p.category;
+
+    // Set Brand
+    const brandSelect = document.getElementById('prod-brand');
+    const customBrandInput = document.getElementById('prod-brand-custom');
+    const standardBrands = ['Nike', 'Adidas', 'Jordan', 'Puma', 'SGU Classic'];
+    
+    if (brandSelect) {
+        if (standardBrands.includes(p.brand)) {
+            brandSelect.value = p.brand;
+            if (customBrandInput) {
+                customBrandInput.style.display = 'none';
+                customBrandInput.value = '';
+            }
+        } else {
+            brandSelect.value = 'custom';
+            if (customBrandInput) {
+                customBrandInput.style.display = 'block';
+                customBrandInput.value = p.brand || '';
+            }
+        }
+    }
+
     document.getElementById('prod-img').value = p.img;
     document.getElementById('prod-desc').value = p.desc || '';
     previewShoeImage(p.img);
+
+    // Hiện nút xóa khi đang sửa sản phẩm
+    const deleteBtn = document.getElementById('btn-modal-delete-prod');
+    if (deleteBtn) deleteBtn.style.display = 'inline-block';
+
     document.getElementById('modal-product').style.display = 'flex';
 }
 
@@ -391,6 +449,12 @@ function saveProductModal() {
     const code = document.getElementById('prod-code').value.trim();
     const name = document.getElementById('prod-name').value.trim();
     const cat = document.getElementById('prod-cat').value;
+
+    // Brand
+    const brandSelect = document.getElementById('prod-brand') ? document.getElementById('prod-brand').value : 'Nike';
+    const customBrand = document.getElementById('prod-brand-custom') ? document.getElementById('prod-brand-custom').value.trim() : '';
+    const brand = (brandSelect === 'custom') ? (customBrand || 'Khác') : brandSelect;
+
     const img = document.getElementById('prod-img').value.trim();
     const desc = document.getElementById('prod-desc').value.trim();
 
@@ -405,6 +469,7 @@ function saveProductModal() {
 
     if (existing) {
         existing.name = name;
+        existing.brand = brand;
         existing.category = cat;
         existing.img = img;
         existing.desc = desc;
@@ -412,9 +477,9 @@ function saveProductModal() {
         prods.unshift({
             id: code,
             name: name,
-            brand: cat.includes('Sneaker') ? 'Nike' : (cat.includes('Chạy') ? 'Adidas' : 'SGU'),
+            brand: brand,
             category: cat,
-            catCode: 'LOAI01',
+            catCode: cat.includes('Sneaker') ? 'LOAI01' : (cat.includes('Chạy') ? 'LOAI02' : (cat.includes('Đá') ? 'LOAI03' : 'LOAI04')),
             costPrice: 1500000,
             profitPercent: 35,
             price: 2025000,
@@ -424,9 +489,12 @@ function saveProductModal() {
             stockImport: 0,
             stockExport: 0,
             sizes: [38, 39, 40, 41, 42, 43],
+            sizeStock: { 38: 2, 39: 3, 40: 4, 41: 3, 42: 2, 43: 1, 44: 0 },
+            gallery: [img],
+            reviewsList: [],
             colors: ['Đen Phối Trắng', 'Trắng Tuyết'],
             tag: 'NEW',
-            reviews: 10,
+            reviews: 0,
             rating: 5.0,
             desc: desc,
             img: img,
@@ -440,7 +508,35 @@ function saveProductModal() {
     loadAdminInventory();
     updateAdminKPIs();
     closeModal('modal-product');
-    showToast(`Đã lưu thông tin sản phẩm "${name}" thành công!`, 'success');
+    showToast(`Đã lưu sản phẩm "${name}" (Thương hiệu: ${brand}) thành công!`, 'success');
+}
+
+function deleteProduct(id) {
+    if (!window.SGU_CORE) return;
+    const prods = SGU_CORE.getProducts();
+    const p = prods.find(x => x.id === id);
+    if (!p) return;
+
+    if (confirm(`Bạn có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm "${p.name}" (Mã: ${p.id}) khỏi hệ thống?\n\n⚠️ Thao tác này sẽ xóa sản phẩm khỏi kho và giao diện bán hàng.`)) {
+        if (SGU_CORE.deleteProduct) {
+            SGU_CORE.deleteProduct(id);
+        } else {
+            const newProds = prods.filter(x => x.id !== id);
+            SGU_CORE.saveProducts(newProds);
+        }
+        loadAdminProducts();
+        loadAdminPricing();
+        loadAdminInventory();
+        updateAdminKPIs();
+        showToast(`Đã xóa vĩnh viễn sản phẩm "${p.name}"!`, 'danger');
+    }
+}
+
+function deleteCurrentEditingProduct() {
+    if (!editingProductId) return;
+    const id = editingProductId;
+    closeModal('modal-product');
+    deleteProduct(id);
 }
 
 function toggleHideProduct(id) {

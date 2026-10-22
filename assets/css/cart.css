@@ -107,8 +107,26 @@
     object-fit: cover;
 }
 .item-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: var(--secondary); }
-.item-meta { font-size: 13px; color: var(--gray); margin-bottom: 6px; }
+.item-meta { font-size: 13px; color: var(--gray); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
 .item-price { font-weight: 800; color: var(--primary); font-size: 16px; }
+
+.cart-size-select {
+    padding: 3px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--secondary);
+    background: #f8fafc;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+.cart-size-select:hover, .cart-size-select:focus {
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+}
 
 .qty-controls {
     display: flex;

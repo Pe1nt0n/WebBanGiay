@@ -35,8 +35,10 @@
             <!-- TÌM KIẾM CƠ BẢN (Mục II.2) -->
             <div class="basic-search">
                 <span class="search-icon-left">🔍</span>
-                <input type="text" id="basic-search-input" placeholder="Tìm kiếm nhanh mẫu giày (VD: Nike, Ultraboost, Jordan)..." onkeyup="if(event.key==='Enter') handleBasicSearch()">
+                <input type="text" id="basic-search-input" placeholder="Tìm kiếm nhanh mẫu giày (VD: Nike, Ultraboost, Jordan)..." autocomplete="off" onkeyup="if(event.key==='Enter') handleBasicSearch()">
                 <button onclick="handleBasicSearch()">Tìm kiếm</button>
+                <!-- AUTOCOMPLETE DROPDOWN -->
+                <div class="search-autocomplete" id="search-autocomplete-box" style="display: none;"></div>
             </div>
 
             <!-- TÀI KHOẢN & GIỎ HÀNG (Mục II.1 & II.3) -->
@@ -294,6 +296,40 @@
             <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px;" onclick="handleUpdateProfile()">
                 Lưu Thay Đổi Thông Tin
             </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 5: CHỌN NHANH SIZE GIÀY ================= -->
+    <div class="modal-overlay" id="modal-quick-size">
+        <div class="modal-box" style="max-width: 440px;">
+            <button class="close-modal" onclick="closeModal('modal-quick-size')">✕</button>
+            <div class="quick-modal-header" style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+                <img id="quick-modal-img" src="" alt="Shoe Preview" style="width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0;">
+                <div style="flex: 1; min-width: 0;">
+                    <div id="quick-modal-brand" style="font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase;">NIKE</div>
+                    <h3 id="quick-modal-title" style="font-size: 15px; font-weight: 800; line-height: 1.3; margin: 2px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tên giày</h3>
+                    <div id="quick-modal-price" style="font-size: 16px; font-weight: 800; color: var(--primary);">0 ₫</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size: 13px; font-weight: 700; color: var(--secondary);">Chọn kích cỡ giày (EU):</label>
+                    <span id="quick-modal-stock-tag" class="size-stock-badge in-stock">Còn hàng</span>
+                </div>
+                <div id="quick-modal-sizes" class="size-chips-grid"></div>
+            </div>
+
+            <div id="quick-modal-stock-desc" style="font-size: 12.5px; margin-bottom: 18px; color: var(--gray); background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);">
+                ℹ️ Chọn size để kiểm tra số lượng tồn kho sẵn có.
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-outline" style="flex: 1; padding: 11px; font-size: 14px;" onclick="closeModal('modal-quick-size')">Hủy</button>
+                <button class="btn-primary" style="flex: 2; padding: 11px; font-size: 14px;" id="quick-modal-btn-confirm" onclick="confirmQuickAddToCart()">
+                    🛒 Thêm Vào Giỏ
+                </button>
+            </div>
         </div>
     </div>
 

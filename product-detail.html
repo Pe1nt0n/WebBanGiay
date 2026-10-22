@@ -31,8 +31,9 @@
                 👟 SGU<span>SNEAKER</span>
             </a>
 
-            <div style="flex:1; max-width:420px; margin: 0 20px;">
-                <input type="text" class="search-input" id="detail-search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." onkeydown="if(event.key==='Enter') window.location.href='index.html?search=' + encodeURIComponent(this.value.trim())">
+            <div style="flex:1; max-width:420px; margin: 0 20px; position: relative;">
+                <input type="text" class="search-input" id="detail-search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." autocomplete="off" onkeydown="if(event.key==='Enter') window.location.href='index.html?search=' + encodeURIComponent(this.value.trim())">
+                <div class="search-autocomplete" id="detail-autocomplete-box" style="display: none;"></div>
             </div>
 
             <div class="header-actions">
@@ -56,26 +57,35 @@
     <!-- MAIN PRODUCT DETAIL -->
     <div class="detail-wrapper">
         <div class="product-main-grid">
-            <!-- CỘT 1: HÌNH ẢNH SẢN PHẨM -->
+            <!-- CỘT 1: HÌNH ẢNH SẢN PHẨM & GALLERY NHIỀU GÓC CHỤP -->
             <div class="gallery-box">
                 <div class="main-img-box">
                     <span class="badge-hot-tag">CHÍNH HÃNG 100%</span>
                     <img id="main-shoe-img" src="./assets/images/products/sp001.jpg" alt="Shoe Product Image">
                 </div>
+                <!-- DẢI ẢNH THUMBNAILS NHIỀU GÓC CHỤP -->
+                <div class="gallery-thumbnails" id="gallery-thumbs-box"></div>
             </div>
 
             <!-- CỘT 2: THÔNG TIN CHI TIẾT & CHỌN MUA -->
             <div class="info-box">
                 <div class="prod-brand-row">
-                    <span class="brand-pill" id="detail-brand">NIKE</span>
-                    <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span id="detail-stock-status" style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="brand-pill" id="detail-brand">NIKE</span>
+                        <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span id="detail-stock-status" style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
+                    </div>
+                    <button type="button" class="btn-wishlist-detail" id="detail-wishlist-btn" onclick="toggleDetailWishlist()">
+                        🤍 Yêu thích
+                    </button>
                 </div>
 
                 <h1 class="prod-title" id="detail-title">Nike Air Max Red 2025 - Special Edition</h1>
 
                 <div class="rating-sold-row">
-                    <span class="stars">⭐⭐⭐⭐⭐</span>
-                    <span><strong>4.9 / 5</strong></span>
+                    <span class="stars" id="detail-stars">⭐⭐⭐⭐⭐</span>
+                    <span><strong id="detail-rating-score">4.9 / 5</strong></span>
+                    <span>•</span>
+                    <span id="detail-reviews-count" style="cursor: pointer; text-decoration: underline;" onclick="switchDetailTab('tab-reviews', document.getElementById('tab-reviews-title'))">128 nhận xét</span>
                     <span>•</span>
                     <span>Đã bán: <strong>486 đôi</strong></span>
                 </div>
@@ -105,6 +115,9 @@
                         <button class="chip" onclick="selectSize(this, 43)">43</button>
                         <button class="chip" onclick="selectSize(this, 44)">44</button>
                     </div>
+                    <div id="detail-size-stock-feedback" style="font-size: 13px; font-weight: 600; margin-top: 8px;">
+                        ✅ Đang kiểm tra tồn kho...
+                    </div>
                 </div>
 
                 <!-- SỐ LƯỢNG & NÚT MUA -->
@@ -132,11 +145,12 @@
             </div>
         </div>
 
-        <!-- TABS THÔNG TIN KỸ THUẬT & MÔ TẢ (RUBRIC II.2) -->
+        <!-- TABS THÔNG TIN KỸ THUẬT, MÔ TẢ & ĐÁNH GIÁ (RUBRIC II.2) -->
         <div class="tabs-section">
             <div class="tab-headers">
                 <div class="tab-title active" onclick="switchDetailTab('tab-desc', this)">Mô Tả & Công Nghệ</div>
                 <div class="tab-title" onclick="switchDetailTab('tab-specs', this)">Thông Số Kỹ Thuật</div>
+                <div class="tab-title" id="tab-reviews-title" onclick="switchDetailTab('tab-reviews', this)">⭐ Đánh Giá Khách Hàng (<span id="tab-reviews-badge">0</span>)</div>
             </div>
 
             <!-- TAB 1: MÔ TẢ -->
@@ -164,6 +178,62 @@
                     <tr><td>Trọng lượng</td><td>Khoảng 320g / chiếc (Size 41)</td></tr>
                     <tr><td>Xuất xứ</td><td>Chính hãng nhập khẩu / Việt Nam gia công xuất khẩu</td></tr>
                 </table>
+            </div>
+
+            <!-- TAB 3: ĐÁNH GIÁ KHÁCH HÀNG & FORM GỬI ĐÁNH GIÁ (MỤC II.2) -->
+            <div id="tab-reviews" class="tab-pane" style="display: none;">
+                <div class="reviews-wrapper">
+                    <!-- PHẦN TỔNG QUAN ĐÁNH GIÁ -->
+                    <div class="reviews-summary-card">
+                        <div class="rating-big-score" id="review-avg-score">5.0</div>
+                        <div>
+                            <div class="stars" style="font-size: 20px;" id="review-stars-display">⭐⭐⭐⭐⭐</div>
+                            <div style="font-size: 13.5px; color: var(--gray); margin-top: 4px;" id="review-total-count">
+                                Dựa trên các nhận xét chân thực từ khách hàng đã trải nghiệm
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORM GỬI ĐÁNH GIÁ MỚI -->
+                    <div class="review-form-card">
+                        <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">Viết Đánh Giá Của Bạn</h4>
+                        <p style="font-size: 13px; color: var(--gray); margin-bottom: 16px;">
+                            Chia sẻ cảm nhận thực tế về chất lượng sản phẩm, độ êm ái và sự vừa vặn của form giày.
+                        </p>
+                        
+                        <div style="margin-bottom: 14px;">
+                            <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Đánh giá chất lượng:</label>
+                            <div class="star-rating-select" id="star-picker">
+                                <span class="star-opt" data-rating="1" onclick="setReviewRating(1)">★</span>
+                                <span class="star-opt" data-rating="2" onclick="setReviewRating(2)">★</span>
+                                <span class="star-opt" data-rating="3" onclick="setReviewRating(3)">★</span>
+                                <span class="star-opt" data-rating="4" onclick="setReviewRating(4)">★</span>
+                                <span class="star-opt active" data-rating="5" onclick="setReviewRating(5)">★</span>
+                                <strong id="star-rating-label" style="font-size: 13.5px; color: var(--secondary); margin-left: 8px;">5/5 Tuyệt vời</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 13px; font-weight: 700;">Họ và tên của bạn: *</label>
+                            <input type="text" id="review-author" class="form-control" placeholder="VD: Nguyễn Văn A">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="font-size: 13px; font-weight: 700;">Nội dung nhận xét chi tiết: *</label>
+                            <textarea id="review-content" class="form-control" rows="3" placeholder="Ví dụ: Giày đi rất êm, nhẹ, form chuẩn ôm chân, giao hàng nhanh đóng hộp cẩn thận..."></textarea>
+                        </div>
+
+                        <button type="button" class="btn-primary" style="padding: 11px 24px; font-size: 14px;" onclick="submitProductReview()">
+                            ✍️ Gửi Đánh Giá Ngay
+                        </button>
+                    </div>
+
+                    <!-- DANH SÁCH CÁC ĐÁNH GIÁ ĐÃ CÓ -->
+                    <div class="reviews-list-box">
+                        <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">Tất Cả Nhận Xét Từ Khách Hàng</h4>
+                        <div id="reviews-items-container"></div>
+                    </div>
+                </div>
             </div>
         </div>
 

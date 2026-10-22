@@ -113,11 +113,11 @@ function renderCartList() {
 
     if (cartItems.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px;">
-                <div style="font-size: 44px; margin-bottom: 12px;">🛒</div>
-                <h4 style="font-size: 17px; margin-bottom: 6px; font-weight:800;">Giỏ hàng của bạn đang trống!</h4>
-                <p style="color: var(--gray); font-size: 13.5px; margin-bottom: 18px;">Hãy quay lại cửa hàng để chọn đôi giày yêu thích của bạn.</p>
-                <a href="index.html" class="btn-primary" style="display:inline-block; padding:10px 24px;">← Mua sắm ngay</a>
+            <div style="text-align: center; padding: 48px 20px; background: #f8fafc; border-radius: var(--radius-md); border: 1px dashed var(--border);">
+                <div style="font-size: 52px; margin-bottom: 12px;">🛒👟</div>
+                <h4 style="font-size: 18px; margin-bottom: 6px; font-weight:800; color: var(--secondary);">Giỏ hàng của bạn đang trống!</h4>
+                <p style="color: var(--gray); font-size: 14px; margin-bottom: 22px;">Hãy khám phá các mẫu Sneaker & Running mới nhất để thêm vào giỏ.</p>
+                <a href="index.html" class="btn-primary" style="display:inline-flex; align-items:center; gap:8px; padding:11px 26px; font-size:14.5px;">← Khám phá cửa hàng ngay</a>
             </div>
         `;
         calculateTotal();
@@ -129,21 +129,59 @@ function renderCartList() {
             <div class="cart-item-img">
                 <img src="${item.img}" alt="${item.name}">
             </div>
-            <div>
+            <div style="flex: 1; min-width: 0;">
                 <div class="item-name">${item.name}</div>
-                <div class="item-meta">Mã: <strong>${item.code}</strong> | Size: <strong>${item.size || 40}</strong></div>
-                <div class="item-price">${Number(item.price).toLocaleString('vi-VN')} ₫</div>
+                <div class="item-meta">
+                    <span>Mã: <strong>${item.code}</strong></span>
+                    <span>|</span>
+                    <label style="font-weight:600; color:var(--gray); font-size:12.5px;">Size:</label>
+                    <select class="cart-size-select" onchange="changeCartItemSize(${idx}, this.value)" title="Đổi kích cỡ giày">
+                        ${generateSizeOptions(item.code, item.size || 40)}
+                    </select>
+                </div>
+                <div class="item-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(item.price) : Number(item.price).toLocaleString('vi-VN') + ' ₫'}</div>
             </div>
             <div class="qty-controls">
-                <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+                <button class="qty-btn" onclick="changeQty(${idx}, -1)" title="Giảm 1">-</button>
                 <input type="text" class="qty-input" value="${item.qty}" readonly>
-                <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
-                <button class="btn-remove" onclick="removeCartItem(${idx})">Xóa</button>
+                <button class="qty-btn" onclick="changeQty(${idx}, 1)" title="Tăng 1">+</button>
+                <button class="btn-remove" onclick="removeCartItem(${idx})" title="Xóa khỏi giỏ">Xóa</button>
             </div>
         </div>
     `).join('');
 
     calculateTotal();
+}
+
+function generateSizeOptions(prodCode, currentSize) {
+    const prod = (window.SGU_CORE && SGU_CORE.getProductById) ? SGU_CORE.getProductById(prodCode) : null;
+    const sizes = (prod && prod.sizes && prod.sizes.length > 0) ? prod.sizes : [38, 39, 40, 41, 42, 43, 44];
+    const sizeStock = (prod && prod.sizeStock) ? prod.sizeStock : {};
+
+    return sizes.map(s => {
+        const inStock = sizeStock[s] !== undefined ? sizeStock[s] > 0 : true;
+        const isSelected = Number(s) === Number(currentSize);
+        return `
+            <option value="${s}" ${isSelected ? 'selected' : ''}>
+                Size ${s} ${(!inStock && !isSelected) ? '(Hết)' : ''}
+            </option>
+        `;
+    }).join('');
+}
+
+function changeCartItemSize(index, newSize) {
+    const numSize = parseInt(newSize);
+    if (window.SGU_CORE && SGU_CORE.updateCartItemSize) {
+        SGU_CORE.updateCartItemSize(index, numSize);
+        cartItems = SGU_CORE.getCart();
+    } else {
+        if (cartItems[index]) {
+            cartItems[index].size = numSize;
+            saveCartState();
+        }
+    }
+    renderCartList();
+    showToast(`Đã chuyển sản phẩm sang Size ${numSize}!`, 'success');
 }
 
 function changeQty(index, change) {

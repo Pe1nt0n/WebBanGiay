@@ -210,6 +210,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     applyFilters();
+    initSearchAutocomplete();
 });
 
 // TOAST NOTIFICATION THAY CHO ALERT
@@ -531,12 +532,17 @@ function renderProducts() {
 
     visibleCountLabel.innerText = pageProducts.length;
 
-    grid.innerHTML = pageProducts.map(p => `
+    grid.innerHTML = pageProducts.map(p => {
+        const isWish = (window.SGU_CORE && SGU_CORE.isWishlisted) ? SGU_CORE.isWishlisted(p.id) : false;
+        return `
         <div class="product-card" onclick="openProductDetailById('${p.id}')">
             <div class="card-img-wrap">
                 <span class="card-tag ${p.tag ? p.tag.toLowerCase() : 'new'}">${p.tag || 'NEW'}</span>
+                <button type="button" class="btn-wishlist-card ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); handleToggleWishlist('${p.id}')" title="${isWish ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}">
+                    ${isWish ? '❤️' : '🤍'}
+                </button>
                 <img src="${p.img}" alt="${p.name}" loading="lazy">
-                <button class="btn-quick-view" onclick="event.stopPropagation(); openProductDetailById('${p.id}')">
+                <button type="button" class="btn-quick-view" onclick="event.stopPropagation(); openProductDetailById('${p.id}')">
                     👁️ Xem Chi Tiết
                 </button>
             </div>
@@ -557,13 +563,14 @@ function renderProducts() {
                 </div>
 
                 <div class="card-footer-action">
-                    <button class="btn-add-cart-sm" onclick="event.stopPropagation(); addToCart('${p.name}', ${p.price}, '${p.id}', '${p.img}')">
+                    <button type="button" class="btn-add-cart-sm" onclick="event.stopPropagation(); openQuickSizeModal('${p.id}')">
                         🛒 Chọn mua
                     </button>
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // PHÂN TRANG (Mục II.2)
@@ -675,4 +682,207 @@ function openModal(id) {
 function closeModal(id) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
+}
+
+// ==========================================================================
+// TÍNH NĂNG NÂNG CẤP MỚI (SEARCH AUTOCOMPLETE, WISHLIST, QUICK SIZE PICKER)
+// ==========================================================================
+
+// 1. SEARCH AUTOCOMPLETE / LIVE SEARCH DROPDOWN
+function initSearchAutocomplete() {
+    const searchInput = document.getElementById('basic-search-input');
+    const autoBox = document.getElementById('search-autocomplete-box');
+    if (!searchInput || !autoBox) return;
+
+    let debounceTimer = null;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            autoBox.style.display = 'none';
+            autoBox.innerHTML = '';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            const norm = (s) => (window.SGU_CORE && SGU_CORE.removeVietnameseTones) ? SGU_CORE.removeVietnameseTones(s) : (s || '').toLowerCase();
+            const normQuery = norm(query);
+
+            const prods = (window.SGU_CORE && SGU_CORE.getProducts) ? SGU_CORE.getProducts().filter(p => p.active !== false) : productsData;
+            const matches = prods.filter(p => norm(p.name).includes(normQuery) || norm(p.brand).includes(normQuery) || norm(p.category).includes(normQuery)).slice(0, 5);
+
+            if (matches.length === 0) {
+                autoBox.innerHTML = `<div class="autocomplete-empty">Không tìm thấy sản phẩm phù hợp với "${query}"</div>`;
+                autoBox.style.display = 'block';
+                return;
+            }
+
+            autoBox.innerHTML = matches.map(p => `
+                <div class="autocomplete-item" onclick="openProductDetailById('${p.id}')">
+                    <img src="${p.img}" alt="${p.name}" class="autocomplete-thumb">
+                    <div class="autocomplete-info">
+                        <div class="autocomplete-title">${p.name}</div>
+                        <div class="autocomplete-meta">
+                            <span class="autocomplete-brand">${p.brand}</span>
+                            <span class="autocomplete-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            autoBox.style.display = 'block';
+        }, 180);
+    });
+
+    // Ẩn khi click ra ngoài
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !autoBox.contains(e.target)) {
+            autoBox.style.display = 'none';
+        }
+    });
+
+    // Ẩn khi nhấn ESC
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            autoBox.style.display = 'none';
+        }
+    });
+}
+
+// 2. WISHLIST TOGGLE (❤️ / 🤍)
+function handleToggleWishlist(prodId) {
+    if (!window.SGU_CORE || !SGU_CORE.toggleWishlist) return;
+    const isAdded = SGU_CORE.toggleWishlist(prodId);
+    showToast(isAdded ? 'Đã thêm sản phẩm vào danh sách Yêu thích ❤️' : 'Đã xóa sản phẩm khỏi Yêu thích 🤍', isAdded ? 'success' : 'warning');
+    renderProducts();
+}
+
+// 3. QUICK SIZE PICKER MODAL STATE & ACTIONS
+let quickModalProduct = null;
+let quickModalSelectedSize = null;
+
+function openQuickSizeModal(prodId) {
+    if (!currentUser) {
+        showToast('Khách hàng phải Đăng nhập trước khi chọn mua và sử dụng giỏ hàng!', 'warning');
+        openModal('modal-login');
+        return;
+    }
+
+    const prods = (window.SGU_CORE && SGU_CORE.getProducts) ? SGU_CORE.getProducts() : productsData;
+    const p = prods.find(item => item.id === prodId);
+    if (!p) return;
+
+    quickModalProduct = p;
+    const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
+    const sizeStock = p.sizeStock || {};
+
+    const imgEl = document.getElementById('quick-modal-img');
+    const brandEl = document.getElementById('quick-modal-brand');
+    const titleEl = document.getElementById('quick-modal-title');
+    const priceEl = document.getElementById('quick-modal-price');
+
+    if (imgEl) imgEl.src = p.img;
+    if (brandEl) brandEl.innerText = p.brand;
+    if (titleEl) titleEl.innerText = p.name;
+    if (priceEl) priceEl.innerText = (window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫';
+
+    // Chọn size còn hàng đầu tiên
+    const firstInStock = sizes.find(s => (sizeStock[s] !== undefined ? sizeStock[s] > 0 : true));
+    quickModalSelectedSize = firstInStock !== undefined ? firstInStock : sizes[0];
+
+    renderQuickModalSizes();
+    updateQuickModalStockInfo();
+    openModal('modal-quick-size');
+}
+
+function renderQuickModalSizes() {
+    const container = document.getElementById('quick-modal-sizes');
+    if (!container || !quickModalProduct) return;
+
+    const sizes = quickModalProduct.sizes && quickModalProduct.sizes.length > 0 ? quickModalProduct.sizes : [38, 39, 40, 41, 42, 43, 44];
+    const sizeStock = quickModalProduct.sizeStock || {};
+
+    container.innerHTML = sizes.map(s => {
+        const inStock = sizeStock[s] !== undefined ? sizeStock[s] > 0 : true;
+        const isSelected = s === quickModalSelectedSize;
+        return `
+            <button type="button" class="size-chip-btn ${isSelected ? 'selected' : ''} ${!inStock ? 'out-of-stock' : ''}" 
+                ${!inStock ? 'disabled title="Hết size này"' : `onclick="selectQuickSize(${s})"`}>
+                ${s}
+            </button>
+        `;
+    }).join('');
+}
+
+function selectQuickSize(size) {
+    quickModalSelectedSize = size;
+    renderQuickModalSizes();
+    updateQuickModalStockInfo();
+}
+
+function updateQuickModalStockInfo() {
+    const tag = document.getElementById('quick-modal-stock-tag');
+    const desc = document.getElementById('quick-modal-stock-desc');
+    const btn = document.getElementById('quick-modal-btn-confirm');
+    if (!quickModalProduct) return;
+
+    const sizeStock = quickModalProduct.sizeStock || {};
+    const stock = sizeStock[quickModalSelectedSize] !== undefined ? sizeStock[quickModalSelectedSize] : quickModalProduct.stock;
+
+    if (stock <= 0) {
+        if (tag) {
+            tag.className = 'size-stock-badge out-stock';
+            tag.innerText = 'Hết size';
+        }
+        if (desc) desc.innerHTML = `❌ Size ${quickModalSelectedSize} hiện tại đã <strong>tạm hết hàng</strong> trong kho. Vui lòng chọn size khác!`;
+        if (btn) btn.disabled = true;
+    } else if (stock <= 3) {
+        if (tag) {
+            tag.className = 'size-stock-badge low-stock';
+            tag.innerText = `Sắp hết (Còn ${stock})`;
+        }
+        if (desc) desc.innerHTML = `⚠️ Size ${quickModalSelectedSize}: Chỉ còn <strong>${stock} đôi</strong> sẵn có trong kho. Đặt sớm kẻo hết!`;
+        if (btn) btn.disabled = false;
+    } else {
+        if (tag) {
+            tag.className = 'size-stock-badge in-stock';
+            tag.innerText = `Còn ${stock} đôi`;
+        }
+        if (desc) desc.innerHTML = `✅ Size ${quickModalSelectedSize}: Còn <strong>${stock} đôi</strong> sẵn sàng giao hàng ngay.`;
+        if (btn) btn.disabled = false;
+    }
+}
+
+function confirmQuickAddToCart() {
+    if (!quickModalProduct || !quickModalSelectedSize) return;
+
+    const p = quickModalProduct;
+    const size = quickModalSelectedSize;
+
+    let cart = (window.SGU_CORE && SGU_CORE.getCart) ? SGU_CORE.getCart() : (JSON.parse(localStorage.getItem('sgu_cart')) || []);
+    const existing = cart.find(item => item.code === p.id && item.size === size);
+
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({
+            code: p.id,
+            name: p.name,
+            price: p.price,
+            size: size,
+            qty: 1,
+            img: p.img
+        });
+    }
+
+    if (window.SGU_CORE && SGU_CORE.saveCart) {
+        SGU_CORE.saveCart(cart);
+    } else {
+        localStorage.setItem('sgu_cart', JSON.stringify(cart));
+    }
+
+    closeModal('modal-quick-size');
+    updateCartBadge();
+    showToast(`Đã thêm "${p.name}" (Size ${size}) vào giỏ hàng!`, 'success');
 }

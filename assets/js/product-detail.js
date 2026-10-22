@@ -11,6 +11,7 @@ window.onload = function() {
     initProductDetail();
     initHeaderUserState();
     updateCartCounter();
+    initDetailSearchAutocomplete();
 };
 
 function initHeaderUserState() {
@@ -100,7 +101,7 @@ function initProductDetail() {
     if (descEl) descEl.innerText = p.desc;
     if (imgEl) imgEl.src = p.img;
 
-    // Tình trạng tồn kho (Rubric I.8)
+    // Tình trạng tồn kho tổng quát (Rubric I.8)
     const stockEl = document.getElementById('detail-stock-status');
     if (stockEl) {
         if (p.stock <= 0) {
@@ -112,17 +113,19 @@ function initProductDetail() {
         }
     }
 
-    // Render kích cỡ size động
-    const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
-    currentSelectedSize = sizes.includes(40) ? 40 : sizes[0];
-    const sizeContainer = document.getElementById('size-chips-box');
-    if (sizeContainer) {
-        sizeContainer.innerHTML = sizes.map(s => `
-            <button class="chip ${s === currentSelectedSize ? 'selected' : ''}" onclick="selectSize(this, ${s})">${s}</button>
-        `).join('');
-    }
+    // 1. Render dải ảnh nhiều góc chụp (Gallery)
+    renderGallery(p);
 
-    // Render sản phẩm liên quan
+    // 2. Render kích cỡ size kết hợp kiểm tra tồn kho từng size
+    renderSizesWithStock(p);
+
+    // 3. Cập nhật nút Yêu thích (Wishlist)
+    updateDetailWishlistUI();
+
+    // 4. Render tab Đánh giá & Nhận xét
+    renderReviewsTab(p);
+
+    // 5. Render sản phẩm liên quan
     renderRelatedProducts(p);
 }
 
@@ -156,11 +159,305 @@ function renderRelatedProducts(currentProd) {
     `).join('');
 }
 
+// ==========================================================================
+// 1. GALLERY HÌNH ẢNH NHIỀU GÓC CHỤP
+// ==========================================================================
+function renderGallery(p) {
+    const box = document.getElementById('gallery-thumbs-box');
+    const mainImg = document.getElementById('main-shoe-img');
+    if (!box || !mainImg) return;
+
+    const gallery = (p.gallery && p.gallery.length > 0) ? p.gallery : [p.img];
+    box.innerHTML = gallery.map((gImg, idx) => `
+        <div class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="changeMainGalleryImage(this, '${gImg}')">
+            <img src="${gImg}" alt="Góc chụp ${idx + 1}">
+        </div>
+    `).join('');
+}
+
+function changeMainGalleryImage(thumbEl, imgSrc) {
+    const mainImg = document.getElementById('main-shoe-img');
+    if (mainImg) {
+        mainImg.style.opacity = '0.4';
+        setTimeout(() => {
+            mainImg.src = imgSrc;
+            mainImg.style.opacity = '1';
+        }, 120);
+    }
+    document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+    if (thumbEl) thumbEl.classList.add('active');
+}
+
+// ==========================================================================
+// 2. KÍCH CỠ SIZE & QUẢN LÝ TỒN KHO TỪNG SIZE
+// ==========================================================================
+function renderSizesWithStock(p) {
+    const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
+    const sizeStock = p.sizeStock || {};
+
+    // Tìm size còn hàng đầu tiên
+    const firstInStock = sizes.find(s => (sizeStock[s] !== undefined ? sizeStock[s] > 0 : true));
+    currentSelectedSize = firstInStock !== undefined ? firstInStock : sizes[0];
+
+    const sizeContainer = document.getElementById('size-chips-box');
+    if (sizeContainer) {
+        sizeContainer.innerHTML = sizes.map(s => {
+            const inStock = sizeStock[s] !== undefined ? sizeStock[s] > 0 : true;
+            const isSelected = (s === currentSelectedSize);
+            return `
+                <button type="button" class="chip ${isSelected ? 'selected' : ''} ${!inStock ? 'out-of-stock' : ''}" 
+                    ${!inStock ? 'disabled title="Hết size này"' : `onclick="selectSize(this, ${s})"`}>
+                    ${s}
+                </button>
+            `;
+        }).join('');
+    }
+
+    updateSizeStockFeedback();
+}
+
 function selectSize(btn, sizeVal) {
     document.querySelectorAll('#size-chips-box .chip').forEach(c => c.classList.remove('selected'));
     btn.classList.add('selected');
     currentSelectedSize = sizeVal;
+    updateSizeStockFeedback();
     showToast(`Đã chọn kích cỡ Size ${sizeVal}`, 'success');
+}
+
+function updateSizeStockFeedback() {
+    const feedback = document.getElementById('detail-size-stock-feedback');
+    const addBtn = document.querySelector('.btn-add-cart');
+    const buyBtn = document.querySelector('.btn-buy-now');
+    if (!feedback || !currentProduct) return;
+
+    const sizeStock = currentProduct.sizeStock || {};
+    const stock = sizeStock[currentSelectedSize] !== undefined ? sizeStock[currentSelectedSize] : currentProduct.stock;
+
+    if (stock <= 0) {
+        feedback.style.color = 'var(--primary)';
+        feedback.innerHTML = `❌ Size ${currentSelectedSize} hiện tại <strong>đã hết hàng</strong> trong kho! Vui lòng chọn size khác.`;
+        if (addBtn) addBtn.disabled = true;
+        if (buyBtn) buyBtn.disabled = true;
+    } else if (stock <= 3) {
+        feedback.style.color = '#d97706';
+        feedback.innerHTML = `⚠️ Size ${currentSelectedSize}: Chỉ còn <strong>${stock} đôi</strong> sẵn có trong kho!`;
+        if (addBtn) addBtn.disabled = false;
+        if (buyBtn) buyBtn.disabled = false;
+    } else {
+        feedback.style.color = 'var(--success)';
+        feedback.innerHTML = `✅ Size ${currentSelectedSize}: Còn <strong>${stock} đôi</strong> sẵn sàng giao hàng ngay.`;
+        if (addBtn) addBtn.disabled = false;
+        if (buyBtn) buyBtn.disabled = false;
+    }
+}
+
+// ==========================================================================
+// 3. NÚT YÊU THÍCH (WISHLIST)
+// ==========================================================================
+function updateDetailWishlistUI() {
+    const btn = document.getElementById('detail-wishlist-btn');
+    if (!btn || !currentProduct || !window.SGU_CORE) return;
+    const isWish = SGU_CORE.isWishlisted(currentProduct.id);
+    btn.className = `btn-wishlist-detail ${isWish ? 'active' : ''}`;
+    btn.innerHTML = isWish ? '❤️ Đã yêu thích' : '🤍 Thêm vào yêu thích';
+}
+
+function toggleDetailWishlist() {
+    if (!currentProduct || !window.SGU_CORE) return;
+    const isAdded = SGU_CORE.toggleWishlist(currentProduct.id);
+    updateDetailWishlistUI();
+    showToast(isAdded ? 'Đã thêm sản phẩm vào danh sách Yêu thích ❤️' : 'Đã xóa khỏi danh sách Yêu thích 🤍', isAdded ? 'success' : 'warning');
+}
+
+// ==========================================================================
+// 4. TAB ĐÁNH GIÁ KHÁCH HÀNG & GỬI NHẬN XÉT MỚI
+// ==========================================================================
+let selectedReviewRating = 5;
+
+function setReviewRating(rating) {
+    selectedReviewRating = rating;
+    document.querySelectorAll('.star-opt').forEach(opt => {
+        const r = parseInt(opt.getAttribute('data-rating'));
+        if (r <= rating) {
+            opt.classList.add('active');
+        } else {
+            opt.classList.remove('active');
+        }
+    });
+    const labels = {
+        1: '1/5 Rất thất vọng',
+        2: '2/5 Tạm được',
+        3: '3/5 Bình thường',
+        4: '4/5 Hài lòng',
+        5: '5/5 Tuyệt vời'
+    };
+    const labelEl = document.getElementById('star-rating-label');
+    if (labelEl) labelEl.innerText = labels[rating] || `${rating}/5`;
+}
+
+function renderReviewsTab(p) {
+    const reviews = p.reviewsList || [];
+    const count = reviews.length;
+
+    const badgeEl = document.getElementById('tab-reviews-badge');
+    const avgScoreEl = document.getElementById('review-avg-score');
+    const starsDisplay = document.getElementById('review-stars-display');
+    const totalCountEl = document.getElementById('review-total-count');
+    const container = document.getElementById('reviews-items-container');
+    const authorInput = document.getElementById('review-author');
+
+    // Prefill author from user if logged in
+    const user = (window.SGU_CORE && SGU_CORE.getCurrentUser) ? SGU_CORE.getCurrentUser() : null;
+    if (authorInput && user && !authorInput.value) {
+        authorInput.value = user.name;
+    }
+
+    if (badgeEl) badgeEl.innerText = count;
+
+    // Rating stats
+    const avg = count > 0 
+        ? (reviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / count).toFixed(1)
+        : (p.rating || 5.0).toFixed(1);
+
+    if (avgScoreEl) avgScoreEl.innerText = avg;
+    if (totalCountEl) totalCountEl.innerText = `Dựa trên ${count} nhận xét thực tế từ khách hàng`;
+
+    const starsStr = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+    if (starsDisplay) starsDisplay.innerText = starsStr;
+
+    // Cập nhật rating ở phần đầu trang
+    const topRating = document.getElementById('detail-rating-score');
+    const topStars = document.getElementById('detail-stars');
+    const topReviewsCount = document.getElementById('detail-reviews-count');
+    if (topRating) topRating.innerText = `${avg} / 5`;
+    if (topStars) topStars.innerText = '⭐'.repeat(Math.round(avg));
+    if (topReviewsCount) topReviewsCount.innerText = `${count} nhận xét`;
+
+    if (!container) return;
+    if (count === 0) {
+        container.innerHTML = `
+            <div style="padding: 24px; text-align: center; color: var(--gray); background: #f8fafc; border-radius: var(--radius-md);">
+                Chưa có nhận xét nào cho sản phẩm này. Hãy là người đầu tiên đánh giá!
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = reviews.map(r => `
+        <div class="review-card-item">
+            <div class="review-card-header">
+                <div class="review-author-wrap">
+                    <div class="review-avatar-circle">${(r.user || 'K').charAt(0).toUpperCase()}</div>
+                    <div>
+                        <strong style="font-size: 14px; color: var(--secondary);">${r.user || 'Khách hàng'}</strong>
+                        <div class="stars" style="font-size: 13px;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                    </div>
+                </div>
+                <span class="review-date-text">📅 ${r.date || 'Gần đây'}</span>
+            </div>
+            <div class="review-text-content">
+                ${r.comment}
+            </div>
+        </div>
+    `).join('');
+}
+
+function submitProductReview() {
+    const authorInput = document.getElementById('review-author');
+    const contentInput = document.getElementById('review-content');
+
+    const author = authorInput ? authorInput.value.trim() : '';
+    const comment = contentInput ? contentInput.value.trim() : '';
+
+    if (!author) {
+        showToast('Vui lòng nhập họ và tên của bạn!', 'warning');
+        return;
+    }
+    if (!comment) {
+        showToast('Vui lòng nhập nội dung đánh giá của bạn!', 'warning');
+        return;
+    }
+
+    const now = new Date();
+    const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+
+    const newReview = {
+        user: author,
+        rating: selectedReviewRating,
+        date: dateStr,
+        comment: comment
+    };
+
+    if (window.SGU_CORE && SGU_CORE.addReview) {
+        const updatedProd = SGU_CORE.addReview(currentProduct.id, newReview);
+        if (updatedProd) currentProduct = updatedProd;
+    }
+
+    renderReviewsTab(currentProduct);
+    if (contentInput) contentInput.value = '';
+    showToast('Cảm ơn bạn đã gửi đánh giá cho sản phẩm!', 'success');
+}
+
+// ==========================================================================
+// 5. SEARCH AUTOCOMPLETE TRÊN HEADER CHI TIẾT
+// ==========================================================================
+function initDetailSearchAutocomplete() {
+    const searchInput = document.getElementById('detail-search-input');
+    const autoBox = document.getElementById('detail-autocomplete-box');
+    if (!searchInput || !autoBox) return;
+
+    let debounceTimer = null;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            autoBox.style.display = 'none';
+            autoBox.innerHTML = '';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            const norm = (s) => (window.SGU_CORE && SGU_CORE.removeVietnameseTones) ? SGU_CORE.removeVietnameseTones(s) : (s || '').toLowerCase();
+            const normQuery = norm(query);
+
+            const prods = (window.SGU_CORE && SGU_CORE.getProducts) ? SGU_CORE.getProducts().filter(p => p.active !== false) : [];
+            const matches = prods.filter(p => norm(p.name).includes(normQuery) || norm(p.brand).includes(normQuery) || norm(p.category).includes(normQuery)).slice(0, 5);
+
+            if (matches.length === 0) {
+                autoBox.innerHTML = `<div class="autocomplete-empty">Không tìm thấy sản phẩm "${query}"</div>`;
+                autoBox.style.display = 'block';
+                return;
+            }
+
+            autoBox.innerHTML = matches.map(p => `
+                <div class="autocomplete-item" onclick="window.location.href='product-detail.html?id=' + encodeURIComponent('${p.id}')">
+                    <img src="${p.img}" alt="${p.name}" class="autocomplete-thumb">
+                    <div class="autocomplete-info">
+                        <div class="autocomplete-title">${p.name}</div>
+                        <div class="autocomplete-meta">
+                            <span class="autocomplete-brand">${p.brand}</span>
+                            <span class="autocomplete-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            autoBox.style.display = 'block';
+        }, 180);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !autoBox.contains(e.target)) {
+            autoBox.style.display = 'none';
+        }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            autoBox.style.display = 'none';
+        }
+    });
 }
 
 function changeQty(delta) {

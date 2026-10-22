@@ -11,7 +11,7 @@
  */
 
 (function () {
-    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v8';
+    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v9';
 
     // 1. DANH MỤC PHÂN LOẠI GIÀY
     const initialCategories = [
@@ -535,7 +535,7 @@
                 }
             ]));
             localStorage.setItem(STORAGE_KEY_INIT, 'true');
-            console.log('%c[SGU Sneaker Core] LocalStorage initialized with v8 schema!', 'color:#10b981; font-weight:bold;');
+            console.log('%c[SGU Sneaker Core] LocalStorage initialized with v9 schema!', 'color:#10b981; font-weight:bold;');
         }
     }
 

@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shoe Store SGU - Cửa hàng giày</title>
+
+    <link rel="stylesheet" href="assets/css/user.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <a href="user.html" class="logo">
+        <span>SHOE <b>STORE</b><small></small></span>
+      </a>
+      <nav class="navbar">
+        <a href="#" class="active" id="homeLink">Trang chủ</a>
+        <a href="#products" id="promotionLink">Khuyến mãi</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="account-menu" id="accountMenu">
+          <a
+            href="#"
+            class="header-icon"
+            id="accountButton"
+            title="Tài khoản"
+            aria-expanded="false"
+          >
+            <i class="fa-regular fa-user"></i>
+          </a>
+
+          <div class="account-popup hidden" id="accountPopup">
+            <h3>Thông tin tài khoản</h3>
+
+            <div id="profileView">
+              <p><strong>Họ tên:</strong> <span id="accountFullName"></span></p>
+              <p><strong>Email:</strong> <span id="accountEmail"></span></p>
+              <p>
+                <strong>Số điện thoại:</strong> <span id="accountPhone"></span>
+              </p>
+
+              <button type="button" id="editProfileButton">Sửa hồ sơ</button>
+            </div>
+
+            <form id="profileForm" class="hidden">
+              <label for="editFullName">Họ tên</label>
+              <input type="text" id="editFullName" required />
+
+              <label for="editEmail">Email</label>
+              <input type="email" id="editEmail" required />
+
+              <label for="editPhone">Số điện thoại</label>
+              <input
+                type="tel"
+                id="editPhone"
+                placeholder="Nhập số điện thoại"
+                pattern="[0-9+(). -]{9,15}"
+                required
+              />
+
+              <p id="profileMessage" aria-live="polite"></p>
+
+              <button type="submit">Lưu thay đổi</button>
+              <button type="button" id="cancelEditButton">Hủy</button>
+            </form>
+
+            <hr />
+
+            <h4>Lịch sử mua hàng thành công</h4>
+            <div id="purchaseHistoryList">Chưa có đơn hàng thành công.</div>
+
+            <button type="button" id="logoutButton">Đăng xuất</button>
+          </div>
+        </div>
+
+        <a href="#" class="header-icon cart-icon" title="Giỏ hàng">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-count">0</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="shop-container">
+      <!-- PRODUCT AREA -->
+      <section class="product-section" id="products">
+        <!-- FORM TÌM KIẾM NÂNG CAO -->
+        <section class="advanced-search">
+          <div class="advanced-search-heading">
+            <div class="search-title">
+              <span class="search-title-icon">
+                <i class="fa-solid fa-sliders"></i>
+              </span>
+
+              <div>
+                <h2>Tìm kiếm nâng cao</h2>
+                <p>Tìm đôi giày phù hợp với phong cách của bạn</p>
+              </div>
+            </div>
+          </div>
+
+          <form class="advanced-search-form" id="advancedSearchForm">
+            <!-- Tên sản phẩm -->
+            <div class="search-field search-field-name">
+              <label for="searchName">
+                <i class="fa-solid fa-shoe-prints"></i>
+                Tên sản phẩm
+              </label>
+
+              <input
+                type="text"
+                id="searchName"
+                name="searchName"
+                placeholder="Nhập tên giày cần tìm..."
+              />
+            </div>
+
+            <!-- Danh mục -->
+            <div class="search-field">
+              <label for="searchCategory">
+                <i class="fa-solid fa-list"></i>
+                Danh mục
+              </label>
+
+              <select id="searchCategory" name="searchCategory">
+                <option value="">Tất cả danh mục</option>
+                <option value="Thời Trang">Thời Trang</option>
+                <option value="Thể Thao">Thể Thao</option>
+              </select>
+            </div>
+
+            <!-- Thương hiệu -->
+            <div class="search-field">
+              <label for="searchBrand">
+                <i class="fa-solid fa-tags"></i>
+                Thương hiệu
+              </label>
+
+              <select id="searchBrand" name="searchBrand">
+                <option value="">Tất cả thương hiệu</option>
+                <option value="NIKE">Nike</option>
+                <option value="ADIDAS">Adidas</option>
+                <option value="Gucci">Gucci</option>
+                <option value="CONVERSE">Converse</option>
+                <option value="NEW BALANCE">New Balance</option>
+              </select>
+            </div>
+
+            <!-- Khoảng giá -->
+            <div class="search-field">
+              <label for="minPrice">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Giá thấp nhất (VNĐ)
+              </label>
+
+              <input
+                type="number"
+                id="minPrice"
+                name="minPrice"
+                min="0"
+                placeholder="Ví dụ: 1000000VND"
+              />
+            </div>
+
+            <div class="search-field">
+              <label for="maxPrice">
+                <i class="fa-solid fa-wallet"></i>
+                Giá cao nhất (VNĐ)
+              </label>
+
+              <input
+                type="number"
+                id="maxPrice"
+                name="maxPrice"
+                min="0"
+                placeholder="Ví dụ: 3000000VND"
+              />
+            </div>
+
+            <!-- Nút thao tác -->
+            <div class="search-actions">
+              <button type="submit" class="btn-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Tìm kiếm
+              </button>
+
+              <button type="reset" class="btn-reset">
+                <i class="fa-solid fa-rotate-left"></i>
+                Đặt lại
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- TIÊU ĐỀ DANH SÁCH SẢN PHẨM -->
+        <div class="section-heading">
+          <div>
+            <h1>Tất cả giày</h1>
+          </div>
+
+          <select class="sort-select" aria-label="Sắp xếp sản phẩm">
+            <option>Mặc định</option>
+            <option>Giá tăng dần</option>
+            <option>Giá giảm dần</option>
+            <option>Đánh giá cao</option>
+          </select>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+          <!-- PRODUCT 1 -->
+          <article
+            class="product-card"
+            data-name="Nike Air Force 1"
+            data-category="Thời Trang"
+            data-brand="NIKE"
+            data-price="2490000"
+            data-sale="true"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Air Force 1.jfif"
+                alt="Nike Air Force 1"
+              />
+              <span class="discount">-15%</span>
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Air Force 1</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(124)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.490.000đ</strong>
+                <del>2.900.000đ</del>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 2 Air Force max 90-->
+          <article
+            class="product-card"
+            data-name="Nike Air Force 1"
+            data-category="Thời Trang"
+            data-brand="NIKE"
+            data-price="2990000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Air Force Max 90.jfif"
+                alt="Nike Air Force Max 90"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Air Force Max 90</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(224)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.990.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 3 adidas ultraboost 5 -->
+          <article
+            class="product-card"
+            data-name="Nike Air Force 1"
+            data-category="Thể Thao"
+            data-brand="ADIDAS"
+            data-price="2799000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Adidas Ultraboost 5 Shoes.jfif"
+                alt="Adidas Ultraboost 5"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">ADIDAS</p>
+              <h3>Adidas Ultraboost 5</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(104)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.799.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 4 adidas superstar-->
+
+          <article
+            class="product-card"
+            data-name="Adidas Superstar"
+            data-category="Thời Trang"
+            data-brand="ADIDAS"
+            data-price="3490000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Adidas Superstar.jfif"
+                alt="Adidas Superstar"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">ADIDAS</p>
+              <h3>Adidas Superstar</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(124)</small>
+              </div>
+
+              <div class="price">
+                <strong>3.490.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 5 Converse Chuck Taylor All Star-->
+          <article
+            class="product-card"
+            data-name="Converse Chuck Taylor All Star"
+            data-category="Thời Trang"
+            data-brand="ADIDAS"
+            data-price="2590000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Converse Chuck Taylor All Star.jfif"
+                alt="Converse Chuck Taylor All Star"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">CONVERSE</p>
+              <h3>Converse Chuck Taylor All Star</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(124)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.590.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 6 New Balance 547-->
+          <article
+            class="product-card"
+            data-name="New Balance 547"
+            data-category="Thể Thao"
+            data-brand="NEW BALANCE"
+            data-price="3590000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/NewBalance.jfif" alt="New Balance 547" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NEW BALANCE</p>
+              <h3>New Balance 547</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(124)</small>
+              </div>
+
+              <div class="price">
+                <strong>3.590.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 7 Gucci Screener -->
+          <article
+            class="product-card"
+            data-name="Gucci Screener"
+            data-category="Thời Trang"
+            data-brand="GUCCI"
+            data-price="32590000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/Gucci.jfif" alt="Gucci Screener" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">GUCCI</p>
+              <h3>Gucci Screener</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>32.590.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 8  Converse Run Star Motion-->
+          <article
+            class="product-card"
+            data-name="Converse Run Star Motion"
+            data-category="Thời Trang"
+            data-brand="CONVERSE"
+            data-price="2190000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Converse.jfif"
+                alt="Converse Run Star Motion"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">CONVERSE</p>
+              <h3>Converse Run Star Motion</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.190.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+
+          <!-- PRODUCT 9  Nike Air Max Plus-->
+          <article
+            class="product-card"
+            data-name=" Nike Air Max Plus"
+            data-category="Thể Thao"
+            data-brand="NIKE"
+            data-price="5190000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/Nike1.jfif" alt=" Nike Air Max Plus" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Nike Air Max Plus</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>5.190.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 10  Nike Dunk Low-->
+          <article
+            class="product-card"
+            data-name=" Nike Dunk Low"
+            data-category="Thời Trang"
+            data-brand="NIKE"
+            data-price="3190000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/nike3.jpg" alt="Nike Dunk Low" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Nike Dunk Low</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>3.190.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 11  Converse Run Star Hike-->
+          <article
+            class="product-card"
+            data-name=" Converse Run Star Hike"
+            data-category="Thời Trang"
+            data-brand="CONVERSE"
+            data-price="2290000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/Converse2.jfif"
+                alt="Converse Run Star Hike"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">CONVERSE</p>
+              <h3>Converse Run Star Hike</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>2.290.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 12  New Balance 2002R Grey-->
+          <article
+            class="product-card"
+            data-name=" New Balance 2002R Grey"
+            data-category="Thời Trang"
+            data-brand="NEW BALANCE"
+            data-price="3290000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/newbalance1.jfif"
+                alt="New Balance 2002R Grey"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NEW BALANCE</p>
+              <h3>New Balance 2002R Grey</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>3.290.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 13  Nike Mercurial Vapor 17 Elite FG hồng-->
+          <article
+            class="product-card"
+            data-name=" Nike Mercurial Vapor 17 Elite FG Hồng"
+            data-category="Thể Thao"
+            data-brand="NIKE"
+            data-price="999000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img
+                src="assets/images/nike4.jfif"
+                alt="Nike Mercurial Vapor 17 Elite FG hồng"
+              />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Nike Mercurial Vapor 17 Elite FG hồng</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>999.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 14  Harden Volume 10-->
+          <article
+            class="product-card"
+            data-name=" Harden Volume 10"
+            data-category="Thòi Trang"
+            data-brand="ADIDAS"
+            data-price="4999000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/adidas1.png" alt="Harden Volume 10" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">ADIDAS</p>
+              <h3>Harden Volume 10</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>4.8</span>
+                <small>(64)</small>
+              </div>
+
+              <div class="price">
+                <strong>4.999.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+          <!-- PRODUCT 15  Air Force 1 Shadow-->
+          <article
+            class="product-card"
+            data-name="Air Force 1 Shadow"
+            data-category="Thời Trang"
+            data-brand="NIKE"
+            data-price="3999000"
+            data-sale="false"
+          >
+            <div class="product-image">
+              <img src="assets/images/AF11.jfif" alt="Air Force 1 Shadow" />
+            </div>
+
+            <div class="product-info">
+              <p class="brand">NIKE</p>
+              <h3>Air Force 1 Shadow</h3>
+
+              <div class="rating">
+                <i class="fa-solid fa-star"></i>
+                <span>5.0</span>
+                <small>(164)</small>
+              </div>
+
+              <div class="price">
+                <strong>3.999.000đ</strong>
+              </div>
+
+              <button class="add-cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                Thêm vào giỏ
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <section class="pagination" id="pagination"></section>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>© 2026 Shoe Store. Bước đi phong cách. Tự tin mỗi ngày.</p>
+    </footer>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/account.js"></script>
+    <script src="assets/js/pagination.js"></script>
+    <script src="assets/js/search.js"></script>
+    <script src="assets/js/promotion.js"></script>
+  </body>
+</html>

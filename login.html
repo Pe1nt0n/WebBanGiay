@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập | Shoe Store</title>
+
+    <link rel="stylesheet" href="assets/css/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main class="login-page">
+      <!-- KHU VỰC GIỚI THIỆU -->
+      <section class="brand-panel">
+        <a href="login.html" class="brand-logo">
+          <span>Shoe Store</span>
+        </a>
+
+        <div class="brand-content">
+          <span class="brand-label">SHOE STORE</span>
+
+          <h1>
+            Bước đi phong cách.<br />
+            <span>Tự tin mỗi ngày.</span>
+          </h1>
+
+          <p>
+            Khám phá những đôi giày phù hợp với cá tính của bạn và tạo nên phong
+            cách riêng.
+          </p>
+
+          <div class="brand-features">
+            <div>
+              <i class="fa-solid fa-shoe-prints"></i>
+              <span>Phong cách hiện đại</span>
+            </div>
+            <div>
+              <i class="fa-solid fa-star"></i>
+              <span>Chất lượng đáng tin cậy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hình giày trang trí -->
+        <div class="shoe-decoration shoe-one">
+          <img src="assets/images/AF1.jfif" alt="Giày phong cách thời trang" />
+        </div>
+
+        <div class="shoe-decoration shoe-two">
+          <img src="assets/images/AF1S.jfif" alt="Giày phong cách thời trang" />
+        </div>
+
+        <div class="brand-footer">YOUR STYLE, YOUR JOURNEY.</div>
+      </section>
+
+      <!-- KHU VỰC ĐĂNG NHẬP -->
+      <section class="form-panel">
+        <div class="login-card" id="loginCard">
+          <div class="form-heading">
+            <span class="welcome-label">WELCOME BACK</span>
+            <h2>Đăng nhập</h2>
+            <p>Chào mừng bạn quay trở lại Shoe Store!</p>
+          </div>
+
+          <form id="loginForm">
+            <div class="input-group">
+              <i class="fa-regular fa-user"></i>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Tên tài khoản"
+                autocomplete="username"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fa-solid fa-lock"></i>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Mật khẩu"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+
+            <p id="loginMessage" class="form-message" aria-live="polite"></p>
+
+            <button type="submit" class="login-button">
+              Đăng nhập
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <div class="separator">
+              <span></span>
+              <p>Chào mừng bạn đến với</p>
+              <span></span>
+            </div>
+
+            <div class="register-link">
+              Chưa có tài khoản?
+              <button type="button" class="text-button" id="showRegister">
+                Đăng ký ngay
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- FORM ĐĂNG KÝ -->
+        <div class="register-card hidden" id="registerCard">
+          <div class="form-heading">
+            <span class="welcome-label">JOIN SHOE STORE</span>
+            <h2>Đăng ký</h2>
+            <p>Tạo tài khoản để bắt đầu hành trình phong cách của bạn.</p>
+          </div>
+
+          <form id="registerForm">
+            <div class="input-group">
+              <i class="fa-regular fa-user"></i>
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Họ và tên"
+                autocomplete="name"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fa-solid fa-at"></i>
+              <input
+                type="text"
+                id="newUsername"
+                placeholder="Tên tài khoản"
+                autocomplete="username"
+                minlength="4"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fa-regular fa-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                placeholder="Địa chỉ email"
+                autocomplete="email"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fa-solid fa-lock"></i>
+              <input
+                type="password"
+                id="newPassword"
+                placeholder="Mật khẩu (ít nhất 6 ký tự)"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <i class="fa-solid fa-shield-halved"></i>
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Xác nhận mật khẩu"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+            </div>
+
+            <p id="registerMessage" class="form-message" aria-live="polite"></p>
+
+            <button type="submit" class="login-button">
+              Tạo tài khoản
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <div class="register-link">
+              Đã có tài khoản?
+              <button type="button" class="text-button" id="showLogin">
+                Đăng nhập
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <footer class="page-footer">© 2026 Shoe Store</footer>
+      </section>
+    </main>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/login.js"></script>
+  </body>
+</html>

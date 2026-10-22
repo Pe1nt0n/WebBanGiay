@@ -691,4 +691,28 @@
                 .trim();
         }
     };
+
+    // KHỞI TẠO NÚT BACK TO TOP CHO TẤT CẢ CÁC TRANG
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!document.getElementById('btn-back-to-top')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-back-to-top';
+            btn.className = 'back-to-top-btn';
+            btn.innerHTML = '↑';
+            btn.title = 'Cuộn lên đầu trang';
+            btn.setAttribute('aria-label', 'Cuộn lên đầu trang');
+            btn.onclick = function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            document.body.appendChild(btn);
+
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 300) {
+                    btn.classList.add('show');
+                } else {
+                    btn.classList.remove('show');
+                }
+            }, { passive: true });
+        }
+    });
 })();

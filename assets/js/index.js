@@ -495,12 +495,32 @@ function applyFilters() {
     renderPagination();
 }
 
+function setQuickPriceRange(min, max, chipEl) {
+    const minInput = document.getElementById('adv-min-price');
+    const maxInput = document.getElementById('adv-max-price');
+    
+    // Xóa active trên tất cả chips
+    document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'));
+
+    if (min === null && max === null) {
+        if (minInput) minInput.value = '';
+        if (maxInput) maxInput.value = '';
+    } else {
+        if (minInput) minInput.value = min || '';
+        if (maxInput) maxInput.value = (max === 999999999) ? '' : (max || '');
+    }
+
+    if (chipEl) chipEl.classList.add('active');
+    applyFilters();
+}
+
 function resetAllFilters() {
     document.getElementById('adv-name').value = '';
     document.getElementById('basic-search-input').value = '';
     document.getElementById('adv-category').value = 'Tất cả';
     document.getElementById('adv-min-price').value = '';
     document.getElementById('adv-max-price').value = '';
+    document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('input[name="brand"]').forEach(cb => cb.checked = true);
     document.querySelectorAll('#category-menu .category-item').forEach(el => el.classList.remove('active'));
     const defaultCatEl = document.querySelector('#category-menu .category-item[data-cat="Tất cả"]');

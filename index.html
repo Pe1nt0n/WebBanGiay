@@ -159,8 +159,15 @@
                 <div class="form-group">
                     <label>Khoảng giá (VNĐ)</label>
                     <div class="price-range-inputs">
-                        <input type="number" id="adv-min-price" class="form-control" placeholder="Từ 500k">
-                        <input type="number" id="adv-max-price" class="form-control" placeholder="Đến 4tr">
+                        <input type="number" id="adv-min-price" class="form-control" placeholder="Từ..." oninput="document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'))">
+                        <input type="number" id="adv-max-price" class="form-control" placeholder="Đến..." oninput="document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'))">
+                    </div>
+                    <!-- CHIP BẤM NHANH KHOẢNG GIÁ -->
+                    <div class="quick-price-chips" id="quick-price-chips">
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(0, 1500000, this)">Dưới 1.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(1500000, 2500000, this)">1.5 - 2.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(2500000, 999999999, this)">Trên 2.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(null, null, this)">Tất cả giá</button>
                     </div>
                 </div>
                 <button class="btn-primary" style="width: 100%; padding: 11px; margin-top: 5px;" onclick="applyFilters()">

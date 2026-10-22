@@ -209,6 +209,35 @@
     gap: 10px;
 }
 
+.quick-price-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+.price-chip {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.price-chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: #fff1f2;
+}
+.price-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
+}
+
 /* PRODUCTS SECTION */
 .products-view {
     display: flex;

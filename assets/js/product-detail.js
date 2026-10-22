@@ -234,20 +234,38 @@ function updateSizeStockFeedback() {
     const stock = sizeStock[currentSelectedSize] !== undefined ? sizeStock[currentSelectedSize] : currentProduct.stock;
 
     if (stock <= 0) {
-        feedback.style.color = 'var(--primary)';
-        feedback.innerHTML = `❌ Size ${currentSelectedSize} hiện tại <strong>đã hết hàng</strong> trong kho! Vui lòng chọn size khác.`;
-        if (addBtn) addBtn.disabled = true;
-        if (buyBtn) buyBtn.disabled = true;
+        feedback.className = 'stock-feedback-box stock-empty';
+        feedback.innerHTML = `
+            <span class="stock-icon">❌</span>
+            <div>
+                <strong>Size ${currentSelectedSize} đã tạm hết hàng!</strong>
+                <p style="font-size:12px; margin-top:2px; opacity:0.9;">Vui lòng chọn kích cỡ khác hoặc liên hệ để đặt trước.</p>
+            </div>
+        `;
+        if (addBtn) { addBtn.disabled = true; addBtn.style.opacity = '0.5'; addBtn.style.cursor = 'not-allowed'; }
+        if (buyBtn) { buyBtn.disabled = true; buyBtn.style.opacity = '0.5'; buyBtn.style.cursor = 'not-allowed'; }
     } else if (stock <= 3) {
-        feedback.style.color = '#d97706';
-        feedback.innerHTML = `⚠️ Size ${currentSelectedSize}: Chỉ còn <strong>${stock} đôi</strong> sẵn có trong kho!`;
-        if (addBtn) addBtn.disabled = false;
-        if (buyBtn) buyBtn.disabled = false;
+        feedback.className = 'stock-feedback-box stock-warning';
+        feedback.innerHTML = `
+            <span class="stock-icon">⚡</span>
+            <div>
+                <strong>Chỉ còn ${stock} đôi duy nhất Size ${currentSelectedSize}!</strong>
+                <p style="font-size:12px; margin-top:2px; opacity:0.9;">Nhiều người đang xem sản phẩm này. Hãy đặt ngay kẻo hết!</p>
+            </div>
+        `;
+        if (addBtn) { addBtn.disabled = false; addBtn.style.opacity = '1'; addBtn.style.cursor = 'pointer'; }
+        if (buyBtn) { buyBtn.disabled = false; buyBtn.style.opacity = '1'; buyBtn.style.cursor = 'pointer'; }
     } else {
-        feedback.style.color = 'var(--success)';
-        feedback.innerHTML = `✅ Size ${currentSelectedSize}: Còn <strong>${stock} đôi</strong> sẵn sàng giao hàng ngay.`;
-        if (addBtn) addBtn.disabled = false;
-        if (buyBtn) buyBtn.disabled = false;
+        feedback.className = 'stock-feedback-box stock-available';
+        feedback.innerHTML = `
+            <span class="stock-icon">✅</span>
+            <div>
+                <strong>Còn hàng trong kho (Còn ${stock} đôi Size ${currentSelectedSize})</strong>
+                <p style="font-size:12px; margin-top:2px; opacity:0.9;">Sẵn sàng đóng gói & giao nhanh 2-3 ngày toàn quốc.</p>
+            </div>
+        `;
+        if (addBtn) { addBtn.disabled = false; addBtn.style.opacity = '1'; addBtn.style.cursor = 'pointer'; }
+        if (buyBtn) { buyBtn.disabled = false; buyBtn.style.opacity = '1'; buyBtn.style.cursor = 'pointer'; }
     }
 }
 

@@ -35,7 +35,7 @@
             <!-- TÌM KIẾM CƠ BẢN (Mục II.2) -->
             <div class="basic-search">
                 <span class="search-icon-left">🔍</span>
-                <input type="text" id="basic-search-input" placeholder="Tìm kiếm nhanh mẫu giày (VD: Nike, Ultraboost, Jordan)..." autocomplete="off" onkeyup="if(event.key==='Enter') handleBasicSearch()">
+                <input type="text" id="basic-search-input" placeholder="Tìm kiếm theo tên giày, thương hiệu..." autocomplete="off" onkeyup="if(event.key==='Enter') handleBasicSearch()">
                 <button onclick="handleBasicSearch()">Tìm kiếm</button>
                 <!-- AUTOCOMPLETE DROPDOWN -->
                 <div class="search-autocomplete" id="search-autocomplete-box" style="display: none;"></div>
@@ -251,19 +251,19 @@
 
             <div class="form-group">
                 <label>Họ và tên đầy đủ *</label>
-                <input type="text" id="reg-fullname" class="form-control" placeholder="VD: Nguyễn Văn A">
+                <input type="text" id="reg-fullname" class="form-control" placeholder="Nhập họ và tên...">
             </div>
             <div class="form-group">
                 <label>Số điện thoại liên hệ *</label>
-                <input type="tel" id="reg-phone" class="form-control" placeholder="VD: 0909123456">
+                <input type="tel" id="reg-phone" class="form-control" placeholder="Nhập số điện thoại...">
             </div>
             <div class="form-group">
                 <label>Địa chỉ nhận hàng mặc định *</label>
-                <input type="text" id="reg-address" class="form-control" placeholder="273 An Dương Vương, Q.5, TP.HCM">
+                <input type="text" id="reg-address" class="form-control" placeholder="Nhập địa chỉ nhận hàng...">
             </div>
             <div class="form-group">
                 <label>Mật khẩu đăng nhập *</label>
-                <input type="password" id="reg-password" class="form-control" placeholder="Nhập mật khẩu bí mật...">
+                <input type="password" id="reg-password" class="form-control" placeholder="Nhập mật khẩu...">
             </div>
             <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;" onclick="handleRegister()">
                 Hoàn Tất Đăng Ký →

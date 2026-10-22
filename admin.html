@@ -202,11 +202,11 @@
                     <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 14px; background: #f8fafc; padding: 18px; border-radius: var(--radius-sm); margin-bottom: 24px; align-items: end;">
                         <div>
                             <label style="font-size: 13px; font-weight: 600;">Mã loại giày *</label>
-                            <input type="text" id="cat-code" class="form-control" placeholder="VD: LOAI05">
+                            <input type="text" id="cat-code" class="form-control" placeholder="Nhập mã loại...">
                         </div>
                         <div>
                             <label style="font-size: 13px; font-weight: 600;">Tên loại giày *</label>
-                            <input type="text" id="cat-name" class="form-control" placeholder="VD: Giày Sandal Thể Thao...">
+                            <input type="text" id="cat-name" class="form-control" placeholder="Nhập tên loại sản phẩm...">
                         </div>
                         <button class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
                     </div>
@@ -356,7 +356,7 @@
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu hoặc sản phẩm</label>
-                            <input type="text" class="form-control" placeholder="VD: PN2025-02 hoặc tên giày..." oninput="filterTableAsYouType(this, 'imports-table-body')">
+                            <input type="text" class="form-control" placeholder="Tìm theo mã phiếu hoặc tên giày..." oninput="filterTableAsYouType(this, 'imports-table-body')">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
@@ -492,7 +492,7 @@
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã đơn / Khách hàng</label>
-                            <input type="text" class="form-control" placeholder="VD: #DH2025 hoặc tên..." oninput="filterTableAsYouType(this, 'admin-orders-table')">
+                            <input type="text" class="form-control" placeholder="Tìm theo mã đơn hoặc tên khách..." oninput="filterTableAsYouType(this, 'admin-orders-table')">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
@@ -673,15 +673,15 @@
                     <option value="SGU Classic">SGU Classic</option>
                     <option value="custom">+ Thêm thương hiệu khác...</option>
                 </select>
-                <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu (VD: Converse, Vans, New Balance...)" style="display: none; margin-top: 8px;">
+                <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu khác..." style="display: none; margin-top: 8px;">
             </div>
             <div class="form-group">
                 <label>Mã sản phẩm *</label>
-                <input type="text" id="prod-code" class="form-control" placeholder="VD: SP007">
+                <input type="text" id="prod-code" class="form-control" placeholder="Mã sản phẩm...">
             </div>
             <div class="form-group">
                 <label>Tên sản phẩm giày *</label>
-                <input type="text" id="prod-name" class="form-control" placeholder="VD: Nike Dunk Low Panda...">
+                <input type="text" id="prod-name" class="form-control" placeholder="Nhập tên sản phẩm giày...">
             </div>
             <div class="form-group">
                 <label style="display: flex; justify-content: space-between; align-items: center;">

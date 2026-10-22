@@ -82,8 +82,18 @@ function toggleSampleGallery() {
 
 function selectSampleImage(imgUrl) {
     const input = document.getElementById('prod-img');
+    const oldVal = input ? input.value : '';
     if (input) input.value = imgUrl;
     previewShoeImage(imgUrl);
+
+    if (typeof currentEditingGallery !== 'undefined') {
+        if (currentEditingGallery.length === 0) {
+            currentEditingGallery.push(imgUrl);
+        } else if (currentEditingGallery[0] === oldVal) {
+            currentEditingGallery[0] = imgUrl;
+        }
+        renderAdminGalleryStrip();
+    }
 
     // Đánh dấu active trong grid
     document.querySelectorAll('.preset-item').forEach(el => {
@@ -116,8 +126,19 @@ function handleProductFileUpload(event) {
     reader.onload = function(e) {
         const base64Url = e.target.result;
         const input = document.getElementById('prod-img');
+        const oldVal = input ? input.value : '';
         if (input) input.value = base64Url;
         previewShoeImage(base64Url);
+
+        if (typeof currentEditingGallery !== 'undefined') {
+            if (currentEditingGallery.length === 0) {
+                currentEditingGallery.push(base64Url);
+            } else if (currentEditingGallery[0] === oldVal) {
+                currentEditingGallery[0] = base64Url;
+            }
+            renderAdminGalleryStrip();
+        }
+
         showToast(`Đã tải ảnh "${file.name}" lên từ máy tính!`, 'success');
     };
     reader.readAsDataURL(file);
@@ -148,13 +169,109 @@ function initImageDragAndDrop() {
             reader.onload = function(evt) {
                 const base64Url = evt.target.result;
                 const input = document.getElementById('prod-img');
+                const oldVal = input ? input.value : '';
                 if (input) input.value = base64Url;
                 previewShoeImage(base64Url);
+
+                if (typeof currentEditingGallery !== 'undefined') {
+                    if (currentEditingGallery.length === 0) {
+                        currentEditingGallery.push(base64Url);
+                    } else if (currentEditingGallery[0] === oldVal) {
+                        currentEditingGallery[0] = base64Url;
+                    }
+                    renderAdminGalleryStrip();
+                }
+
                 showToast(`Đã thả ảnh "${file.name}" vào sản phẩm!`, 'success');
             };
             reader.readAsDataURL(file);
         }
     });
+}
+
+// ==========================================================
+// QUẢN LÝ BỘ SƯU TẬP ẢNH GALLERY CHI TIẾT SẢN PHẨM
+// ==========================================================
+let currentEditingGallery = [];
+
+function renderAdminGalleryStrip() {
+    const strip = document.getElementById('admin-gallery-strip');
+    if (!strip) return;
+
+    if (!currentEditingGallery || currentEditingGallery.length === 0) {
+        strip.innerHTML = '<span style="font-size: 12px; color: var(--gray); font-style: italic;">Chưa có ảnh trong gallery. Ảnh chính ở trên sẽ được dùng làm ảnh đại diện duy nhất.</span>';
+        return;
+    }
+
+    strip.innerHTML = currentEditingGallery.map((imgUrl, idx) => `
+        <div class="admin-gallery-thumb-item" title="Ảnh góc chụp #${idx + 1}">
+            <img src="${imgUrl}" alt="Gallery ${idx + 1}" onerror="this.src='./assets/images/products/sp001.jpg'">
+            <button type="button" class="btn-remove-gallery" onclick="removeGalleryImage(${idx})" title="Xóa ảnh này khỏi bộ sưu tập">✕</button>
+            <span class="badge-main-tag">${idx === 0 ? 'ẢNH 1' : 'ẢNH ' + (idx + 1)}</span>
+        </div>
+    `).join('');
+}
+
+function removeGalleryImage(idx) {
+    if (idx >= 0 && idx < currentEditingGallery.length) {
+        currentEditingGallery.splice(idx, 1);
+        renderAdminGalleryStrip();
+        showToast('Đã xóa 1 ảnh khỏi bộ sưu tập gallery!', 'info');
+    }
+}
+
+function addImageToGallery(imgUrl) {
+    if (!imgUrl) return;
+    if (currentEditingGallery.includes(imgUrl)) {
+        showToast('Ảnh này đã có trong bộ sưu tập!', 'warning');
+        return;
+    }
+    currentEditingGallery.push(imgUrl);
+    renderAdminGalleryStrip();
+    showToast('Đã thêm 1 ảnh vào bộ sưu tập chi tiết!', 'success');
+}
+
+function handleGalleryFileUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('Vui lòng chỉ chọn file hình ảnh (JPG, PNG, WebP)!', 'warning');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhẹ hơn!', 'warning');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        addImageToGallery(e.target.result);
+        event.target.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function toggleGalleryPresetPicker() {
+    const card = document.getElementById('gallery-preset-picker-card');
+    if (!card) return;
+    const isShowing = card.style.display !== 'none';
+    card.style.display = isShowing ? 'none' : 'block';
+    if (!isShowing) {
+        renderGalleryPresetPicker();
+    }
+}
+
+function renderGalleryPresetPicker() {
+    const container = document.getElementById('gallery-preset-picker-items');
+    if (!container) return;
+    container.innerHTML = sampleShoeImages.map(item => `
+        <div class="preset-item" onclick="addImageToGallery('${item.img}')" title="Thêm ${item.code} - ${item.name} vào gallery">
+            <img src="${item.img}" alt="${item.name}">
+            <span>${item.code}</span>
+        </div>
+    `).join('');
 }
 
 // THAO TÁC NHANH: TẠO PHIẾU NHẬP HÀNG TỪ CẢNH BÁO TỒN KHO
@@ -510,6 +627,12 @@ function openAddProductModal() {
     document.getElementById('prod-desc').value = '';
     previewShoeImage('./assets/images/products/sp001.jpg');
 
+    // Thiết lập gallery mặc định và render strip
+    currentEditingGallery = ['./assets/images/products/sp001.jpg'];
+    renderAdminGalleryStrip();
+    const galPicker = document.getElementById('gallery-preset-picker-card');
+    if (galPicker) galPicker.style.display = 'none';
+
     // Ẩn nút xóa khi đang thêm mới
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'none';
@@ -572,6 +695,18 @@ function openEditProductModal(id) {
     document.getElementById('prod-desc').value = p.desc || '';
     previewShoeImage(p.img);
 
+    // Tải danh sách gallery sản phẩm và render strip
+    if (p.gallery && Array.isArray(p.gallery) && p.gallery.length > 0) {
+        currentEditingGallery = [...p.gallery];
+    } else if (p.img) {
+        currentEditingGallery = [p.img];
+    } else {
+        currentEditingGallery = [];
+    }
+    renderAdminGalleryStrip();
+    const galPicker = document.getElementById('gallery-preset-picker-card');
+    if (galPicker) galPicker.style.display = 'none';
+
     // Hiện nút xóa khi đang sửa sản phẩm
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'inline-block';
@@ -601,11 +736,17 @@ function saveProductModal() {
     const prods = SGU_CORE.getProducts();
     const existing = prods.find(p => p.id === code);
 
+    // Lưu danh sách gallery đã chỉnh sửa trong admin
+    const finalGallery = (currentEditingGallery && currentEditingGallery.length > 0)
+        ? [...currentEditingGallery]
+        : (img ? [img] : []);
+
     if (existing) {
         existing.name = name;
         existing.brand = brand;
         existing.category = cat;
         existing.img = img;
+        existing.gallery = finalGallery;
         existing.desc = desc;
     } else {
         prods.unshift({
@@ -624,7 +765,7 @@ function saveProductModal() {
             stockExport: 0,
             sizes: [38, 39, 40, 41, 42, 43],
             sizeStock: { 38: 2, 39: 3, 40: 4, 41: 3, 42: 2, 43: 1, 44: 0 },
-            gallery: [img],
+            gallery: finalGallery,
             reviewsList: [],
             colors: ['Đen Phối Trắng', 'Trắng Tuyết'],
             tag: 'NEW',

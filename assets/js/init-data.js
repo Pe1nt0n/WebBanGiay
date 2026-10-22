@@ -11,7 +11,7 @@
  */
 
 (function () {
-    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v9';
+    const STORAGE_KEY_INIT = 'sgu_sneaker_initialized_v10';
 
     // 1. DANH MỤC PHÂN LOẠI GIÀY
     const initialCategories = [
@@ -203,8 +203,7 @@
             desc: 'Được đóng thủ công từ da bò lớp một nhập khẩu Italy bóng mịn, đế phíp kết hợp cao su chống trượt tạo vẻ lịch lãm sang trọng.',
             img: './assets/images/products/sp006.jpg',
             gallery: [
-                './assets/images/products/sp006.jpg',
-                './assets/images/products/sp010.jpg'
+                './assets/images/products/sp006.jpg'
             ],
             reviewsList: [
                 { user: 'Trần Văn Hùng', rating: 5, date: '16/10/2025', comment: 'Da bóng tự nhiên sang trọng, lót trong êm không bị cạ gót chân khi mang tất.' }
@@ -325,8 +324,7 @@
             desc: 'Thiết kế giày lười Penny Loafer tiện lợi, da bò nguyên tấm đánh xi bóng bẩy, lót giày êm ái thoáng khí suốt ngày dài công sở.',
             img: './assets/images/products/sp010.jpg',
             gallery: [
-                './assets/images/products/sp010.jpg',
-                './assets/images/products/sp006.jpg'
+                './assets/images/products/sp010.jpg'
             ],
             reviewsList: [
                 { user: 'Đặng Tuấn Kiệt', rating: 5, date: '09/10/2025', comment: 'Giày lười xỏ vào nhanh, đi làm văn phòng nhìn rất chỉn chu và thanh lịch.' }

@@ -723,6 +723,41 @@
                     </div>
                 </div>
             </div>
+
+            <!-- QUẢN LÝ BỘ SƯU TẬP ẢNH GALLERY NHIỀU GÓC CHỤP -->
+            <div class="form-group" style="background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <label style="font-weight: 800; font-size: 13px; color: var(--secondary); margin-bottom: 2px; display: block;">
+                            🖼️ Bộ sưu tập ảnh góc chụp (Gallery chi tiết)
+                        </label>
+                        <span style="font-size: 11.5px; color: var(--gray);">Các góc ảnh này hiển thị ở trang Chi tiết sản phẩm. Bấm ✕ để xóa ảnh không muốn.</span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="document.getElementById('gallery-file-input').click()">
+                            📁 + Tải thêm ảnh
+                        </button>
+                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="toggleGalleryPresetPicker()">
+                            🖼️ + Chọn từ mẫu
+                        </button>
+                    </div>
+                    <input type="file" id="gallery-file-input" accept="image/*" style="display: none;" onchange="handleGalleryFileUpload(event)">
+                </div>
+
+                <!-- BẢNG CHỌN MẪU ĐỂ THÊM VÀO GALLERY (COLLAPSIBLE) -->
+                <div id="gallery-preset-picker-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
+                    <div class="preset-gallery-title">
+                        <span>Chọn ảnh để thêm vào bộ sưu tập:</span>
+                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:13px; font-weight:700;" onclick="toggleGalleryPresetPicker()">✕ Đóng</button>
+                    </div>
+                    <div class="preset-gallery-grid" id="gallery-preset-picker-items"></div>
+                </div>
+
+                <!-- DANH SÁCH ẢNH TRONG GALLERY HIỆN TẠI -->
+                <div id="admin-gallery-strip" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; min-height: 60px;">
+                    <!-- JS render danh sách ảnh với nút xóa ✕ -->
+                </div>
+            </div>
             <div class="form-group">
                 <label>Mô tả chi tiết sản phẩm</label>
                 <textarea id="prod-desc" class="form-control" rows="3" placeholder="Chất liệu da, công nghệ đế đệm..."></textarea>

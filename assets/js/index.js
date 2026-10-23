@@ -627,8 +627,8 @@ function renderPagination() {
     }
 
     let html = `
-        <button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
-            ‹ Trước
+        <button class="page-btn page-btn-nav" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+            ← Trước
         </button>
     `;
 
@@ -641,8 +641,8 @@ function renderPagination() {
     }
 
     html += `
-        <button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
-            Sau ›
+        <button class="page-btn page-btn-nav" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+            Sau →
         </button>
     `;
 

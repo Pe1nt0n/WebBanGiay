@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin SGU SNEAKER - Hệ Thống Quản Trị Cửa Hàng Toàn Diện</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- STYLESHEETS DÙNG CHUNG & QUẢN TRỊ ADMIN -->
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <link rel="stylesheet" href="./assets/css/admin.css">
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <!-- =========================================================
+         MỤC I.1: TRANG ĐĂNG NHẬP ADMIN (KHÔNG DÙNG CHUNG VỚI KHÁCH)
+         ========================================================= -->
+    <div id="admin-login-screen">
+        <div class="login-card">
+            <h2>🔐 CỔNG QUẢN TRỊ VIÊN</h2>
+            <p>Hệ thống quản lý cửa hàng SGU Sneaker dành riêng cho Chủ cửa hàng & Quản lý.</p>
+            <div class="form-group">
+                <label>Tài khoản Quản trị</label>
+                <input type="text" id="admin-user" class="form-control" value="admin_sgu">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="admin-pass" class="form-control" value="123456">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 10px;" onclick="loginAdmin()">
+                Đăng Nhập Vào Hệ Thống Admin →
+            </button>
+            <div style="margin-top: 18px; text-align: center; font-size: 13px;">
+                <a href="index.html" style="color: var(--gray); text-decoration: underline;">← Quay lại trang Cửa hàng</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BỐ CỤC CHÍNH DASHBOARD ADMIN -->
+    <div class="admin-layout">
+        <!-- SIDEBAR MENU: ĐẦY ĐỦ 7 CHỨC NĂNG QUẢN TRỊ -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">SGU<span>ADMIN</span></div>
+
+                <div class="menu-group-title">Danh Mục & Người Dùng</div>
+                <div class="menu-item active" id="nav-users" onclick="switchAdminTab('tab-users', this)">
+                    👥 1. Quản lý Khách hàng
+                </div>
+                <div class="menu-item" id="nav-cats" onclick="switchAdminTab('tab-cats', this)">
+                    📂 2. Quản lý Loại sản phẩm
+                </div>
+                <div class="menu-item" id="nav-prods" onclick="switchAdminTab('tab-prods', this)">
+                    👟 3. Quản lý Danh mục Giày
+                </div>
+
+                <div class="menu-group-title">Vận Hành, Kho & Đơn Hàng</div>
+                <div class="menu-item" id="nav-imports" onclick="switchAdminTab('tab-imports', this)">
+                    📥 4. Quản lý Nhập sản phẩm
+                </div>
+                <div class="menu-item" id="nav-pricing" onclick="switchAdminTab('tab-pricing', this)">
+                    💰 5. Quản lý Giá bán & Lợi nhuận
+                </div>
+                <div class="menu-item" id="nav-orders" onclick="switchAdminTab('tab-orders', this)">
+                    <span>📦 6. Quản lý Đơn đặt hàng</span>
+                    <span class="sidebar-badge danger" id="sidebar-order-count">3</span>
+                </div>
+                <div class="menu-item" id="nav-inventory" onclick="switchAdminTab('tab-inventory', this)">
+                    <span>📊 7. Quản lý Tồn kho</span>
+                    <span class="sidebar-badge warning" id="sidebar-alert-count">2</span>
+                </div>
+            </div>
+
+            <div style="padding: 0 24px;">
+                <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="logoutAdmin()">🚪 Đăng xuất Admin</button>
+                <a href="index.html" class="btn btn-dark" style="display:block; text-align:center;">🌐 Xem Web Cửa Hàng</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div>
+                    <strong>Bảng điều khiển Quản trị Toàn diện</strong> | Quản trị viên: <span style="color: var(--primary); font-weight: 700;">Admin SGU</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <a href="index.html" class="btn btn-primary">🛒 Trang Bán Hàng</a>
+                    <button class="btn btn-dark" onclick="lockAdminScreen()">
+                        🔒 Khóa màn hình
+                    </button>
+                </div>
+            </div>
+
+            <!-- BỘ THẺ KPI THỐNG KÊ NHANH (METRIC CARDS) - ĐỈNH CAO UI/UX ADMIN -->
+            <div class="kpi-grid">
+                <div class="kpi-card" onclick="switchAdminTab('tab-orders', document.getElementById('nav-orders'))" title="Bấm để xem danh sách Đơn đặt hàng">
+                    <div class="kpi-icon revenue">💰</div>
+                    <div class="kpi-title">Doanh Thu Dự Kiến</div>
+                    <div class="kpi-val" id="kpi-revenue">42.500.000 ₫</div>
+                    <div class="kpi-badge up">▲ +15% so với tháng trước</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-orders', document.getElementById('nav-orders'))" title="Bấm để xem các đơn mới cần xử lý">
+                    <div class="kpi-icon orders">📦</div>
+                    <div class="kpi-title">Đơn Hàng Cần Xử Lý</div>
+                    <div class="kpi-val" id="kpi-pending-orders" style="color:var(--info);">3 đơn mới</div>
+                    <div class="kpi-badge" style="color:var(--info);">⚡ Cần xác nhận giao hàng</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-prods', document.getElementById('nav-prods'))" title="Bấm để xem danh mục sản phẩm">
+                    <div class="kpi-icon products">👟</div>
+                    <div class="kpi-title">Mẫu Giày Đang Bán</div>
+                    <div class="kpi-val" id="kpi-total-prods">16 mẫu</div>
+                    <div class="kpi-badge" style="color:var(--dark);">4 phân loại đang hiển thị</div>
+                </div>
+
+                <div class="kpi-card" onclick="switchAdminTab('tab-inventory', document.getElementById('nav-inventory'))" title="Bấm để xem cảnh báo tồn kho">
+                    <div class="kpi-icon alert">⚠️</div>
+                    <div class="kpi-title">Cảnh Báo Tồn Kho</div>
+                    <div class="kpi-val" id="kpi-low-stock" style="color:var(--danger);">2 mẫu</div>
+                    <div class="kpi-badge warn">🚨 Dưới ngưỡng an toàn (&lt; 5 đôi)</div>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.2: QUẢN LÝ NGƯỜI DÙNG / KHÁCH HÀNG (0.75đ) ================= -->
+            <div id="tab-users" class="admin-tab" style="display: block;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>👥 Quản lý Người dùng / Khách hàng</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Hiển thị danh sách khách hàng, Reset mật khẩu và Khóa / Mở khóa tài khoản</span>
+                        </div>
+                        <div class="table-search-bar">
+                            <input type="text" placeholder="🔍 Tìm tên, email, SĐT khách..." oninput="filterTableAsYouType(this, 'user-table-body')">
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã KH</th>
+                                <th>Họ và tên</th>
+                                <th>Email / Tài khoản</th>
+                                <th>Số điện thoại</th>
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <tr>
+                                <td><strong>KH001</strong></td>
+                                <td><strong>Nguyễn Văn A</strong></td>
+                                <td>nguyenvana@gmail.com</td>
+                                <td>0909123456</td>
+                                <td>273 An Dương Vương, Q.5, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh1">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Nguyễn Văn A')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh1" onclick="toggleLock('kh1', 'Nguyễn Văn A')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH002</strong></td>
+                                <td><strong>Trần Thị Bích</strong></td>
+                                <td>tranthibich@gmail.com</td>
+                                <td>0918222333</td>
+                                <td>120 Nguyễn Huệ, Q.1, TP.HCM</td>
+                                <td><span class="badge badge-active" id="badge-kh2">Đang hoạt động</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Trần Thị Bích')">🔑 Reset Pass</button>
+                                    <button class="btn btn-danger" id="btn-lock-kh2" onclick="toggleLock('kh2', 'Trần Thị Bích')">🔒 Khóa TK</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>KH003</strong></td>
+                                <td><strong>Lê Hoàng Nam</strong></td>
+                                <td>lehoangnam@gmail.com</td>
+                                <td>0987654321</td>
+                                <td>45 Lê Lợi, Q.Gò Vấp, TP.HCM</td>
+                                <td><span class="badge badge-locked" id="badge-kh3">Đã khóa</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="resetUserPassword('Lê Hoàng Nam')">🔑 Reset Pass</button>
+                                    <button class="btn btn-success" id="btn-lock-kh3" onclick="toggleLock('kh3', 'Lê Hoàng Nam')">🔓 Mở khóa TK</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.3: QUẢN LÝ LOẠI SẢN PHẨM (0.5đ) ================= -->
+            <div id="tab-cats" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <h3>📂 Quản lý Loại sản phẩm (Thêm, Sửa, Xóa / Ẩn)</h3>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 14px; background: #f8fafc; padding: 18px; border-radius: var(--radius-sm); margin-bottom: 24px; align-items: end;">
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Mã loại giày *</label>
+                            <input type="text" id="cat-code" class="form-control" placeholder="Nhập mã loại...">
+                        </div>
+                        <div>
+                            <label style="font-size: 13px; font-weight: 600;">Tên loại giày *</label>
+                            <input type="text" id="cat-name" class="form-control" placeholder="Nhập tên loại sản phẩm...">
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="btn-save-cat" class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
+                            <button id="btn-cancel-cat" class="btn btn-danger" style="padding: 11px 16px; display: none;" onclick="cancelCategoryEdit()">Hủy</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm loại giày..." oninput="filterTableAsYouType(this, 'cat-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã loại</th>
+                                <th>Tên loại giày</th>
+                                <th>Số lượng mẫu</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cat-table-body">
+                            <tr>
+                                <td><strong>LOAI01</strong></td>
+                                <td class="cat-name">Giày Sneaker</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI01', 'Giày Sneaker')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideCategory('LOAI01')">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI02</strong></td>
+                                <td class="cat-name">Giày Chạy Bộ</td>
+                                <td>4 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI02', 'Giày Chạy Bộ')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideCategory('LOAI02')">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI03</strong></td>
+                                <td class="cat-name">Giày Đá Bóng</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI03', 'Giày Đá Bóng')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideCategory('LOAI03')">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>LOAI04</strong></td>
+                                <td class="cat-name">Giày Tây Nam</td>
+                                <td>2 sản phẩm</td>
+                                <td><span class="badge badge-active">Đang hiển thị</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editCategory('LOAI04', 'Giày Tây Nam')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideCategory('LOAI04')">👁️ Ẩn / Xóa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.4: QUẢN LÝ DANH MỤC SẢN PHẨM (0.75đ) ================= -->
+            <div id="tab-prods" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>👟 Quản lý Danh mục Sản phẩm Giày</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Thêm mới, sửa thông tin và ẩn/hiện sản phẩm khỏi web khách hàng</span>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div class="table-search-bar">
+                                <input type="text" placeholder="🔍 Tìm tên, mã giày, loại..." oninput="filterTableAsYouType(this, 'prod-table-body')">
+                            </div>
+                            <button class="btn btn-primary" onclick="openAddProductModal()">+ Thêm sản phẩm giày mới</button>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hình</th>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Thương hiệu</th>
+                                <th>Phân loại</th>
+                                <th>Mô tả tóm tắt</th>
+                                <th>Trạng thái</th>
+                                <th style="width: 200px; text-align: center;">Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prod-table-body">
+                            <tr>
+                                <td><img src="./assets/images/products/sp001.jpg" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP001')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP001')">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="./assets/images/products/sp002.jpg" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>Đế Boost hoàn trả năng lượng, bọt siêu nhẹ bền bỉ.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP002')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP002')">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="./assets/images/products/sp003.jpg" class="thumb" alt="Shoe"></td>
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>Chất liệu da thật cao cấp, cổ cao tôn dáng thời trang đường phố.</td>
+                                <td><span class="badge badge-active">Đang bán</span></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openEditProductModal('SP003')">✏️ Sửa</button>
+                                    <button class="btn btn-danger" onclick="toggleHideProduct('SP003')">🗑️ Xóa / Ẩn</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.5: QUẢN LÝ NHẬP SẢN PHẨM (0.75đ) ================= -->
+            <div id="tab-imports" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📥 Quản lý Phiếu Nhập Hàng (Không quản lý Nhà cung cấp)</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Thêm, sửa và chỉ sửa phiếu nhập trước khi hoàn thành</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="openImportModal('new')">+ Thêm phiếu nhập mới</button>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu hoặc sản phẩm</label>
+                            <input type="text" class="form-control" placeholder="Tìm theo mã phiếu hoặc tên giày..." oninput="filterTableAsYouType(this, 'imports-table-body')">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
+                            <input type="date" class="form-control" value="2025-10-22">
+                        </div>
+                        <button class="btn btn-dark" onclick="showToast('Đã lọc danh sách phiếu nhập hàng theo ngày!', 'success')">🔍 Tìm kiếm phiếu</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày nhập</th>
+                                <th>Chi tiết sản phẩm (Số lượng & Giá nhập)</th>
+                                <th>Tổng giá trị</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác quản trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="imports-table-body">
+                            <tr>
+                                <td><strong>PN2025-02</strong></td>
+                                <td>22/10/2025</td>
+                                <td>Nike Air Max Red (SL: 10 đôi - Giá nhập: 1.800.000₫)</td>
+                                <td><strong style="color:var(--primary);">18.000.000 ₫</strong></td>
+                                <td><span class="badge badge-pending" id="imp-status-2">Chưa hoàn thành</span></td>
+                                <td id="imp-actions-2">
+                                    <button class="btn btn-warning" onclick="openImportModal('edit')">✏️ Sửa phiếu</button>
+                                    <button class="btn btn-success" onclick="completeImport(2)">✅ Hoàn thành</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>PN2025-01</strong></td>
+                                <td>10/10/2025</td>
+                                <td>Adidas Ultraboost Pro (SL: 15 đôi - Giá nhập: 1.400.000₫)</td>
+                                <td><strong style="color:var(--primary);">21.000.000 ₫</strong></td>
+                                <td><span class="badge badge-done">Đã hoàn thành</span></td>
+                                <td>
+                                    <button class="btn btn-disabled" disabled title="Phiếu đã hoàn thành không thể sửa">🔒 Đã khóa sửa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.6: QUẢN LÝ GIÁ BÁN & LỢI NHUẬN (0.50đ) ================= -->
+            <div id="tab-pricing" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>💰 Quản lý Giá Bán & Thiết Lập Tỉ Lệ % Lợi Nhuận</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Giá bán tự động cập nhật = Giá vốn * (1 + % Lợi nhuận)</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Áp dụng cho Phân loại</label>
+                            <select class="form-control" id="bulk-cat-select">
+                                <option>Giày Sneaker</option>
+                                <option>Giày Chạy Bộ</option>
+                                <option>Giày Đá Bóng</option>
+                                <option>Giày Tây Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">% Lợi nhuận mới</label>
+                            <input type="number" id="bulk-percent-input" class="form-control" value="35" style="width:120px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="applyBulkProfit()">Áp Dụng Cho Toàn Loại</button>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm sản phẩm định giá..." oninput="filterTableAsYouType(this, 'pricing-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Giá vốn (Giá nhập)</th>
+                                <th>Tỉ lệ % Lợi nhuận</th>
+                                <th>Giá bán ra (Tự động tính)</th>
+                                <th>Cập nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pricing-table-body">
+                            <tr>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>1.800.000 ₫</td>
+                                <td><input type="number" class="form-control" value="36" style="width:85px; display:inline-block;" oninput="calcPrice(this, 1800000, 'sell-1')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-1">2.448.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP001!', 'success')">Lưu</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>1.400.000 ₫</td>
+                                <td><input type="number" class="form-control" value="35" style="width:85px; display:inline-block;" oninput="calcPrice(this, 1400000, 'sell-2')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-2">1.890.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP002!', 'success')">Lưu</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>2.400.000 ₫</td>
+                                <td><input type="number" class="form-control" value="33" style="width:85px; display:inline-block;" oninput="calcPrice(this, 2400000, 'sell-3')"> %</td>
+                                <td><strong style="color:var(--primary); font-size:16px;" id="sell-3">3.192.000 ₫</strong></td>
+                                <td><button class="btn btn-primary" onclick="showToast('Đã lưu giá bán mới cho SP003!', 'success')">Lưu</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.7: QUẢN LÝ ĐƠN ĐẶT HÀNG (0.50đ) ================= -->
+            <div id="tab-orders" class="admin-tab" style="display: none;">
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📦 Quản lý & Cập Nhật Tình Trạng Đơn Đặt Hàng</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Đồng bộ đơn hàng từ giỏ hàng của khách (Mới đặt, Đã xử lý, Đã giao, Hủy)</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã đơn / Khách hàng</label>
+                            <input type="text" class="form-control" placeholder="Tìm theo mã đơn hoặc tên khách..." oninput="filterTableAsYouType(this, 'admin-orders-table')">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
+                            <input type="date" class="form-control" value="2025-10-01">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày đặt</label>
+                            <input type="date" class="form-control" value="2025-10-31">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tình trạng đơn</label>
+                            <select class="form-control" id="order-filter-status" onchange="filterAdminOrders()">
+                                <option value="ALL">-- Tất cả tình trạng --</option>
+                                <option value="Mới đặt">Mới đặt</option>
+                                <option value="Đã xử lý">Đã xử lý</option>
+                                <option value="Đã giao">Đã giao</option>
+                                <option value="Hủy">Hủy</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-dark" onclick="filterAdminOrders()">🔍 Lọc đơn hàng</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Tình trạng hiện tại</th>
+                                <th>Cập nhật trạng thái & Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table">
+                            <!-- JS tự render từ LocalStorage -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================= MỤC I.8: QUẢN LÝ TỒN KHO & CẢNH BÁO (0.75đ) ================= -->
+            <div id="tab-inventory" class="admin-tab" style="display: none;">
+                <!-- CẢNH BÁO SẮP HẾT HÀNG (Mục I.8) -->
+                <div style="background: #fff1f2; border: 1.5px solid #fda4af; color: #9f1239; padding: 18px 24px; border-radius: 12px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px;">
+                        <span>⚠️ CẢNH BÁO TỒN KHO: CÓ SẢN PHẨM SẮP HẾT HÀNG (&lt; 5 ĐÔI)</span>
+                    </div>
+                    <p style="font-size: 13.5px; margin-top: 6px; line-height: 1.5;">
+                        • <strong>SP003 - Air Jordan 1 Retro High</strong> hiện chỉ còn <strong>2 đôi</strong> trong kho!<br>
+                        • <strong>SP004 - Nike Mercurial Vapor 15</strong> hiện chỉ còn <strong>3 đôi</strong> trong kho!<br>
+                        👉 <em>Vui lòng lập thêm phiếu nhập hàng mới ở mục <strong>Quản lý nhập sản phẩm</strong> để đảm bảo nguồn cung.</em>
+                    </p>
+                    <div style="margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-danger" style="background:#b91c1c; color:#fff;" onclick="quickImportProduct('SP003 - Air Jordan 1 Retro High', 15)">
+                            ⚡ Lập phiếu nhập nhanh cho SP003 (+15 đôi)
+                        </button>
+                        <button class="btn btn-warning" onclick="quickImportProduct('SP004 - Nike Mercurial Vapor 15', 10)">
+                            ⚡ Lập phiếu nhập nhanh cho SP004 (+10 đôi)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-box">
+                    <div class="card-header">
+                        <div>
+                            <h3>📊 Báo Cáo Tra Cứu Nhập – Xuất – Tồn Kho</h3>
+                            <span style="font-size: 13px; color: var(--gray);">Theo dõi biến động xuất nhập tồn của từng mẫu giày theo thời gian</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Chọn loại giày</label>
+                            <select class="form-control">
+                                <option>-- Tất cả phân loại --</option>
+                                <option>Giày Sneaker</option>
+                                <option>Giày Chạy Bộ</option>
+                                <option>Giày Đá Bóng</option>
+                                <option>Giày Tây Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày</label>
+                            <input type="date" class="form-control" value="2025-10-01">
+                        </div>
+                        <div>
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày</label>
+                            <input type="date" class="form-control" value="2025-10-31">
+                        </div>
+                        <button class="btn btn-primary" onclick="showToast('Đã kết xuất báo cáo Nhập - Xuất - Tồn kho!', 'success')">Xuất Báo Cáo</button>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <input type="text" placeholder="🔍 Tìm kiếm sản phẩm trong kho..." oninput="filterTableAsYouType(this, 'inventory-table-body')" class="form-control" style="max-width: 320px;">
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm giày</th>
+                                <th>Phân loại</th>
+                                <th>Tồn đầu kỳ</th>
+                                <th>SL Nhập (+)</th>
+                                <th>SL Xuất / Bán (-)</th>
+                                <th>Tồn hiện tại</th>
+                                <th>Tình trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body">
+                            <tr>
+                                <td><strong>SP001</strong></td>
+                                <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>10</td>
+                                <td style="color:#10b981; font-weight:700;">+15</td>
+                                <td style="color:#e11d48; font-weight:700;">-7</td>
+                                <td><strong>18 đôi</strong></td>
+                                <td><span class="badge badge-done">Đủ hàng</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SP002</strong></td>
+                                <td><strong>Adidas Ultraboost Light Pro</strong></td>
+                                <td>Giày Chạy Bộ</td>
+                                <td>8</td>
+                                <td style="color:#10b981; font-weight:700;">+15</td>
+                                <td style="color:#e11d48; font-weight:700;">-9</td>
+                                <td><strong>14 đôi</strong></td>
+                                <td><span class="badge badge-done">Đủ hàng</span></td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td><strong>SP003</strong></td>
+                                <td><strong>Air Jordan 1 Retro High</strong></td>
+                                <td>Giày Sneaker</td>
+                                <td>5</td>
+                                <td style="color:#10b981; font-weight:700;">+0</td>
+                                <td style="color:#e11d48; font-weight:700;">-3</td>
+                                <td><strong style="color:var(--primary); font-size:16px;">2 đôi</strong></td>
+                                <td><span class="badge badge-danger">⚠️ Sắp hết hàng</span></td>
+                            </tr>
+                            <tr style="background: #fff1f2;">
+                                <td><strong>SP004</strong></td>
+                                <td><strong>Nike Mercurial Vapor 15</strong></td>
+                                <td>Giày Đá Bóng</td>
+                                <td>6</td>
+                                <td style="color:#10b981; font-weight:700;">+0</td>
+                                <td style="color:#e11d48; font-weight:700;">-3</td>
+                                <td><strong style="color:var(--primary); font-size:16px;">3 đôi</strong></td>
+                                <td><span class="badge badge-danger">⚠️ Sắp hết hàng</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL THÊM / SỬA SẢN PHẨM GIÀY (Mục I.4) -->
+    <div class="modal-overlay" id="modal-product">
+        <div class="modal-box">
+            <h3 id="modal-prod-title" style="margin-bottom: 18px; font-weight: 800;">Thêm sản phẩm giày mới</h3>
+            <div class="form-group">
+                <label>Loại sản phẩm giày *</label>
+                <select id="prod-cat" class="form-control">
+                    <option value="Giày Sneaker">Giày Sneaker</option>
+                    <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                    <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                    <option value="Giày Tây Nam">Giày Tây Nam</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Thương hiệu giày (Brand) *</label>
+                <select id="prod-brand" class="form-control" onchange="handleBrandSelectChange(this.value)">
+                    <option value="Nike">Nike</option>
+                    <option value="Adidas">Adidas</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Puma">Puma</option>
+                    <option value="Clarks">Clarks</option>
+                    <option value="Converse">Converse</option>
+                    <option value="custom">+ Thêm thương hiệu khác...</option>
+                </select>
+                <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu khác..." style="display: none; margin-top: 8px;">
+            </div>
+            <div class="form-group">
+                <label>Mã sản phẩm *</label>
+                <input type="text" id="prod-code" class="form-control" placeholder="Mã sản phẩm...">
+            </div>
+            <div class="form-group">
+                <label>Tên sản phẩm giày *</label>
+                <input type="text" id="prod-name" class="form-control" placeholder="Nhập tên sản phẩm giày...">
+            </div>
+            <div class="form-group">
+                <label style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Hình ảnh sản phẩm *</span>
+                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">Tải từ máy tính, chọn ảnh mẫu hoặc dán URL</span>
+                </label>
+
+                <!-- TOOLBAR TIỆN ÍCH CHỌN ẢNH -->
+                <div class="image-picker-toolbar" style="margin-bottom: 8px;">
+                    <button type="button" class="btn-picker-tool" onclick="document.getElementById('file-upload-input').click()">
+                        📁 Tải ảnh từ máy tính
+                    </button>
+                    <button type="button" class="btn-picker-tool" onclick="toggleSampleGallery()">
+                        🖼️ Chọn từ kho ảnh mẫu (12 mẫu)
+                    </button>
+                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;" onchange="handleProductFileUpload(event)">
+                </div>
+
+                <!-- BẢNG CHỌN ẢNH MẪU CÓ SẴN (COLLAPSIBLE) -->
+                <div id="sample-gallery-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
+                    <div class="preset-gallery-title">
+                        <span>Kho ảnh giày có sẵn trong cửa hàng (Click để chọn ngay):</span>
+                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:14px; font-weight:700;" onclick="toggleSampleGallery()">✕ Đóng</button>
+                    </div>
+                    <div class="preset-gallery-grid" id="preset-gallery-items">
+                        <!-- JS render 12 thumbnails -->
+                    </div>
+                </div>
+
+                <!-- ĐƯỜNG DẪN VÀ PREVIEW BOX -->
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="flex: 1;">
+                        <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc link ảnh..." oninput="previewShoeImage(this.value)">
+                        <div style="font-size: 11px; color: var(--gray); margin-top: 4px;">Hoặc kéo & thả file ảnh trực tiếp vào ô vuông bên phải.</div>
+                    </div>
+                    <div class="image-preview-large-box" id="box-preview-img" title="Click hoặc Kéo thả ảnh vào đây để tải" onclick="document.getElementById('file-upload-input').click()">
+                        <img id="img-preview-thumb" src="" style="display: none;">
+                        <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center; line-height: 1.2;">📁 Chọn<br>ảnh</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUẢN LÝ BỘ SƯU TẬP ẢNH GALLERY NHIỀU GÓC CHỤP -->
+            <div class="form-group" style="background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <label style="font-weight: 800; font-size: 13px; color: var(--secondary); margin-bottom: 2px; display: block;">
+                            🖼️ Bộ sưu tập ảnh góc chụp (Gallery chi tiết)
+                        </label>
+                        <span style="font-size: 11.5px; color: var(--gray);">Các góc ảnh này hiển thị ở trang Chi tiết sản phẩm. Bấm ✕ để xóa ảnh không muốn.</span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="document.getElementById('gallery-file-input').click()">
+                            📁 + Tải thêm ảnh
+                        </button>
+                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="toggleGalleryPresetPicker()">
+                            🖼️ + Chọn từ mẫu
+                        </button>
+                    </div>
+                    <input type="file" id="gallery-file-input" accept="image/*" style="display: none;" onchange="handleGalleryFileUpload(event)">
+                </div>
+
+                <!-- BẢNG CHỌN MẪU ĐỂ THÊM VÀO GALLERY (COLLAPSIBLE) -->
+                <div id="gallery-preset-picker-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
+                    <div class="preset-gallery-title">
+                        <span>Chọn ảnh để thêm vào bộ sưu tập:</span>
+                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:13px; font-weight:700;" onclick="toggleGalleryPresetPicker()">✕ Đóng</button>
+                    </div>
+                    <div class="preset-gallery-grid" id="gallery-preset-picker-items"></div>
+                </div>
+
+                <!-- DANH SÁCH ẢNH TRONG GALLERY HIỆN TẠI -->
+                <div id="admin-gallery-strip" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; min-height: 60px;">
+                    <!-- JS render danh sách ảnh với nút xóa ✕ -->
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mô tả chi tiết sản phẩm</label>
+                <textarea id="prod-desc" class="form-control" rows="3" placeholder="Chất liệu da, công nghệ đế đệm..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                <button type="button" class="btn btn-danger" id="btn-modal-delete-prod" style="display: none;" onclick="deleteCurrentEditingProduct()">🗑️ Xóa Sản Phẩm Này</button>
+                <div style="display: flex; gap: 12px; margin-left: auto;">
+                    <button class="btn btn-dark" onclick="closeModal('modal-product')">Đóng</button>
+                    <button class="btn btn-primary" onclick="saveProductModal()">💾 Lưu Sản Phẩm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG (MỤC I.5) -->
+    <div class="modal-overlay" id="modal-import">
+        <div class="modal-box">
+            <h3 id="modal-imp-title" style="margin-bottom: 16px; font-weight:800;">Thêm Phiếu Nhập Hàng</h3>
+            <input type="hidden" id="imp-edit-id" value="">
+            <div style="margin-bottom: 14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Ngày nhập hàng *</label>
+                <input type="date" id="imp-date" class="form-control" value="2025-10-24" style="width:100%;">
+            </div>
+            <p style="font-size:13px; font-weight:700; margin-bottom: 8px;">Danh sách sản phẩm nhập:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm giày</th>
+                        <th>Giá nhập (VNĐ)</th>
+                        <th>Số lượng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select class="form-control" id="imp-prod-select">
+                                <option value="SP001">SP001 - Nike Air Max Red 2025</option>
+                            </select>
+                        </td>
+                        <td><input type="number" id="imp-price" class="form-control" value="1800000"></td>
+                        <td><input type="number" id="imp-qty" class="form-control" value="10" style="width:80px;"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+                <button class="btn btn-dark" onclick="closeModal('modal-import')">Đóng</button>
+                <button class="btn btn-primary" onclick="saveImportModal()">💾 Lưu phiếu nhập</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT ĐƠN HÀNG (Mục I.7) -->
+    <div class="modal-overlay" id="modal-order-detail">
+        <div class="modal-box">
+            <!-- TIÊU ĐỀ IN ẤN (CHỈ HIỆN KHI IN) -->
+            <div class="print-header" style="display: none; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="font-size: 20px; font-weight: 800;">👟 SGU SNEAKER - HỆ THỐNG PHÂN PHỐI GIÀY CHÍNH HÃNG</div>
+                <div style="font-size: 12px; color: #555; margin-top: 4px;">Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, TP.HCM | Hotline: 1900 1234</div>
+                <div style="text-align: center; font-size: 17px; font-weight: 800; margin-top: 14px; text-transform: uppercase;">PHIẾU XUẤT KHO & HÓA ĐƠN BÁN LẺ</div>
+            </div>
+
+            <h3 style="margin-bottom: 14px; font-weight:800;">Chi tiết đơn đặt hàng: <span id="ord-detail-id" style="color:var(--primary);">#DH2025-089</span></h3>
+            <div style="background:#f8fafc; padding:16px; border-radius:8px; margin-bottom:18px; font-size:14px;">
+                <p style="margin-bottom:4px;"><strong>Khách hàng:</strong> <span id="ord-detail-cust">Nguyễn Văn A</span></p>
+                <p style="margin-bottom:4px;"><strong>Địa chỉ giao:</strong> <span id="ord-detail-addr">273 An Dương Vương, Q.5, TP.HCM</span></p>
+                <p><strong>Phương thức:</strong> Tiền mặt khi nhận hàng (COD)</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sản phẩm giày</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="ord-detail-items">
+                    <tr>
+                        <td>Nike Air Max Red 2025 (Size 41)</td>
+                        <td>2.450.000 ₫</td>
+                        <td>1</td>
+                        <td><strong>2.450.000 ₫</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align:right; margin-top:18px; font-weight:800; color:var(--primary); font-size:18px;">
+                Tổng tiền: <span id="ord-detail-total">2.450.000 ₫</span>
+            </div>
+
+            <!-- CHỮ KÝ VÀ LỜI CẢM ƠN (CHỈ HIỆN KHI IN) -->
+            <div class="print-signatures" style="display: none; margin-top: 30px; padding-top: 14px; border-top: 1px dashed #cbd5e1;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; font-size: 13px;">
+                    <div>
+                        <strong>Người Lập Phiếu Xuất</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, ghi rõ họ tên)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong>SGU SNEAKER</strong></div>
+                    </div>
+                    <div>
+                        <strong>Người Nhận Hàng</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, xác nhận nguyên vẹn)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong id="print-admin-cust-sig">Khách hàng</strong></div>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 11.5px; color: #666; margin-top: 22px;">
+                    Cảm ơn quý khách đã mua sắm tại SGU Sneaker! Đổi size & bảo hành miễn phí trong 7 ngày.
+                </div>
+            </div>
+
+            <div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-primary" onclick="printInvoice()">🖨️ In Hóa Đơn</button>
+                <button class="btn btn-dark" onclick="closeModal('modal-order-detail')">Đóng cửa sổ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS SGU SNEAKER -->
+    <script src="./assets/js/init-data.js"></script>
+    <script src="./assets/js/admin.js"></script>
+</body>
+</html>

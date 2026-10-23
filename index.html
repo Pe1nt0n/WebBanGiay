@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGU SNEAKER - Cửa Hàng Giày Thể Thao Chính Hãng</title>
+    <!-- Google Fonts & Icon Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- STYLESHEETS DÙNG CHUNG & TRANG CHỦ -->
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <link rel="stylesheet" href="./assets/css/index.css">
+</head>
+<body>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- PROMO TOPBAR -->
+    <div class="promo-bar" style="justify-content: flex-end;">
+        <div class="promo-bar-right">
+            <span>📞 CSKH: 1900 1234</span>
+            <a href="admin.html" style="color: #cbd5e1; font-weight:600;">🔐 Cổng Quản Trị Admin ↗</a>
+        </div>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                👟 SGU<span>SNEAKER</span>
+            </a>
+
+            <!-- TÌM KIẾM CƠ BẢN (Mục II.2) -->
+            <div class="basic-search">
+                <span class="search-icon-left">🔍</span>
+                <input type="text" id="basic-search-input" placeholder="Tìm kiếm theo tên giày, thương hiệu..." autocomplete="off" onkeyup="if(event.key==='Enter') handleBasicSearch()">
+                <button onclick="handleBasicSearch()">Tìm kiếm</button>
+                <!-- AUTOCOMPLETE DROPDOWN -->
+                <div class="search-autocomplete" id="search-autocomplete-box" style="display: none;"></div>
+            </div>
+
+            <!-- TÀI KHOẢN & GIỎ HÀNG (Mục II.1 & II.3) -->
+            <div class="header-actions">
+                <!-- Khi CHƯA đăng nhập -->
+                <div id="user-guest" style="display: flex; gap: 10px;">
+                    <button class="btn-outline" onclick="openModal('modal-login')">Đăng nhập</button>
+                    <button class="btn-primary" onclick="openModal('modal-register')">Đăng ký</button>
+                </div>
+
+                <!-- Khi ĐÃ đăng nhập -->
+                <div id="user-logged-in">
+                    <div class="user-avatar" id="avatar-initial">A</div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--gray);">Xin chào,</div>
+                        <span class="user-name" id="display-username">Nguyễn Văn A</span>
+                    </div>
+                    <button class="btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="openModal('modal-profile')">Hồ sơ</button>
+                    <button class="btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="handleLogout()">Đăng xuất</button>
+                </div>
+
+                <!-- NÚT GIỎ HÀNG -->
+                <button class="cart-btn" onclick="goToCart()">
+                    🛒 <span>Giỏ hàng</span>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= HERO BANNER ================= -->
+    <div class="hero-banner">
+        <div class="hero-inner">
+            <div>
+                <h1 class="hero-title">ĐẲNG CẤP BƯỚC CHÂN,<br><span>CHINH PHỤC ĐỈNH CAO</span></h1>
+                <p class="hero-desc">
+                    Khám phá không gian mua sắm sneaker và giày thể thao chính hãng đa dạng từ các thương hiệu hàng đầu như Nike, Adidas, Jordan, Puma và Clarks. Mỗi đôi giày đều được tuyển chọn kỹ lưỡng, mang đến cảm giác êm ái vượt trội trên từng bước chân, cam kết 100% chính hãng cùng chính sách đổi trả thuận tiện và giao hàng nhanh toàn quốc.
+                </p>
+            </div>
+            <div class="hero-banner-shoe">
+                <img src="./assets/images/hero-shoe.jpg" alt="Nike Hero Shoe">
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN LAYOUT ================= -->
+    <main class="main-container">
+        <!-- CỘT TRÁI: BỘ LỌC ĐA NĂNG & TÌM KIẾM NÂNG CAO (Mục II.2) -->
+        <aside class="sidebar">
+            <!-- 1. PHÂN LOẠI DANH MỤC -->
+            <div class="filter-card">
+                <div class="filter-header">
+                    <span class="filter-title">📂 PHÂN LOẠI SẢN PHẨM</span>
+                    <button class="btn-reset-filters" onclick="resetAllFilters()">Đặt lại</button>
+                </div>
+                <ul class="category-list" id="category-menu">
+                    <li class="category-item active" data-cat="Tất cả" onclick="filterByCategory('Tất cả', this)">
+                        <span>Tất cả sản phẩm</span>
+                        <span class="cat-badge" id="count-all">12</span>
+                    </li>
+                    <li class="category-item" data-cat="Sneaker" onclick="filterByCategory('Giày Sneaker', this)">
+                        <span>Giày Sneaker</span>
+                        <span class="cat-badge">4</span>
+                    </li>
+                    <li class="category-item" data-cat="Running" onclick="filterByCategory('Giày Chạy Bộ', this)">
+                        <span>Giày Chạy Bộ</span>
+                        <span class="cat-badge">4</span>
+                    </li>
+                    <li class="category-item" data-cat="Football" onclick="filterByCategory('Giày Đá Bóng', this)">
+                        <span>Giày Đá Bóng</span>
+                        <span class="cat-badge">2</span>
+                    </li>
+                    <li class="category-item" data-cat="Classic" onclick="filterByCategory('Giày Tây Nam', this)">
+                        <span>Giày Tây Da Bò</span>
+                        <span class="cat-badge">2</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 2. TÌM KIẾM NÂNG CAO KẾT HỢP NHIỀU TIÊU CHÍ (Mục II.2) -->
+            <div class="filter-card">
+                <div class="filter-header">
+                    <span class="filter-title">🔍 TÌM KIẾM NÂNG CAO</span>
+                </div>
+                <div class="form-group">
+                    <label>Tên sản phẩm giày</label>
+                    <input type="text" id="adv-name" class="form-control" placeholder="Từ khóa tên giày...">
+                </div>
+                <div class="form-group">
+                    <label>Loại sản phẩm</label>
+                    <select id="adv-category" class="form-control">
+                        <option value="Tất cả">-- Tất cả loại --</option>
+                        <option value="Giày Sneaker">Giày Sneaker</option>
+                        <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                        <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                        <option value="Giày Tây Nam">Giày Tây Nam</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Thương hiệu sản xuất</label>
+                    <div class="brand-list" id="brand-filter-list">
+                        <label class="brand-label"><input type="checkbox" name="brand" value="Nike" checked onchange="applyFilters()"> Nike</label>
+                        <label class="brand-label"><input type="checkbox" name="brand" value="Adidas" checked onchange="applyFilters()"> Adidas</label>
+                        <label class="brand-label"><input type="checkbox" name="brand" value="Jordan" checked onchange="applyFilters()"> Jordan</label>
+                        <label class="brand-label"><input type="checkbox" name="brand" value="Puma" checked onchange="applyFilters()"> Puma</label>
+                        <label class="brand-label"><input type="checkbox" name="brand" value="Clarks" checked onchange="applyFilters()"> Clarks</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Khoảng giá (VNĐ)</label>
+                    <div class="price-range-inputs">
+                        <input type="number" id="adv-min-price" class="form-control" placeholder="Từ..." oninput="document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'))">
+                        <input type="number" id="adv-max-price" class="form-control" placeholder="Đến..." oninput="document.querySelectorAll('#quick-price-chips .price-chip').forEach(c => c.classList.remove('active'))">
+                    </div>
+                    <!-- CHIP BẤM NHANH KHOẢNG GIÁ -->
+                    <div class="quick-price-chips" id="quick-price-chips">
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(0, 1500000, this)">Dưới 1.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(1500000, 2500000, this)">1.5 - 2.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(2500000, 999999999, this)">Trên 2.5 triệu</button>
+                        <button type="button" class="price-chip" onclick="setQuickPriceRange(null, null, this)">Tất cả giá</button>
+                    </div>
+                </div>
+                <button class="btn-primary" style="width: 100%; padding: 11px; margin-top: 5px;" onclick="applyFilters()">
+                    Áp Dụng Bộ Lọc Ngay
+                </button>
+            </div>
+
+            <!-- 3. LỌC THEO KÍCH CỠ (SIZE GIÀY) -->
+            <div class="filter-card">
+                <div class="filter-header">
+                    <span class="filter-title">📏 CHỌN SIZE GIÀY</span>
+                </div>
+                <div class="size-grid">
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 38)">38</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 39)">39</button>
+                    <button class="size-chip selected" onclick="toggleSizeFilter(this, 40)">40</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 41)">41</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 42)">42</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 43)">43</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 44)">44</button>
+                    <button class="size-chip" onclick="toggleSizeFilter(this, 'ALL')">All</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CỘT PHẢI: LƯỚI SẢN PHẨM & THANH SẮP XẾP & PHÂN TRANG -->
+        <section class="products-view">
+            <!-- THANH ĐIỀU KHIỂN & SẮP XẾP -->
+            <div class="control-bar">
+                <div class="view-title">
+                    <h2 id="current-view-title">Tất Cả Sản Phẩm Giày</h2>
+                    <span id="product-count-label">Hiển thị <strong id="visible-count">6</strong> trên 12 sản phẩm</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 13px; font-weight: 600; color: var(--gray);">Sắp xếp theo:</label>
+                    <select class="sort-select" id="sort-order" onchange="handleSortChange()">
+                        <option value="featured">Nổi bật nhất</option>
+                        <option value="price-asc">Giá: Thấp đến Cao ↑</option>
+                        <option value="price-desc">Giá: Cao đến Thấp ↓</option>
+                        <option value="rating">Đánh giá cao nhất ⭐</option>
+                        <option value="name-asc">Tên: A đến Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- LƯỚI HIỂN THỊ SẢN PHẨM (DỮ LIỆU ĐỘNG QUA JS) -->
+            <div class="product-grid" id="product-grid">
+                <!-- Javascript sẽ tự render danh sách sản phẩm đẹp mắt tại đây -->
+            </div>
+
+            <!-- PHÂN TRANG (Mục II.2 - Có phân trang) -->
+            <div class="pagination-container" id="pagination-box">
+                <!-- Render bằng JS dựa trên số lượng sản phẩm -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= MODAL 1: ĐĂNG NHẬP KHÁCH HÀNG (Mục II.1) ================= -->
+    <div class="modal-overlay" id="modal-login">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeModal('modal-login')">✕</button>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Đăng Nhập Khách Hàng</h2>
+            <p style="font-size: 13px; color: var(--gray); margin-bottom: 20px;">Vui lòng đăng nhập để sử dụng đầy đủ chức năng giỏ hàng & thanh toán.</p>
+
+            <div class="form-group">
+                <label>Email hoặc Tên đăng nhập</label>
+                <input type="text" id="login-username" class="form-control" value="nguyenvana@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="login-password" class="form-control" value="123456">
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;" onclick="handleLogin()">
+                Đăng Nhập Tài Khoản →
+            </button>
+            <div style="text-align: center; margin-top: 18px; font-size: 13px; color: var(--gray);">
+                Chưa có tài khoản? <a href="javascript:void(0)" style="color: var(--primary); font-weight: 700;" onclick="closeModal('modal-login'); openModal('modal-register')">Đăng ký ngay tại đây</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 3: ĐĂNG KÝ TÀI KHOẢN (Mục II.1) ================= -->
+    <div class="modal-overlay" id="modal-register">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeModal('modal-register')">✕</button>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Đăng Ký Tài Khoản Mới</h2>
+            <p style="font-size: 13px; color: var(--gray); margin-bottom: 20px;">Tạo tài khoản thành viên để nhận voucher giảm giá 20%.</p>
+
+            <div class="form-group">
+                <label>Họ và tên đầy đủ *</label>
+                <input type="text" id="reg-fullname" class="form-control" placeholder="Nhập họ và tên...">
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại liên hệ *</label>
+                <input type="tel" id="reg-phone" class="form-control" placeholder="Nhập số điện thoại...">
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ nhận hàng mặc định *</label>
+                <input type="text" id="reg-address" class="form-control" placeholder="Nhập địa chỉ nhận hàng...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu đăng nhập *</label>
+                <input type="password" id="reg-password" class="form-control" placeholder="Nhập mật khẩu...">
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;" onclick="handleRegister()">
+                Hoàn Tất Đăng Ký →
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 4: HỒ SƠ CÁ NHÂN (Mục II.1) ================= -->
+    <div class="modal-overlay" id="modal-profile">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeModal('modal-profile')">✕</button>
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px;">Hồ Sơ Tài Khoản</h2>
+            <p style="font-size: 13px; color: var(--gray); margin-bottom: 20px;">Quản lý và cập nhật thông tin cá nhân của bạn.</p>
+
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" id="prof-name" class="form-control" value="Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+                <label>Email liên hệ</label>
+                <input type="email" id="prof-email" class="form-control" value="nguyenvana@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="tel" id="prof-phone" class="form-control" value="0909123456">
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ nhận hàng (Mặc định khi đặt hàng)</label>
+                <input type="text" id="prof-address" class="form-control" value="273 An Dương Vương, Phường 3, Quận 5, TP.HCM">
+            </div>
+            <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px;" onclick="handleUpdateProfile()">
+                Lưu Thay Đổi Thông Tin
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 5: CHỌN NHANH SIZE GIÀY ================= -->
+    <div class="modal-overlay" id="modal-quick-size">
+        <div class="modal-box" style="max-width: 440px;">
+            <button class="close-modal" onclick="closeModal('modal-quick-size')">✕</button>
+            <div class="quick-modal-header" style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+                <img id="quick-modal-img" src="" alt="Shoe Preview" style="width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0;">
+                <div style="flex: 1; min-width: 0;">
+                    <div id="quick-modal-brand" style="font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase;">NIKE</div>
+                    <h3 id="quick-modal-title" style="font-size: 15px; font-weight: 800; line-height: 1.3; margin: 2px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tên giày</h3>
+                    <div id="quick-modal-price" style="font-size: 16px; font-weight: 800; color: var(--primary);">0 ₫</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size: 13px; font-weight: 700; color: var(--secondary);">Chọn kích cỡ giày (EU):</label>
+                    <span id="quick-modal-stock-tag" class="size-stock-badge in-stock">Còn hàng</span>
+                </div>
+                <div id="quick-modal-sizes" class="size-chips-grid"></div>
+            </div>
+
+            <div id="quick-modal-stock-desc" style="font-size: 12.5px; margin-bottom: 18px; color: var(--gray); background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border);">
+                ℹ️ Chọn size để kiểm tra số lượng tồn kho sẵn có.
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-outline" style="flex: 1; padding: 11px; font-size: 14px;" onclick="closeModal('modal-quick-size')">Hủy</button>
+                <button class="btn-primary" style="flex: 2; padding: 11px; font-size: 14px;" id="quick-modal-btn-confirm" onclick="confirmQuickAddToCart()">
+                    🛒 Thêm Vào Giỏ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="margin-bottom: 14px; color: #fff; font-size: 20px; font-weight: 800;">
+                    👟 SGU<span style="color: var(--primary, #2563eb);">SNEAKER</span>
+                </div>
+                <p style="line-height: 1.6; margin-bottom: 14px; color: #94a3b8;">
+                    Cửa hàng phân phối giày Sneaker, giày thể thao và thời trang chính hãng uy tín hàng đầu. Cam kết chất lượng, bảo hành chu đáo và giao hàng toàn quốc.
+                </p>
+                <p style="color: #cbd5e1; margin-bottom: 6px;">📍 <strong>Địa chỉ:</strong> 273 An Dương Vương, P.3, Q.5, TP.HCM</p>
+                <p style="color: #cbd5e1;">📞 <strong>Hotline:</strong> 1900 1234 (8:00 - 21:30)</p>
+            </div>
+            <div class="footer-col">
+                <h4>Về Cửa Hàng</h4>
+                <p style="line-height: 1.6; margin-bottom: 12px; color: #94a3b8;">
+                    Không gian mua sắm uy tín dành cho cộng đồng yêu thích giày chính hãng. Đa dạng mẫu mã từ chạy bộ, tập luyện đến phong cách đường phố năng động.
+                </p>
+                <div style="color: #cbd5e1; font-size: 13.5px; line-height: 1.9;">
+                    <div>🕒 <strong>Mở cửa:</strong> 08:00 – 22:00 (Tất cả các ngày)</div>
+                    <div>📦 <strong>Giao hàng:</strong> Ship COD toàn quốc từ 2 – 4 ngày</div>
+                    <div>💬 <strong>Tư vấn:</strong> Hỗ trợ giải đáp & chọn size 24/7</div>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Chính Sách & Hỗ Trợ</h4>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="showToast('Đổi trả miễn phí trong 7 ngày nếu lỗi từ NSX!', 'info')">Chính sách đổi trả & bảo hành</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Miễn phí giao hàng toàn quốc cho mọi đơn hàng!', 'info')">Giao nhận & vận chuyển</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Hỗ trợ thanh toán khi nhận hàng (COD) hoặc quét mã VietQR!', 'info')">Phương thức thanh toán</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Cam kết 100% sản phẩm chính hãng, phát hiện fake đền x10!', 'info')">Cam kết chính hãng</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2026 SGU Sneaker. Tất cả quyền được bảo lưu.</div>
+            <div>Hệ thống phân phối giày chính hãng cao cấp</div>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT XỬ LÝ TOÀN BỘ LOGIC ================= -->
+    <script src="./assets/js/init-data.js"></script>
+    <script src="./assets/js/index.js"></script>
+</body>
+</html>

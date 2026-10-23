@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGU SNEAKER - Giỏ Hàng & Thanh Toán Đơn Hàng</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- STYLESHEETS DÙNG CHUNG & GIỎ HÀNG -->
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <link rel="stylesheet" href="./assets/css/cart.css">
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">👟 SGU<span>SNEAKER</span></a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-pill">
+                    <span class="user-dot"></span>
+                    <span>Tài khoản: <strong id="cart-username">Nguyễn Văn A</strong></span>
+                </div>
+                <button class="btn-outline" id="cart-logout-btn" style="padding: 6px 12px; font-size: 13px; color: var(--danger); border-color: #fecdd3;" onclick="handleCartLogout()">🚪 Đăng xuất</button>
+                <a href="index.html" class="btn-outline">← Tiếp tục chọn giày</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 3 BƯỚC ĐIỀU HƯỚNG THEO RUBRIC CHẤM ĐIỂM SGU -->
+        <div class="steps-nav">
+            <button class="step-btn active" id="btn-tab-1" onclick="switchCheckoutTab('tab-1', this)">
+                <span class="step-num">1</span>
+                <span>🛒 Giỏ Hàng & Thanh Toán</span>
+            </button>
+            <button class="step-btn" id="btn-tab-2" onclick="switchCheckoutTab('tab-2', this)">
+                <span class="step-num">2</span>
+                <span>✅ Xem Lại Đơn Đặt Hàng</span>
+            </button>
+            <button class="step-btn" id="btn-tab-3" onclick="switchCheckoutTab('tab-3', this)">
+                <span class="step-num">3</span>
+                <span>📦 Lịch Sử Các Đơn Hàng</span>
+            </button>
+        </div>
+
+        <!-- =========================================================
+             TAB 1: GIỎ HÀNG, ĐỊA CHỈ & PHƯƠNG THỨC THANH TOÁN (Mục II.3)
+             ========================================================= -->
+        <div id="tab-1" class="tab-pane" style="display: block;">
+            <div class="checkout-grid">
+                <!-- CỘT TRÁI: DANH SÁCH GIÀY TRONG GIỎ (ĐỘNG TỪ LOCALSTORAGE) -->
+                <div>
+                    <div class="card-box">
+                        <div class="card-title">
+                            <span>🛒 Sản Phẩm Trong Giỏ Hàng</span>
+                            <span style="font-size: 13px; font-weight: 500; color: var(--gray); margin-left: auto;">(Có thể tăng/giảm SL & xóa)</span>
+                        </div>
+                        <div id="cart-items-list">
+                            <!-- Javascript sẽ render danh sách sản phẩm động -->
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="index.html" style="color: var(--primary); font-weight: 700; font-size: 14px;">+ Thêm sản phẩm khác từ cửa hàng</a>
+                            <button class="btn-outline" style="font-size: 12px; padding: 6px 12px;" onclick="clearCart()">Xóa rỗng giỏ hàng</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI: ĐỊA CHỈ NHẬN HÀNG & PHƯƠNG THỨC THANH TOÁN -->
+                <div>
+                    <!-- 1. ĐỊA CHỈ NHẬN HÀNG (Mục II.3) -->
+                    <div class="card-box">
+                        <div class="card-title">📍 Địa Chỉ Nhận Hàng</div>
+
+                        <label class="option-card selected" id="card-addr-default" onclick="selectAddressMode('default')">
+                            <input type="radio" name="addr_mode" value="default" checked>
+                            <div>
+                                <strong style="font-size: 14px;">Dùng địa chỉ có sẵn từ tài khoản</strong>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 4px;" id="addr-default-text">
+                                    Nguyễn Văn A • 0909123456<br>
+                                    273 An Dương Vương, Phường 3, Quận 5, TP. Hồ Chí Minh
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="option-card" id="card-addr-new" onclick="selectAddressMode('new')">
+                            <input type="radio" name="addr_mode" value="new">
+                            <div>
+                                <strong style="font-size: 14px;">Nhập địa chỉ giao hàng mới</strong>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 4px;">Giao đến địa chỉ hoặc người nhận khác</p>
+                            </div>
+                        </label>
+
+                        <!-- Form nhập địa chỉ mới đầy đủ control -->
+                        <div id="new-address-form" style="display: none; background: #f8fafc; padding: 18px; border-radius: 10px; border: 1px solid var(--border); margin-top: 14px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Họ tên người nhận *</label>
+                                    <input type="text" id="new-name" class="form-control" placeholder="Họ và tên người nhận...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Số điện thoại *</label>
+                                    <input type="tel" id="new-phone" class="form-control" placeholder="Số điện thoại nhận hàng...">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tỉnh / Thành phố *</label>
+                                    <select id="new-city" class="form-control">
+                                        <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                        <option value="Hà Nội">Hà Nội</option>
+                                        <option value="Đà Nẵng">Đà Nẵng</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quận / Huyện *</label>
+                                    <select id="new-district" class="form-control">
+                                        <option value="Quận 1">Quận 1</option>
+                                        <option value="Quận 5">Quận 5</option>
+                                        <option value="Quận 7">Quận 7</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Số nhà, tên đường, Phường/Xã *</label>
+                                <input type="text" id="new-street" class="form-control" placeholder="Số nhà, tên đường...">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Ghi chú khi giao hàng</label>
+                                <input type="text" id="new-note" class="form-control" placeholder="Ghi chú thêm về đơn hàng (nếu có)...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. PHƯƠNG THỨC THANH TOÁN (Mục II.3 - COD MẶC ĐỊNH) -->
+                    <div class="card-box">
+                        <div class="card-title">💳 Phương Thức Thanh Toán</div>
+
+                        <label class="option-card selected" id="pay-card-cod" onclick="selectPaymentMethod('COD')">
+                            <input type="radio" name="pay_mode" value="COD" checked>
+                            <div>
+                                <strong style="font-size: 14px;">Tiền mặt khi nhận hàng (COD)</strong>
+                                <span style="background: var(--success); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 6px;">Mặc định</span>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 4px;">Kiểm tra hàng và thanh toán trực tiếp cho shipper</p>
+                            </div>
+                        </label>
+
+                        <label class="option-card" id="pay-card-bank" onclick="selectPaymentMethod('BANK')">
+                            <input type="radio" name="pay_mode" value="BANK">
+                            <div>
+                                <strong style="font-size: 14px;">Chuyển khoản ngân hàng (VietQR 24/7)</strong>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 4px;">Chuyển nhanh qua mã QR tự động xác nhận</p>
+                            </div>
+                        </label>
+
+                        <div id="bank-box" style="display: none; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; margin-bottom: 12px;">
+                            🏦 <strong>Vietcombank</strong> - STK: <strong>0071001234567</strong><br>
+                            Chủ TK: <strong>CỬA HÀNG SGU SNEAKER</strong> | Cú pháp: <em>SGU SĐT</em>
+                        </div>
+
+                        <!-- TỔNG KẾT TIỀN -->
+                        <div style="margin-top: 20px;">
+                            <div class="summary-row">
+                                <span>Tạm tính (<span id="summary-qty">0</span> sản phẩm):</span>
+                                <strong id="summary-subtotal">0 ₫</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Phí vận chuyển giao hàng:</span>
+                                <strong style="color: var(--success);">Miễn phí 0 ₫</strong>
+                            </div>
+                            <div class="summary-total">
+                                <span>TỔNG THANH TOÁN:</span>
+                                <span id="summary-final">0 ₫</span>
+                            </div>
+
+                            <button class="btn-primary" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 18px;" onclick="handlePlaceOrder()">
+                                XÁC NHẬN ĐẶT HÀNG NGAY →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 2: XEM LẠI ĐƠN ĐẶT HÀNG KHI KẾT THÚC QUÁ TRÌNH MUA (Mục II.3)
+             ========================================================= -->
+        <div id="tab-2" class="tab-pane" style="display: none;">
+            <div class="order-success-card">
+                <h2>🎉 ĐẶT HÀNG THÀNH CÔNG!</h2>
+                <p>Cảm ơn bạn đã tin tưởng mua sắm tại SGU Sneaker. Đơn hàng của bạn đã được ghi nhận vào hệ thống.</p>
+            </div>
+
+            <div class="card-box">
+                <div class="card-title">
+                    <span>Hóa Đơn Chi Tiết Đơn Hàng Vừa Đặt: <span id="confirm-order-id" style="color: var(--primary);">#DH2025-089</span></span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 24px;">
+                    <div>
+                        <p style="margin-bottom: 6px;"><strong>Mã đơn hàng:</strong> <span id="conf-id">#DH2025-089</span></p>
+                        <p style="margin-bottom: 6px;"><strong>Ngày đặt mua:</strong> <span id="conf-date">24/10/2025</span></p>
+                        <p><strong>Tình trạng xử lý:</strong> <span class="status-badge status-new">Mới đặt</span></p>
+                    </div>
+                    <div>
+                        <p style="margin-bottom: 6px;"><strong>Địa chỉ giao:</strong> <span id="conf-addr">273 An Dương Vương, Q.5, TP.HCM</span></p>
+                        <p><strong>Phương thức thanh toán:</strong> <span id="conf-payment">Tiền mặt khi nhận hàng (COD)</span></p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm giày</th>
+                            <th>Size</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="confirm-items-table">
+                        <!-- JS render sản phẩm trong đơn vừa đặt -->
+                    </tbody>
+                </table>
+
+                <div style="text-align: right; margin-top: 24px;">
+                    <span style="font-size: 15px; color: var(--gray);">Tổng thanh toán: </span>
+                    <strong style="font-size: 24px; color: var(--primary); margin-left: 8px;" id="conf-total">0 ₫</strong>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 14px;">
+                    <a href="index.html" class="btn-outline">← Về trang chủ mua tiếp</a>
+                    <button class="btn-primary" onclick="switchCheckoutTab('tab-3', document.getElementById('btn-tab-3'))">
+                        Xem lịch sử tất cả đơn đã mua →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 3: XEM LẠI ĐƠN HÀNG ĐÃ MUA CỦA KHÁCH HÀNG (Mục II.4)
+             ========================================================= -->
+        <div id="tab-3" class="tab-pane" style="display: none;">
+            <div class="card-box">
+                <div class="card-title" style="flex-wrap: wrap; gap: 14px;">
+                    <span>📦 Lịch Sử Đơn Hàng Của Bạn (<span id="user-history-name">Nguyễn Văn A</span>)</span>
+                    <span style="font-size: 13px; font-weight: 500; color: var(--gray); margin-left: auto;">
+                        (Tự động đồng bộ theo tài khoản đang đăng nhập)
+                    </span>
+                </div>
+
+                <!-- BỘ LỌC ĐƠN HÀNG THEO KHOẢNG THỜI GIAN & TRẠNG THÁI (RUBRIC II.4) -->
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1.5fr auto; gap: 12px; align-items: end;">
+                    <div>
+                        <label style="font-size: 12px; font-weight: 700; color: var(--gray); display: block; margin-bottom: 4px;">🔍 Tìm kiếm đơn hàng:</label>
+                        <input type="text" id="history-filter-keyword" class="form-control" placeholder="Nhập mã đơn (#DH...) hoặc tên giày..." oninput="filterCustomerOrders()">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; font-weight: 700; color: var(--gray); display: block; margin-bottom: 4px;">📌 Trạng thái:</label>
+                        <select id="history-filter-status" class="form-control" onchange="filterCustomerOrders()">
+                            <option value="ALL">Tất cả trạng thái</option>
+                            <option value="Mới đặt">Mới đặt</option>
+                            <option value="Đã xử lý">Đã xử lý</option>
+                            <option value="Đã giao">Đã giao</option>
+                            <option value="Hủy">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; font-weight: 700; color: var(--gray); display: block; margin-bottom: 4px;">📅 Khoảng thời gian đặt:</label>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <input type="date" id="history-filter-from" class="form-control" style="font-size: 12px; padding: 7px;" onchange="filterCustomerOrders()">
+                            <span style="font-size: 12px; color: var(--gray);">-</span>
+                            <input type="date" id="history-filter-to" class="form-control" style="font-size: 12px; padding: 7px;" onchange="filterCustomerOrders()">
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn-outline" style="padding: 10px 14px; font-size: 13px;" onclick="resetHistoryFilters()">🔄 Đặt lại</button>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Ngày Đặt</th>
+                            <th>Danh Sách Giày Đã Mua</th>
+                            <th>Địa Chỉ Nhận Hàng</th>
+                            <th>Thanh Toán</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-history-table">
+                        <!-- JS render danh sách đơn hàng đã mua -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT HÓA ĐƠN ĐƠN HÀNG (MỤC II.4) -->
+    <div class="modal-overlay" id="modal-history-detail" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.65); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1500;">
+        <div style="background: #fff; width: 100%; max-width: 650px; border-radius: 14px; padding: 28px; position: relative; box-shadow: 0 20px 35px rgba(0,0,0,0.2);">
+            <button onclick="closeModal('modal-history-detail')" style="position: absolute; top: 16px; right: 16px; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; font-weight: 800; border: none; cursor: pointer;">✕</button>
+
+            <!-- TIÊU ĐỀ IN ẤN (CHỈ HIỆN KHI IN) -->
+            <div class="print-header" style="display: none; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="font-size: 20px; font-weight: 800;">👟 SGU SNEAKER - HỆ THỐNG PHÂN PHỐI GIÀY CHÍNH HÃNG</div>
+                <div style="font-size: 12px; color: #555; margin-top: 4px;">Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, TP.HCM | Hotline: 1900 1234</div>
+                <div style="text-align: center; font-size: 17px; font-weight: 800; margin-top: 14px; text-transform: uppercase;">PHIẾU XUẤT KHO & HÓA ĐƠN BÁN LẺ</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                    <h3 style="font-size: 19px; font-weight: 800; color: var(--secondary);">🧾 Hóa Đơn Chi Tiết: <span id="hist-modal-id" style="color:var(--primary);">#DH2025-089</span></h3>
+                    <p style="font-size: 12.5px; color: var(--gray); margin-top: 2px;">Cửa Hàng Giày SGU SNEAKER - Hệ thống bán lẻ chính hãng</p>
+                </div>
+                <button class="btn-outline" style="padding: 6px 14px; font-size: 12.5px;" onclick="window.print()">🖨️ In Hóa Đơn</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 18px; font-size: 13.5px;">
+                <div>
+                    <p style="margin-bottom: 4px;"><strong>Người nhận:</strong> <span id="hist-modal-cust">Nguyễn Văn A</span></p>
+                    <p style="margin-bottom: 4px;"><strong>SĐT liên hệ:</strong> <span id="hist-modal-phone">0909123456</span></p>
+                    <p><strong>Ngày đặt mua:</strong> <span id="hist-modal-date">24/10/2025</span></p>
+                </div>
+                <div>
+                    <p style="margin-bottom: 4px;"><strong>Phương thức:</strong> <span id="hist-modal-payment">Tiền mặt (COD)</span></p>
+                    <p style="margin-bottom: 4px;"><strong>Địa chỉ:</strong> <span id="hist-modal-address">273 An Dương Vương, Q.5</span></p>
+                    <p><strong>Trạng thái:</strong> <span id="hist-modal-status" class="status-badge status-new">Mới đặt</span></p>
+                </div>
+            </div>
+
+            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">Chi tiết sản phẩm trong đơn:</div>
+            <div id="hist-modal-items" style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 18px;">
+                <!-- Table rendered dynamically -->
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 14px;">
+                <span style="font-size: 14px; color: var(--gray);">Phí vận chuyển: <strong style="color:var(--success);">0 ₫ (Miễn phí)</strong></span>
+                <div>
+                    <span style="font-size: 14px; color: var(--gray);">Tổng thanh toán: </span>
+                    <strong style="font-size: 20px; color: var(--primary);" id="hist-modal-total">0 ₫</strong>
+                </div>
+            </div>
+
+            <!-- CHỮ KÝ VÀ LỜI CẢM ƠN (CHỈ HIỆN KHI IN) -->
+            <div class="print-signatures" style="display: none; margin-top: 30px; padding-top: 14px; border-top: 1px dashed #cbd5e1;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; font-size: 13px;">
+                    <div>
+                        <strong>Người Lập Hóa Đơn</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, ghi rõ họ tên)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong>SGU SNEAKER</strong></div>
+                    </div>
+                    <div>
+                        <strong>Khách Hàng Nhận Hàng</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, xác nhận nguyên vẹn)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong id="print-cust-name-sig">Khách hàng</strong></div>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 11.5px; color: #666; margin-top: 22px;">
+                    Cảm ơn quý khách đã mua sắm tại SGU Sneaker! Đổi size & bảo hành miễn phí trong 7 ngày.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="margin-bottom: 14px; color: #fff; font-size: 20px; font-weight: 800;">
+                    👟 SGU<span style="color: var(--primary, #2563eb);">SNEAKER</span>
+                </div>
+                <p style="line-height: 1.6; margin-bottom: 14px; color: #94a3b8;">
+                    Cửa hàng phân phối giày Sneaker, giày thể thao và thời trang chính hãng uy tín hàng đầu. Cam kết chất lượng, bảo hành chu đáo và giao hàng toàn quốc.
+                </p>
+                <p style="color: #cbd5e1; margin-bottom: 6px;">📍 <strong>Địa chỉ:</strong> 273 An Dương Vương, P.3, Q.5, TP.HCM</p>
+                <p style="color: #cbd5e1;">📞 <strong>Hotline:</strong> 1900 1234 (8:00 - 21:30)</p>
+            </div>
+            <div class="footer-col">
+                <h4>Về Cửa Hàng</h4>
+                <p style="line-height: 1.6; margin-bottom: 12px; color: #94a3b8;">
+                    Không gian mua sắm uy tín dành cho cộng đồng yêu thích giày chính hãng. Đa dạng mẫu mã từ chạy bộ, tập luyện đến phong cách đường phố năng động.
+                </p>
+                <div style="color: #cbd5e1; font-size: 13.5px; line-height: 1.9;">
+                    <div>🕒 <strong>Mở cửa:</strong> 08:00 – 22:00 (Tất cả các ngày)</div>
+                    <div>📦 <strong>Giao hàng:</strong> Ship COD toàn quốc từ 2 – 4 ngày</div>
+                    <div>💬 <strong>Tư vấn:</strong> Hỗ trợ giải đáp & chọn size 24/7</div>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Chính Sách & Hỗ Trợ</h4>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="showToast('Đổi trả miễn phí trong 7 ngày nếu lỗi từ NSX!', 'info')">Chính sách đổi trả & bảo hành</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Miễn phí giao hàng toàn quốc cho mọi đơn hàng!', 'info')">Giao nhận & vận chuyển</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Hỗ trợ thanh toán khi nhận hàng (COD) hoặc quét mã VietQR!', 'info')">Phương thức thanh toán</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Cam kết 100% sản phẩm chính hãng, phát hiện fake đền x10!', 'info')">Cam kết chính hãng</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2026 SGU Sneaker. Tất cả quyền được bảo lưu.</div>
+            <div>Hệ thống phân phối giày chính hãng cao cấp</div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS SGU SNEAKER -->
+    <script src="./assets/js/init-data.js"></script>
+    <script src="./assets/js/cart.js"></script>
+</body>
+</html>

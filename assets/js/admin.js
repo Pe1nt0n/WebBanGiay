@@ -4,18 +4,22 @@
  * Thành viên 4 phụ trách - Barem I.1 -> I.8
  */
 
-// HỆ THỐNG THÔNG BÁO TOAST
+// HỆ THỐNG THÔNG BÁO TOAST (Tối đa 3 toast cùng lúc tránh spam)
 function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
+    while (container.children.length >= 3) {
+        container.firstElementChild.remove();
+    }
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${msg}</span>`;
+    const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '⚠️');
+    toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease reverse forwards';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 2800);
 }
 
 // TÌM KIẾM TỨC THÌ TRÊN BẢNG (SEARCH AS YOU TYPE)
@@ -507,6 +511,7 @@ function loadAdminCategories() {
 
     table.innerHTML = cats.map(c => {
         const count = prods.filter(p => p.catCode === c.code || p.category === c.name).length;
+        const safeName = c.name.replace(/'/g, "\\'");
         return `
             <tr>
                 <td><strong>${c.code}</strong></td>
@@ -514,23 +519,69 @@ function loadAdminCategories() {
                 <td>${count} sản phẩm</td>
                 <td><span class="badge ${c.active ? 'badge-active' : 'badge-locked'}">${c.active ? 'Đang hiển thị' : 'Tạm ẩn'}</span></td>
                 <td>
-                    <button class="btn btn-warning" onclick="editCategory('${c.code}', '${c.name}')">✏️ Sửa</button>
+                    <button class="btn btn-warning" onclick="editCategory('${c.code}', '${safeName}')">✏️ Sửa</button>
                     <button class="btn btn-danger" onclick="toggleHideCategory('${c.code}')">${c.active ? '👁️ Ẩn / Xóa' : '🔓 Hiển thị'}</button>
                 </td>
             </tr>
         `;
     }).join('');
+
+    // Đồng bộ danh sách loại vào dropdown trong Modal Thêm/Sửa sản phẩm
+    const prodCatSelect = document.getElementById('prod-cat');
+    if (prodCatSelect) {
+        const currentVal = prodCatSelect.value;
+        prodCatSelect.innerHTML = cats.filter(c => c.active !== false).map(c => 
+            `<option value="${c.name}">${c.name}</option>`
+        ).join('');
+        if (currentVal && Array.from(prodCatSelect.options).some(o => o.value === currentVal)) {
+            prodCatSelect.value = currentVal;
+        }
+    }
 }
 
 function editCategory(code, name) {
-    document.getElementById('cat-code').value = code;
-    document.getElementById('cat-name').value = name;
-    showToast(`Đã tải dữ liệu loại "${name}" lên form chỉnh sửa!`, 'success');
+    const codeInput = document.getElementById('cat-code');
+    const nameInput = document.getElementById('cat-name');
+    const saveBtn = document.getElementById('btn-save-cat');
+    const cancelBtn = document.getElementById('btn-cancel-cat');
+
+    if (codeInput) {
+        codeInput.value = code;
+        codeInput.readOnly = true;
+        codeInput.style.background = '#f1f5f9';
+    }
+    if (nameInput) {
+        nameInput.value = name;
+        nameInput.focus();
+    }
+    if (saveBtn) saveBtn.innerHTML = '💾 Cập Nhật Loại';
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+
+    showToast(`Đã tải dữ liệu loại "${name}" lên form chỉnh sửa!`, 'info');
+}
+
+function cancelCategoryEdit() {
+    const codeInput = document.getElementById('cat-code');
+    const nameInput = document.getElementById('cat-name');
+    const saveBtn = document.getElementById('btn-save-cat');
+    const cancelBtn = document.getElementById('btn-cancel-cat');
+
+    if (codeInput) {
+        codeInput.value = '';
+        codeInput.readOnly = false;
+        codeInput.style.background = '';
+    }
+    if (nameInput) nameInput.value = '';
+    if (saveBtn) saveBtn.innerHTML = '+ Lưu Loại Giày';
+    if (cancelBtn) cancelBtn.style.display = 'none';
 }
 
 function saveCategory() {
-    const code = document.getElementById('cat-code').value.trim();
-    const name = document.getElementById('cat-name').value.trim();
+    const codeInput = document.getElementById('cat-code');
+    const nameInput = document.getElementById('cat-name');
+    const code = codeInput ? codeInput.value.trim() : '';
+    const name = nameInput ? nameInput.value.trim() : '';
+
     if (!code || !name) {
         showToast('Vui lòng nhập đầy đủ Mã loại và Tên loại giày!', 'warning');
         return;
@@ -538,18 +589,34 @@ function saveCategory() {
 
     if (!window.SGU_CORE) return;
     const cats = SGU_CORE.getCategories();
-    const existing = cats.find(c => c.code.toLowerCase() === code.toLowerCase());
-    if (existing) {
-        existing.name = name;
+    const existingIndex = cats.findIndex(c => c.code.toLowerCase() === code.toLowerCase());
+    
+    if (existingIndex !== -1) {
+        const oldName = cats[existingIndex].name;
+        cats[existingIndex].name = name;
+        
+        // Đồng bộ đổi tên category trong tất cả sản phẩm đang mang mã loại này
+        const prods = SGU_CORE.getProducts();
+        let updatedCount = 0;
+        prods.forEach(p => {
+            if (p.catCode === code || p.category === oldName) {
+                p.category = name;
+                p.catCode = code;
+                updatedCount++;
+            }
+        });
+        if (updatedCount > 0) {
+            SGU_CORE.saveProducts(prods);
+        }
+        showToast(`Đã cập nhật loại giày: ${code} - "${name}"!`, 'success');
     } else {
         cats.push({ code: code, name: name, count: 0, active: true });
+        showToast(`Đã thêm mới loại giày: ${code} - "${name}"!`, 'success');
     }
 
     SGU_CORE.saveCategories(cats);
     loadAdminCategories();
-    showToast(`Đã lưu thành công loại giày: ${code} - ${name}!`, 'success');
-    document.getElementById('cat-code').value = '';
-    document.getElementById('cat-name').value = '';
+    cancelCategoryEdit();
 }
 
 function toggleHideCategory(code) {

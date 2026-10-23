@@ -208,7 +208,10 @@
                             <label style="font-size: 13px; font-weight: 600;">Tên loại giày *</label>
                             <input type="text" id="cat-name" class="form-control" placeholder="Nhập tên loại sản phẩm...">
                         </div>
-                        <button class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="btn-save-cat" class="btn btn-primary" style="padding: 11px 22px;" onclick="saveCategory()">+ Lưu Loại Giày</button>
+                            <button id="btn-cancel-cat" class="btn btn-danger" style="padding: 11px 16px; display: none;" onclick="cancelCategoryEdit()">Hủy</button>
+                        </div>
                     </div>
 
                     <div style="margin-bottom: 14px;">

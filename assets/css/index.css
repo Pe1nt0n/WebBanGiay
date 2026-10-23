@@ -56,8 +56,8 @@
     color: #94a3b8;
     font-size: 15px;
     margin-bottom: 0;
-    max-width: 520px;
-    line-height: 1.6;
+    max-width: 560px;
+    line-height: 1.65;
 }
 .hero-cta { display: flex; gap: 14px; }
 .hero-banner-shoe {

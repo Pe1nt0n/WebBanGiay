@@ -217,6 +217,10 @@ function renderSizesWithStock(p) {
 }
 
 function selectSize(btn, sizeVal) {
+    if (btn.classList.contains('out-of-stock') || btn.disabled) {
+        showToast(`Size ${sizeVal} hiện đã tạm hết hàng, vui lòng chọn kích cỡ khác!`, 'warning');
+        return;
+    }
     document.querySelectorAll('#size-chips-box .chip').forEach(c => c.classList.remove('selected'));
     btn.classList.add('selected');
     currentSelectedSize = sizeVal;

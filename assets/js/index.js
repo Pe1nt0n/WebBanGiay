@@ -859,6 +859,12 @@ function renderQuickModalSizes() {
 }
 
 function selectQuickSize(size) {
+    if (!quickModalProduct) return;
+    const sizeStock = quickModalProduct.sizeStock || {};
+    if (sizeStock[size] !== undefined && sizeStock[size] <= 0) {
+        showToast(`Size ${size} hiện đã tạm hết hàng, vui lòng chọn size khác!`, 'warning');
+        return;
+    }
     quickModalSelectedSize = size;
     renderQuickModalSizes();
     updateQuickModalStockInfo();

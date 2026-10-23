@@ -307,6 +307,14 @@
     <div class="modal-overlay" id="modal-history-detail" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.65); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1500;">
         <div style="background: #fff; width: 100%; max-width: 650px; border-radius: 14px; padding: 28px; position: relative; box-shadow: 0 20px 35px rgba(0,0,0,0.2);">
             <button onclick="closeModal('modal-history-detail')" style="position: absolute; top: 16px; right: 16px; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; font-weight: 800; border: none; cursor: pointer;">✕</button>
+
+            <!-- TIÊU ĐỀ IN ẤN (CHỈ HIỆN KHI IN) -->
+            <div class="print-header" style="display: none; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="font-size: 20px; font-weight: 800;">👟 SGU SNEAKER - HỆ THỐNG PHÂN PHỐI GIÀY CHÍNH HÃNG</div>
+                <div style="font-size: 12px; color: #555; margin-top: 4px;">Địa chỉ: 273 An Dương Vương, Phường 3, Quận 5, TP.HCM | Hotline: 1900 1234</div>
+                <div style="text-align: center; font-size: 17px; font-weight: 800; margin-top: 14px; text-transform: uppercase;">PHIẾU XUẤT KHO & HÓA ĐƠN BÁN LẺ</div>
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;">
                 <div>
                     <h3 style="font-size: 19px; font-weight: 800; color: var(--secondary);">🧾 Hóa Đơn Chi Tiết: <span id="hist-modal-id" style="color:var(--primary);">#DH2025-089</span></h3>
@@ -338,6 +346,27 @@
                 <div>
                     <span style="font-size: 14px; color: var(--gray);">Tổng thanh toán: </span>
                     <strong style="font-size: 20px; color: var(--primary);" id="hist-modal-total">0 ₫</strong>
+                </div>
+            </div>
+
+            <!-- CHỮ KÝ VÀ LỜI CẢM ƠN (CHỈ HIỆN KHI IN) -->
+            <div class="print-signatures" style="display: none; margin-top: 30px; padding-top: 14px; border-top: 1px dashed #cbd5e1;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; font-size: 13px;">
+                    <div>
+                        <strong>Người Lập Hóa Đơn</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, ghi rõ họ tên)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong>SGU SNEAKER</strong></div>
+                    </div>
+                    <div>
+                        <strong>Khách Hàng Nhận Hàng</strong><br>
+                        <span style="font-size: 11px; color: #666;">(Ký, xác nhận nguyên vẹn)</span>
+                        <div style="height: 50px;"></div>
+                        <div><strong id="print-cust-name-sig">Khách hàng</strong></div>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 11.5px; color: #666; margin-top: 22px;">
+                    Cảm ơn quý khách đã mua sắm tại SGU Sneaker! Đổi size & bảo hành miễn phí trong 7 ngày.
                 </div>
             </div>
         </div>

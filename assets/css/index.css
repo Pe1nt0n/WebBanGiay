@@ -537,13 +537,31 @@
     border-color: var(--primary);
     box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3);
 }
-.size-chip-btn:disabled, .size-chip-btn.out-of-stock {
-    opacity: 0.45;
-    background: #f1f5f9;
+.size-chip-btn:disabled,
+.size-chip-btn.out-of-stock {
+    opacity: 0.55;
+    background: #f8fafc;
     color: #94a3b8;
-    border-style: dashed;
-    cursor: not-allowed;
+    border: 1px dashed #cbd5e1;
+    cursor: not-allowed !important;
     text-decoration: line-through;
+    position: relative;
+}
+.size-chip-btn:disabled::after,
+.size-chip-btn.out-of-stock::after {
+    content: "Hết";
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    line-height: 1.2;
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 .size-stock-badge {
     display: inline-block;

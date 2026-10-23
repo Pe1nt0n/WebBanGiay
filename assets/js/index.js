@@ -581,14 +581,9 @@ function renderProducts() {
     visibleCountLabel.innerText = pageProducts.length;
 
     grid.innerHTML = pageProducts.map(p => {
-        const isWish = (window.SGU_CORE && SGU_CORE.isWishlisted) ? SGU_CORE.isWishlisted(p.id) : false;
         return `
         <div class="product-card" onclick="openProductDetailById('${p.id}')">
             <div class="card-img-wrap">
-                <span class="card-tag ${p.tag ? p.tag.toLowerCase() : 'new'}">${p.tag || 'NEW'}</span>
-                <button type="button" class="btn-wishlist-card ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); handleToggleWishlist('${p.id}')" title="${isWish ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}">
-                    ${isWish ? '❤️' : '🤍'}
-                </button>
                 <img src="${p.img}" alt="${p.name}" loading="lazy">
                 <button type="button" class="btn-quick-view" onclick="event.stopPropagation(); openProductDetailById('${p.id}')">
                     👁️ Xem Chi Tiết

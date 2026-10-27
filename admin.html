@@ -359,13 +359,16 @@
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã phiếu hoặc sản phẩm</label>
-                            <input type="text" class="form-control" placeholder="Tìm theo mã phiếu hoặc tên giày..." oninput="filterTableAsYouType(this, 'imports-table-body')">
+                            <input type="text" id="import-filter-keyword" class="form-control" placeholder="Tìm theo mã phiếu hoặc tên giày..." oninput="filterAdminImports()">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Ngày lập phiếu</label>
-                            <input type="date" class="form-control" value="2025-10-22">
+                            <input type="date" id="import-filter-date" class="form-control" onchange="filterAdminImports()">
                         </div>
-                        <button class="btn btn-dark" onclick="showToast('Đã lọc danh sách phiếu nhập hàng theo ngày!', 'success')">🔍 Tìm kiếm phiếu</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-dark" onclick="filterAdminImports()">🔍 Lọc phiếu</button>
+                            <button class="btn btn-outline" onclick="resetAdminImportFilters()">🔄 Đặt lại</button>
+                        </div>
                     </div>
 
                     <table>
@@ -495,15 +498,15 @@
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tìm mã đơn / Khách hàng</label>
-                            <input type="text" class="form-control" placeholder="Tìm theo mã đơn hoặc tên khách..." oninput="filterTableAsYouType(this, 'admin-orders-table')">
+                            <input type="text" id="order-filter-keyword" class="form-control" placeholder="Tìm theo mã đơn hoặc tên khách..." oninput="filterAdminOrders()">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày đặt</label>
-                            <input type="date" class="form-control" value="2025-10-01">
+                            <input type="date" id="order-filter-from" class="form-control" onchange="filterAdminOrders()">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày đặt</label>
-                            <input type="date" class="form-control" value="2025-10-31">
+                            <input type="date" id="order-filter-to" class="form-control" onchange="filterAdminOrders()">
                         </div>
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tình trạng đơn</label>
@@ -515,7 +518,10 @@
                                 <option value="Hủy">Hủy</option>
                             </select>
                         </div>
-                        <button class="btn btn-dark" onclick="filterAdminOrders()">🔍 Lọc đơn hàng</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-dark" onclick="filterAdminOrders()">🔍 Lọc đơn hàng</button>
+                            <button class="btn btn-outline" onclick="resetAdminOrderFilters()">🔄 Đặt lại</button>
+                        </div>
                     </div>
 
                     <table>
@@ -569,27 +575,31 @@
                     <div class="filter-bar">
                         <div>
                             <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Chọn loại giày</label>
-                            <select class="form-control">
-                                <option>-- Tất cả phân loại --</option>
-                                <option>Giày Sneaker</option>
-                                <option>Giày Chạy Bộ</option>
-                                <option>Giày Đá Bóng</option>
-                                <option>Giày Tây Nam</option>
+                            <select class="form-control" id="inventory-filter-cat" onchange="filterAdminInventory()">
+                                <option value="ALL">-- Tất cả phân loại --</option>
+                                <option value="Giày Sneaker">Giày Sneaker</option>
+                                <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                                <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                                <option value="Giày Tây Nam">Giày Tây Nam</option>
                             </select>
                         </div>
                         <div>
-                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Từ ngày</label>
-                            <input type="date" class="form-control" value="2025-10-01">
+                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tình trạng tồn</label>
+                            <select class="form-control" id="inventory-filter-status" onchange="filterAdminInventory()">
+                                <option value="ALL">-- Tất cả tình trạng --</option>
+                                <option value="critical">⚠️ Nguy cấp (&lt; 5 đôi)</option>
+                                <option value="normal">✅ Đủ hàng (≥ 5 đôi)</option>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Đến ngày</label>
-                            <input type="date" class="form-control" value="2025-10-31">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-dark" onclick="filterAdminInventory()">🔍 Lọc kho</button>
+                            <button class="btn btn-outline" onclick="resetAdminInventoryFilters()">🔄 Đặt lại</button>
+                            <button class="btn btn-primary" onclick="exportInventoryReport()">📥 Xuất Báo Cáo CSV</button>
                         </div>
-                        <button class="btn btn-primary" onclick="showToast('Đã kết xuất báo cáo Nhập - Xuất - Tồn kho!', 'success')">Xuất Báo Cáo</button>
                     </div>
 
                     <div style="margin-bottom: 14px;">
-                        <input type="text" placeholder="🔍 Tìm kiếm sản phẩm trong kho..." oninput="filterTableAsYouType(this, 'inventory-table-body')" class="form-control" style="max-width: 320px;">
+                        <input type="text" id="inventory-filter-keyword" placeholder="🔍 Tìm kiếm sản phẩm trong kho..." oninput="filterAdminInventory()" class="form-control" style="max-width: 320px;">
                     </div>
 
                     <table>

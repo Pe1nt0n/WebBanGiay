@@ -38,6 +38,8 @@ function initUserData() {
     const usernameEl = document.getElementById('cart-username');
     const histNameEl = document.getElementById('user-history-name');
     const addrDefaultEl = document.getElementById('addr-default-text');
+    const logoutBtn = document.getElementById('cart-logout-btn');
+    const loginBtn = document.getElementById('cart-login-btn');
 
     if (!currentUser) {
         if (usernameEl) usernameEl.innerText = 'Khách (Chưa đăng nhập)';
@@ -47,6 +49,8 @@ function initUserData() {
                 <em>Chưa có thông tin mặc định. Vui lòng chọn "Nhập địa chỉ mới" bên dưới hoặc đăng nhập tại Trang Chủ.</em>
             `;
         }
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        if (loginBtn) loginBtn.style.display = 'inline-flex';
         selectAddressMode('new');
         return;
     }
@@ -60,8 +64,8 @@ function initUserData() {
         `;
     }
 
-    const logoutBtn = document.getElementById('cart-logout-btn');
-    if (logoutBtn) logoutBtn.style.display = currentUser ? 'inline-block' : 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (loginBtn) loginBtn.style.display = 'none';
 }
 
 function handleCartLogout() {
@@ -185,6 +189,21 @@ function changeCartItemSize(index, newSize) {
 }
 
 function changeQty(index, change) {
+    if (!cartItems[index]) return;
+
+    if (change > 0) {
+        const item = cartItems[index];
+        const prod = (window.SGU_CORE && SGU_CORE.getProductById) ? SGU_CORE.getProductById(item.code || item.id) : null;
+        if (prod) {
+            const sizeStock = prod.sizeStock || {};
+            const avail = sizeStock[item.size] !== undefined ? sizeStock[item.size] : prod.stock;
+            if (item.qty + change > avail) {
+                showToast(`Kho chỉ còn tối đa ${avail} sản phẩm cho Size ${item.size}!`, 'warning');
+                return;
+            }
+        }
+    }
+
     cartItems[index].qty += change;
     if (cartItems[index].qty <= 0) {
         removeCartItem(index);
@@ -347,6 +366,9 @@ function handlePlaceOrder() {
             if (found) {
                 found.stock = Math.max(0, (found.stock || 0) - item.qty);
                 found.stockExport = (found.stockExport || 0) + item.qty;
+                if (found.sizeStock && found.sizeStock[item.size] !== undefined) {
+                    found.sizeStock[item.size] = Math.max(0, found.sizeStock[item.size] - item.qty);
+                }
             }
         });
         SGU_CORE.saveProducts(prods);
@@ -445,11 +467,34 @@ function getBadgeStatusClass(status) {
 function filterCustomerOrders() {
     const keyword = document.getElementById('history-filter-keyword').value.trim().toLowerCase();
     const status = document.getElementById('history-filter-status').value;
+    const fromVal = document.getElementById('history-filter-from') ? document.getElementById('history-filter-from').value : '';
+    const toVal = document.getElementById('history-filter-to') ? document.getElementById('history-filter-to').value : '';
+
+    const fromDate = fromVal ? new Date(fromVal) : null;
+    const toDate = toVal ? new Date(toVal + 'T23:59:59') : null;
 
     const filtered = allOrders.filter(ord => {
         const matchKeyword = !keyword || ord.id.toLowerCase().includes(keyword) || ord.items.toLowerCase().includes(keyword);
         const matchStatus = (status === 'ALL') || (ord.status === status);
-        return matchKeyword && matchStatus;
+
+        let matchDate = true;
+        if (fromDate || toDate) {
+            let ordDate = null;
+            if (ord.date) {
+                const parts = ord.date.split('/');
+                if (parts.length === 3) {
+                    ordDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                } else {
+                    ordDate = new Date(ord.date);
+                }
+            }
+            if (ordDate && !isNaN(ordDate.getTime())) {
+                if (fromDate && ordDate < fromDate) matchDate = false;
+                if (toDate && ordDate > toDate) matchDate = false;
+            }
+        }
+
+        return matchKeyword && matchStatus && matchDate;
     });
 
     renderOrderHistory(filtered);

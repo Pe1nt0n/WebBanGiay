@@ -692,7 +692,7 @@
         }
     };
 
-    // KHỞI TẠO NÚT BACK TO TOP CHO TẤT CẢ CÁC TRANG
+    // KHỞI TẠO NÚT BACK TO TOP CHO TẤT CẢ CÁC TRANG & HỖ TRỢ ĐÓNG MODAL THÔNG MINH
     document.addEventListener('DOMContentLoaded', function () {
         if (!document.getElementById('btn-back-to-top')) {
             const btn = document.createElement('button');
@@ -714,5 +714,23 @@
                 }
             }, { passive: true });
         }
+
+        // TÍNH NĂNG UX: Đóng modal bằng phím ESC hoặc click vào vùng tối ngoài Modal
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' || e.key === 'Esc') {
+                const activeModals = document.querySelectorAll('.modal-overlay');
+                activeModals.forEach(modal => {
+                    if (modal.style.display === 'flex' || window.getComputedStyle(modal).display === 'flex') {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList && e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        });
     });
 })();

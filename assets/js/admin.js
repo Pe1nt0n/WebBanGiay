@@ -897,10 +897,15 @@ function toggleHideProduct(id) {
 // ==========================================================
 // 4. QUẢN LÝ NHẬP HÀNG (MỤC I.5)
 // ==========================================================
-function loadAdminImports() {
+function loadAdminImports(customList) {
     const table = document.getElementById('imports-table-body');
     if (!table || !window.SGU_CORE) return;
-    const imports = SGU_CORE.getImports();
+    const imports = customList || SGU_CORE.getImports();
+
+    if (imports.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy phiếu nhập hàng nào phù hợp với bộ lọc.</td></tr>`;
+        return;
+    }
 
     table.innerHTML = imports.map(imp => `
         <tr id="imp-row-${imp.id}">
@@ -919,6 +924,42 @@ function loadAdminImports() {
             </td>
         </tr>
     `).join('');
+}
+
+function filterAdminImports() {
+    if (!window.SGU_CORE) return;
+    const imports = SGU_CORE.getImports();
+    const keyword = (document.getElementById('import-filter-keyword')?.value || '').trim().toLowerCase();
+    const dateVal = document.getElementById('import-filter-date')?.value;
+
+    const filtered = imports.filter(imp => {
+        const matchKeyword = !keyword || imp.id.toLowerCase().includes(keyword) || (imp.items && imp.items.toLowerCase().includes(keyword));
+
+        let matchDate = true;
+        if (dateVal) {
+            let impDateStr = imp.date || '';
+            if (impDateStr.includes('/')) {
+                const parts = impDateStr.split('/');
+                if (parts.length === 3) {
+                    impDateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                }
+            }
+            if (impDateStr !== dateVal) matchDate = false;
+        }
+
+        return matchKeyword && matchDate;
+    });
+
+    loadAdminImports(filtered);
+}
+
+function resetAdminImportFilters() {
+    const kw = document.getElementById('import-filter-keyword');
+    const dt = document.getElementById('import-filter-date');
+    if (kw) kw.value = '';
+    if (dt) dt.value = '';
+    loadAdminImports();
+    showToast('Đã đặt lại bộ lọc phiếu nhập hàng!', 'success');
 }
 
 let editingImportId = null;
@@ -1026,6 +1067,16 @@ function completeImport(id) {
     if (targetProd) {
         targetProd.stock = (targetProd.stock || 0) + addQty;
         targetProd.stockImport = (targetProd.stockImport || 0) + addQty;
+        // Bổ sung tồn kho vào các size
+        if (targetProd.sizeStock) {
+            const sizes = Object.keys(targetProd.sizeStock);
+            if (sizes.length > 0) {
+                const perSize = Math.max(1, Math.floor(addQty / sizes.length));
+                sizes.forEach(s => {
+                    targetProd.sizeStock[s] = (targetProd.sizeStock[s] || 0) + perSize;
+                });
+            }
+        }
         SGU_CORE.saveProducts(prods);
     }
 
@@ -1114,12 +1165,21 @@ function applyBulkProfit() {
 // ==========================================================
 // 6. QUẢN LÝ ĐƠN HÀNG (MỤC I.7)
 // ==========================================================
-function loadAdminOrders() {
+function loadAdminOrders(customList) {
     const table = document.getElementById('admin-orders-table');
     if (!table || !window.SGU_CORE) return;
-    const orders = SGU_CORE.getOrders();
+    const allOrders = SGU_CORE.getOrders();
+    const orders = customList || allOrders;
 
-    table.innerHTML = orders.map((ord, idx) => `
+    if (orders.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy đơn hàng nào phù hợp với bộ lọc.</td></tr>`;
+        return;
+    }
+
+    table.innerHTML = orders.map((ord) => {
+        const originalIndex = allOrders.findIndex(o => o.id === ord.id);
+        const idx = originalIndex !== -1 ? originalIndex : 0;
+        return `
         <tr data-status="${ord.status}">
             <td><strong>${ord.id}</strong></td>
             <td><strong>${ord.cust || 'Nguyễn Văn A'}</strong></td>
@@ -1136,7 +1196,7 @@ function loadAdminOrders() {
                 <button class="btn btn-dark" style="margin-left:6px;" onclick="viewOrderDetail(${idx})">👁️ Chi tiết</button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 function getBadgeClass(status) {
@@ -1164,10 +1224,54 @@ function changeOrderStatus(selectEl, idx) {
 }
 
 function filterAdminOrders() {
-    const filter = document.getElementById('order-filter-status').value;
-    document.querySelectorAll('#admin-orders-table tr').forEach(row => {
-        row.style.display = (filter === 'ALL' || row.dataset.status === filter) ? '' : 'none';
+    if (!window.SGU_CORE) return;
+    const orders = SGU_CORE.getOrders();
+    const status = document.getElementById('order-filter-status')?.value || 'ALL';
+    const keyword = (document.getElementById('order-filter-keyword')?.value || '').trim().toLowerCase();
+    const fromVal = document.getElementById('order-filter-from')?.value;
+    const toVal = document.getElementById('order-filter-to')?.value;
+
+    const fromDate = fromVal ? new Date(fromVal) : null;
+    const toDate = toVal ? new Date(toVal + 'T23:59:59') : null;
+
+    const filtered = orders.filter(ord => {
+        const matchStatus = (status === 'ALL') || (ord.status === status);
+        const matchKeyword = !keyword || ord.id.toLowerCase().includes(keyword) || (ord.cust && ord.cust.toLowerCase().includes(keyword));
+
+        let matchDate = true;
+        if (fromDate || toDate) {
+            let ordDate = null;
+            if (ord.date) {
+                const parts = ord.date.split('/');
+                if (parts.length === 3) {
+                    ordDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                } else {
+                    ordDate = new Date(ord.date);
+                }
+            }
+            if (ordDate && !isNaN(ordDate.getTime())) {
+                if (fromDate && ordDate < fromDate) matchDate = false;
+                if (toDate && ordDate > toDate) matchDate = false;
+            }
+        }
+
+        return matchStatus && matchKeyword && matchDate;
     });
+
+    loadAdminOrders(filtered);
+}
+
+function resetAdminOrderFilters() {
+    const kw = document.getElementById('order-filter-keyword');
+    const st = document.getElementById('order-filter-status');
+    const fromEl = document.getElementById('order-filter-from');
+    const toEl = document.getElementById('order-filter-to');
+    if (kw) kw.value = '';
+    if (st) st.value = 'ALL';
+    if (fromEl) fromEl.value = '';
+    if (toEl) toEl.value = '';
+    loadAdminOrders();
+    showToast('Đã đặt lại bộ lọc đơn hàng!', 'success');
 }
 
 function viewOrderDetail(idx) {
@@ -1205,10 +1309,15 @@ function viewOrderDetail(idx) {
 // ==========================================================
 // 7. BÁO CÁO TỒN KHO & CẢNH BÁO TỒN THẤP (MỤC I.8)
 // ==========================================================
-function loadAdminInventory() {
+function loadAdminInventory(customList) {
     const table = document.getElementById('inventory-table-body');
     if (!table || !window.SGU_CORE) return;
-    const prods = SGU_CORE.getProducts();
+    const prods = customList || SGU_CORE.getProducts();
+
+    if (prods.length === 0) {
+        table.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy sản phẩm tồn kho phù hợp với điều kiện lọc.</td></tr>`;
+        return;
+    }
 
     table.innerHTML = prods.map(p => {
         const isCritical = p.stock < 5;
@@ -1232,6 +1341,62 @@ function loadAdminInventory() {
             </tr>
         `;
     }).join('');
+}
+
+function filterAdminInventory() {
+    if (!window.SGU_CORE) return;
+    const prods = SGU_CORE.getProducts();
+    const cat = document.getElementById('inventory-filter-cat')?.value || 'ALL';
+    const status = document.getElementById('inventory-filter-status')?.value || 'ALL';
+    const keyword = (document.getElementById('inventory-filter-keyword')?.value || '').trim().toLowerCase();
+
+    const filtered = prods.filter(p => {
+        const matchCat = (cat === 'ALL') || (p.category === cat);
+        const matchKeyword = !keyword || p.id.toLowerCase().includes(keyword) || p.name.toLowerCase().includes(keyword);
+        const matchStatus = (status === 'ALL') 
+            || (status === 'critical' && (p.stock < 5))
+            || (status === 'normal' && (p.stock >= 5));
+        return matchCat && matchKeyword && matchStatus;
+    });
+
+    loadAdminInventory(filtered);
+}
+
+function resetAdminInventoryFilters() {
+    const cat = document.getElementById('inventory-filter-cat');
+    const status = document.getElementById('inventory-filter-status');
+    const kw = document.getElementById('inventory-filter-keyword');
+    if (cat) cat.value = 'ALL';
+    if (status) status.value = 'ALL';
+    if (kw) kw.value = '';
+    loadAdminInventory();
+    showToast('Đã đặt lại bộ lọc tồn kho!', 'success');
+}
+
+function exportInventoryReport() {
+    if (!window.SGU_CORE) return;
+    const prods = SGU_CORE.getProducts();
+    const today = new Date().toLocaleDateString('vi-VN');
+
+    let csvContent = '\uFEFF'; // UTF-8 BOM cho Microsoft Excel tiếng Việt
+    csvContent += 'BÁO CÁO TỒN KHO SẢN PHẨM - SGU SNEAKER STORE\n';
+    csvContent += `Ngày xuất báo cáo: ${today}\n\n`;
+    csvContent += 'Mã SP,Tên sản phẩm giày,Phân loại,Tồn đầu kỳ,Tổng nhập,Tổng xuất,Tồn hiện tại,Tình trạng\n';
+
+    prods.forEach(p => {
+        const status = (p.stock < 5) ? 'Nguy cấp' : 'Đủ hàng';
+        csvContent += `"${p.id}","${p.name}","${p.category}",${p.stockInitial || 10},${p.stockImport || 0},${p.stockExport || 0},${p.stock},"${status}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Bao_Cao_Ton_Kho_SGU_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('🎉 Đã xuất file CSV báo cáo tồn kho thành công!', 'success');
 }
 
 function closeModal(id) { 

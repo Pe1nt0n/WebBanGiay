@@ -908,11 +908,22 @@ function confirmQuickAddToCart() {
 
     const p = quickModalProduct;
     const size = quickModalSelectedSize;
+    const sizeStock = p.sizeStock || {};
+    const avail = sizeStock[size] !== undefined ? sizeStock[size] : p.stock;
+
+    if (avail <= 0) {
+        showToast(`Size ${size} hiện đã tạm hết hàng trong kho!`, 'warning');
+        return;
+    }
 
     let cart = (window.SGU_CORE && SGU_CORE.getCart) ? SGU_CORE.getCart() : (JSON.parse(localStorage.getItem('sgu_cart')) || []);
     const existing = cart.find(item => item.code === p.id && item.size === size);
 
     if (existing) {
+        if (existing.qty + 1 > avail) {
+            showToast(`Kho chỉ còn tối đa ${avail} sản phẩm cho Size ${size}!`, 'warning');
+            return;
+        }
         existing.qty += 1;
     } else {
         cart.push({

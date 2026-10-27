@@ -224,6 +224,16 @@ function selectSize(btn, sizeVal) {
     document.querySelectorAll('#size-chips-box .chip').forEach(c => c.classList.remove('selected'));
     btn.classList.add('selected');
     currentSelectedSize = sizeVal;
+
+    // Tự động điều chỉnh số lượng chọn nếu vượt quá tồn kho của size mới
+    if (currentProduct && currentProduct.sizeStock) {
+        const stock = currentProduct.sizeStock[sizeVal] !== undefined ? currentProduct.sizeStock[sizeVal] : currentProduct.stock;
+        const qtyInput = document.getElementById('qty-input');
+        if (qtyInput && stock > 0 && parseInt(qtyInput.value) > stock) {
+            qtyInput.value = stock;
+        }
+    }
+
     updateSizeStockFeedback();
     showToast(`Đã chọn kích cỡ Size ${sizeVal}`, 'success');
 }
@@ -487,9 +497,21 @@ function changeQty(delta) {
     if (!input) return;
     let val = parseInt(input.value) + delta;
     if (val < 1) val = 1;
-    const max = currentProduct ? currentProduct.stock : 20;
+
+    // Kiểm tra tồn kho theo size được chọn hiện tại
+    const sizeStock = (currentProduct && currentProduct.sizeStock) ? currentProduct.sizeStock : {};
+    const max = (currentProduct && sizeStock[currentSelectedSize] !== undefined)
+        ? sizeStock[currentSelectedSize]
+        : (currentProduct ? currentProduct.stock : 20);
+
+    if (max <= 0) {
+        showToast(`Size ${currentSelectedSize} hiện đã hết hàng trong kho!`, 'warning');
+        input.value = 1;
+        return;
+    }
+
     if (val > max) {
-        showToast(`Kho hiện chỉ còn tối đa ${max} sản phẩm!`, 'warning');
+        showToast(`Kho hiện chỉ còn tối đa ${max} sản phẩm cho Size ${currentSelectedSize}!`, 'warning');
         val = max;
     }
     input.value = val;
@@ -532,17 +554,20 @@ function addToCartDetailed() {
         return;
     }
 
-    // 3. Kiểm tra số lượng tồn kho
+    // 3. Kiểm tra số lượng tồn kho theo Size
     const p = currentProduct;
-    if (p.stock <= 0) {
-        showToast('Sản phẩm này tạm thời đã hết hàng trong kho!', 'warning');
+    const sizeStock = p.sizeStock || {};
+    const availStock = sizeStock[currentSelectedSize] !== undefined ? sizeStock[currentSelectedSize] : p.stock;
+
+    if (availStock <= 0) {
+        showToast(`Size ${currentSelectedSize} tạm thời đã hết hàng trong kho! Vui lòng chọn size khác.`, 'warning');
         return;
     }
 
     const qtyInput = document.getElementById('qty-input');
     const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
-    if (qty > p.stock) {
-        showToast(`Số lượng đặt (${qty}) vượt quá tồn kho (${p.stock})!`, 'warning');
+    if (qty > availStock) {
+        showToast(`Kho chỉ còn ${availStock} sản phẩm cho Size ${currentSelectedSize}!`, 'warning');
         return;
     }
 
@@ -550,6 +575,10 @@ function addToCartDetailed() {
     let cart = SGU_CORE.getCart();
     const existing = cart.find(i => i.code === p.id && i.size === currentSelectedSize);
     if (existing) {
+        if (existing.qty + qty > availStock) {
+            showToast(`Giỏ hàng đã có ${existing.qty} đôi. Kho chỉ còn tối đa ${availStock} đôi cho Size ${currentSelectedSize}!`, 'warning');
+            return;
+        }
         existing.qty += qty;
     } else {
         cart.push({

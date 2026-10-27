@@ -1,7 +1,6 @@
 /**
  * SGU SNEAKER - JAVASCRIPT QUẢN TRỊ 2: NGHIỆP VỤ BÁN HÀNG & KHO BÃI (OPERATIONS, SALES & INVENTORY)
  * Học phần: Lập trình Web và Ứng dụng - Đại học Sài Gòn (SGU)
- * PHÂN CÔNG: THÀNH VIÊN 4 PHỤ TRÁCH (Barem SGU: I.5, I.6, I.7, I.8)
  * 
  * CÁC CHỨC NĂNG CHÍNH:
  * 1. Quản lý Nhập hàng: Tìm kiếm phiếu nhập, Thêm phiếu (ngày, giá, số lượng), Sửa & Hoàn thành phiếu nhập
@@ -544,7 +543,7 @@ function exportInventoryReport() {
 }
 
 // ==========================================================
-// 5. KHỞI CHẠY CÁC MODULE CỦA THÀNH VIÊN 4
+// 5. KHỞI CHẠY CÁC MODULE BÁN HÀNG & KHO BÃI
 // ==========================================================
 
 function loadAdminSalesModules() {

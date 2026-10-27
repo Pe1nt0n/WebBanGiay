@@ -1,6 +1,5 @@
 /**
  * SGU SNEAKER - LOGIC GIỎ HÀNG, ĐẶT HÀNG & LỊCH SỬ ĐƠN (CART PAGE)
- * Thành viên 3 - Barem II.3 & II.4
  */
 
 // DỮ LIỆU ĐỒNG BỘ QUA SGU_CORE (SHARED DATA CORE)

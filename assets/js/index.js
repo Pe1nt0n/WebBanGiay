@@ -1,6 +1,5 @@
 /**
  * SGU SNEAKER - LOGIC TRANG CHỦ & TÌM KIẾM SẢN PHẨM (INDEX PAGE)
- * Thành viên 1 - Barem II.1 & II.2
  */
 
 // 1. DỮ LIỆU SẢN PHẨM MẪU (ĐỒNG BỘ LOCALSTORAGE QUA SGU_CORE)

@@ -1,7 +1,6 @@
 /**
  * SGU SNEAKER - JAVASCRIPT QUẢN TRỊ 1: DỮ LIỆU GỐC & KHÁCH HÀNG (MASTER DATA & USER MANAGEMENT)
  * Học phần: Lập trình Web và Ứng dụng - Đại học Sài Gòn (SGU)
- * PHÂN CÔNG: THÀNH VIÊN 3 PHỤ TRÁCH (Barem SGU: I.1, I.2, I.3, I.4)
  * 
  * CÁC CHỨC NĂNG CHÍNH:
  * 1. Tiện ích giao diện: Toast notification, Tìm kiếm bảng tức thì, Đóng modal
@@ -809,7 +808,7 @@ function saveProductModal() {
     SGU_CORE.saveProducts(prods);
     loadAdminProducts();
 
-    // Đồng bộ sang các module do Thành viên 4 phụ trách (nếu đã nạp)
+    // Đồng bộ sang các module định giá & tồn kho (nếu đã nạp)
     if (typeof loadAdminPricing === 'function') loadAdminPricing();
     if (typeof loadAdminInventory === 'function') loadAdminInventory();
     updateAdminKPIs();
@@ -860,7 +859,7 @@ function toggleHideProduct(id) {
 }
 
 // ==========================================================
-// 7. KHỞI CHẠY CÁC MODULE CỦA THÀNH VIÊN 3
+// 7. KHỞI CHẠY CÁC MODULE DỮ LIỆU GỐC & KHÁCH HÀNG
 // ==========================================================
 
 function loadAdminMasterModules() {

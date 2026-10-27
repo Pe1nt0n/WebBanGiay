@@ -1,6 +1,5 @@
 /**
  * SGU SNEAKER - LOGIC CHI TIẾT SẢN PHẨM (PRODUCT DETAIL PAGE)
- * Thành viên 2 - Barem II.2
  */
 
 // DỮ LIỆU ĐỘNG TỪ BỘ KHỞI TẠO DÙNG CHUNG (SGU_CORE)

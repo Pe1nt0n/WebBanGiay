@@ -117,10 +117,8 @@ DoAnWeb/
 │       ├── index.js             # Logic Trang chủ: tìm kiếm, bộ lọc đa năng, phân trang, quick view
 │       ├── product-detail.js    # Logic Chi tiết SP: tồn kho từng size, gallery, đánh giá
 │       ├── cart.js              # Logic Giỏ hàng: voucher, VietQR/COD, lịch sử & in hóa đơn
-│       └── admin.js             # Logic Quản trị: KPI, CRUD loại, CRUD sản phẩm, duyệt đơn
-│
-├── docs/
-│   └── HUONG_DAN_SU_DUNG.md     # Hướng dẫn sử dụng, tài khoản demo & tiêu chí chấm điểm
+│       ├── admin-master.js      # [TV3] Logic Quản trị 1: Auth, User, Loại SP, Quản lý sản phẩm & Gallery
+│       └── admin-sales.js       # [TV4] Logic Quản trị 2: Nhập hàng, Giá bán, Đơn hàng, Tồn kho & Báo cáo
 │
 ├── .gitignore                   # Bộ lọc bỏ qua tệp tin rác của hệ điều hành
 └── README.md                    # Tài liệu giới thiệu tổng quan dự án

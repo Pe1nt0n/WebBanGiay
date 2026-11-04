@@ -24,7 +24,7 @@ function showToast(msg, type = 'success') {
     }
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '⚠️');
+    const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : (type === 'danger' ? '❌' : '⚠️'));
     toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -53,6 +53,12 @@ function closeModal(id) {
 // 2. XÁC THỰC ADMIN & KHUNG DASHBOARD (MỤC I.1)
 // ==========================================================
 
+// Danh sách tài khoản Quản trị hợp lệ
+const VALID_ADMIN_ACCOUNTS = [
+    { user: 'admin', pass: 'admin123' },
+    { user: 'admin_sgu', pass: '123456' }
+];
+
 // Kiểm tra phiên làm việc Admin qua sessionStorage
 function checkAdminSession() {
     const isAuth = sessionStorage.getItem('sgu_admin_auth') === 'true';
@@ -62,36 +68,83 @@ function checkAdminSession() {
         loginScreen.style.display = 'none';
     } else {
         loginScreen.style.display = 'flex';
+        const userInput = document.getElementById('admin-user');
+        if (userInput) setTimeout(() => userInput.focus(), 150);
     }
 }
 
-// Đăng nhập Admin riêng biệt (không dùng chung khách)
+// Đăng nhập Admin riêng biệt (xác thực tài khoản & mật khẩu chính xác)
 function loginAdmin() {
-    const user = document.getElementById('admin-user').value.trim();
-    const pass = document.getElementById('admin-pass').value.trim();
-    if (!user || !pass) {
-        showToast('Vui lòng nhập tài khoản và mật khẩu!', 'warning');
+    const userInput = document.getElementById('admin-user');
+    const passInput = document.getElementById('admin-pass');
+    const user = userInput ? userInput.value.trim() : '';
+    const pass = passInput ? passInput.value.trim() : '';
+
+    if (!user && !pass) {
+        showToast('Vui lòng nhập tài khoản và mật khẩu Quản trị!', 'warning');
+        if (userInput) userInput.focus();
         return;
     }
+    if (!user) {
+        showToast('Vui lòng nhập tài khoản Quản trị!', 'warning');
+        if (userInput) userInput.focus();
+        return;
+    }
+    if (!pass) {
+        showToast('Vui lòng nhập mật khẩu Quản trị!', 'warning');
+        if (passInput) passInput.focus();
+        return;
+    }
+
+    const isValid = VALID_ADMIN_ACCOUNTS.some(acc => acc.user === user && acc.pass === pass);
+    if (!isValid) {
+        showToast('Tài khoản hoặc mật khẩu Quản trị không chính xác!', 'danger');
+        if (passInput) {
+            passInput.value = '';
+            passInput.focus();
+        }
+        return;
+    }
+
     sessionStorage.setItem('sgu_admin_auth', 'true');
     const loginScreen = document.getElementById('admin-login-screen');
     if (loginScreen) loginScreen.style.display = 'none';
-    showToast('Đăng nhập Quản trị viên thành công! Phiên làm việc đã kích hoạt.', 'success');
+
+    // Xóa trắng ô nhập sau khi đăng nhập thành công
+    if (userInput) userInput.value = '';
+    if (passInput) passInput.value = '';
+
+    showToast(`Đăng nhập Quản trị viên thành công! Xin chào ${user}.`, 'success');
 }
 
 // Đăng xuất Admin
 function logoutAdmin() {
     sessionStorage.removeItem('sgu_admin_auth');
     const loginScreen = document.getElementById('admin-login-screen');
-    if (loginScreen) loginScreen.style.display = 'flex';
+    if (loginScreen) {
+        loginScreen.style.display = 'flex';
+        const userInput = document.getElementById('admin-user');
+        const passInput = document.getElementById('admin-pass');
+        if (userInput) userInput.value = '';
+        if (passInput) passInput.value = '';
+        if (userInput) setTimeout(() => userInput.focus(), 150);
+    }
     showToast('Đã đăng xuất khỏi tài khoản Quản trị!', 'warning');
 }
 
-// Khóa nhanh màn hình Admin
+// Khóa nhanh màn hình Admin (yêu cầu xác thực lại để tiếp tục)
 function lockAdminScreen() {
+    sessionStorage.removeItem('sgu_admin_auth');
     const loginScreen = document.getElementById('admin-login-screen');
-    if (loginScreen) loginScreen.style.display = 'flex';
-    showToast('Đã khóa màn hình Quản trị viên!', 'warning');
+    if (loginScreen) {
+        loginScreen.style.display = 'flex';
+        const passInput = document.getElementById('admin-pass');
+        if (passInput) {
+            passInput.value = '';
+            setTimeout(() => passInput.focus(), 150);
+        }
+    }
+    showToast('Đã khóa màn hình Quản trị viên! Vui lòng đăng nhập lại.', 'warning');
 }
 
 // Chuyển Tab chức năng điều hướng

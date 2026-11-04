@@ -109,6 +109,7 @@
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: var(--shadow-sm);
+    overflow-x: auto;
 }
 .card-header {
     display: flex;
@@ -155,8 +156,8 @@
 
 /* TABLES */
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13.5px; }
-th { background: #f8fafc; font-weight: 700; color: var(--dark); }
+th, td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13.5px; vertical-align: middle; }
+th { background: #f8fafc; font-weight: 700; color: var(--dark); white-space: nowrap; }
 .thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
 
 /* KPI STAT CARDS */

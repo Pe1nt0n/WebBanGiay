@@ -351,11 +351,15 @@ header {
 
 /* STATUS BADGES */
 .status-badge {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 700;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 .status-new { background: #dbeafe; color: #1e40af; }
 .status-pending { background: #fef3c7; color: #b45309; }
@@ -363,15 +367,25 @@ header {
 .status-cancel { background: #fee2e2; color: #991b1b; }
 
 .badge {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    line-height: 1.2;
+    text-align: center;
 }
 .badge-active { background: #dcfce7; color: #15803d; }
 .badge-locked { background: #fee2e2; color: #b91c1c; }
 .badge-pending { background: #fef3c7; color: #b45309; }
 .badge-done { background: #dbeafe; color: #1d4ed8; }
+.badge-danger { background: #fee2e2; color: #b91c1c; }
+.badge-warning { background: #fef3c7; color: #b45309; }
+.badge-info { background: #e0f2fe; color: #0284c7; }
+.badge-success { background: #dcfce7; color: #15803d; }
 
 /* MODAL WINDOWS */
 .modal-overlay {

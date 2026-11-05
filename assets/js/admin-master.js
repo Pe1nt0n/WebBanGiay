@@ -168,6 +168,10 @@ function switchAdminTab(tabId, navEl) {
     if (mapHash[tabId]) {
         history.replaceState(null, null, mapHash[tabId]);
     }
+
+    if (tabId === "tab-users") {
+        loadAdminUsers();
+    }
 }
 
 // Bộ thẻ KPI thống kê tự động cập nhật từ SGU_CORE
@@ -252,6 +256,14 @@ function resetUserPassword(userId, name) {
     if (u) {
         u.pass = '123456';
         SGU_CORE.saveUsers(users);
+
+        // Đồng bộ nếu tài khoản này đang đăng nhập phiên hiện tại
+        const cur = SGU_CORE.getCurrentUser();
+        if (cur && (cur.id === userId || cur.email === u.email)) {
+            cur.pass = '123456';
+            SGU_CORE.setCurrentUser(cur);
+        }
+
         showToast(`Đã reset mật khẩu của khách hàng "${name}" về mặc định: 123456`, 'success');
     }
 }
@@ -933,4 +945,25 @@ window.addEventListener('DOMContentLoaded', function() {
     if (hash === '#users') switchAdminTab('tab-users', document.getElementById('nav-users'));
     else if (hash === '#cats') switchAdminTab('tab-cats', document.getElementById('nav-cats'));
     else if (hash === '#prods') switchAdminTab('tab-prods', document.getElementById('nav-prods'));
+});
+
+// Lắng nghe sự kiện storage để đồng bộ dữ liệu theo thời gian thực giữa các tab (Storefront <-> Admin)
+window.addEventListener('storage', function (e) {
+    if (e.key === 'sgu_users') {
+        loadAdminUsers();
+    }
+    if (e.key === 'sgu_orders') {
+        if (typeof loadAdminOrders === 'function') loadAdminOrders();
+        updateAdminKPIs();
+    }
+    if (e.key === 'sgu_products') {
+        loadAdminProducts();
+        updateAdminKPIs();
+    }
+});
+
+// Tự động tải lại dữ liệu khi người dùng chuyển tab quay lại trang Admin
+window.addEventListener('focus', function () {
+    loadAdminUsers();
+    updateAdminKPIs();
 });

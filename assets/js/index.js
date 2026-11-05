@@ -356,19 +356,57 @@ function handleLogout() {
     showToast('Đã đăng xuất khỏi tài khoản!', 'warning');
 }
 
-// CẬP NHẬT HỒ SƠ (Mục II.1)
+// CẬP NHẬT HỒ SƠ & EMAIL (Mục II.1)
 function handleUpdateProfile() {
     if (!currentUser) return;
-    const name = document.getElementById('prof-name').value.trim();
-    const phone = document.getElementById('prof-phone').value.trim();
-    const address = document.getElementById('prof-address').value.trim();
+    const nameEl = document.getElementById('prof-name');
+    const emailEl = document.getElementById('prof-email');
+    const phoneEl = document.getElementById('prof-phone');
+    const addressEl = document.getElementById('prof-address');
 
-    if (!name || !phone || !address) {
-        showToast('Vui lòng không để trống thông tin cá nhân!', 'warning');
+    const name = nameEl ? nameEl.value.trim() : '';
+    const email = emailEl ? emailEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const address = addressEl ? addressEl.value.trim() : '';
+
+    if (!name || !email || !phone || !address) {
+        showToast('Vui lòng không để trống thông tin cá nhân (Họ tên, Email, SĐT, Địa chỉ)!', 'warning');
         return;
     }
 
+    // Kiểm tra định dạng Email hợp lệ
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Email không đúng định dạng! Vui lòng nhập email hợp lệ (ví dụ: ten@gmail.com).', 'warning');
+        return;
+    }
+
+    // Lấy danh sách tài khoản hiện có trong hệ thống
+    const users = (window.SGU_CORE && SGU_CORE.getUsers) 
+        ? SGU_CORE.getUsers() 
+        : (JSON.parse(localStorage.getItem('sgu_users')) || []);
+
+    // Kiểm tra nếu email đã được sử dụng bởi tài khoản khác
+    const emailLower = email.toLowerCase();
+    const isDuplicateEmail = users.some(u => {
+        if (!u.email) return false;
+        if (u.email.toLowerCase() !== emailLower) return false;
+        if (currentUser.id && u.id) {
+            return u.id !== currentUser.id;
+        }
+        return (currentUser.email || '').toLowerCase() !== emailLower;
+    });
+
+    if (isDuplicateEmail) {
+        showToast('Email này đã được sử dụng bởi một tài khoản khác trong hệ thống!', 'warning');
+        return;
+    }
+
+    const oldEmail = currentUser.email;
+
+    // 1. Cập nhật thông tin session của người dùng hiện tại (sgu_user)
     currentUser.name = name;
+    currentUser.email = email;
     currentUser.phone = phone;
     currentUser.address = address;
 
@@ -378,9 +416,45 @@ function handleUpdateProfile() {
         localStorage.setItem('sgu_user', JSON.stringify(currentUser));
     }
 
+    // 2. Đồng bộ cập nhật vào danh sách sgu_users (để Admin hiển thị chính xác)
+    const userIndex = users.findIndex(u => {
+        if (currentUser.id && u.id) return u.id === currentUser.id;
+        if (oldEmail && u.email) return u.email.toLowerCase() === oldEmail.toLowerCase();
+        return u.name === currentUser.name;
+    });
+
+    if (userIndex !== -1) {
+        users[userIndex].name = name;
+        users[userIndex].email = email;
+        users[userIndex].phone = phone;
+        users[userIndex].address = address;
+        if (window.SGU_CORE && SGU_CORE.saveUsers) {
+            SGU_CORE.saveUsers(users);
+        } else {
+            localStorage.setItem('sgu_users', JSON.stringify(users));
+        }
+    }
+
+    // 3. Đồng bộ cập nhật các đơn hàng trong lịch sử (nếu có)
+    if (window.SGU_CORE && SGU_CORE.getOrders) {
+        const orders = SGU_CORE.getOrders();
+        let ordersChanged = false;
+        orders.forEach(o => {
+            if ((oldEmail && (o.custEmail === oldEmail || o.email === oldEmail)) || (currentUser.id && o.userId === currentUser.id)) {
+                o.custEmail = email;
+                o.cust = name;
+                if (o.email) o.email = email;
+                ordersChanged = true;
+            }
+        });
+        if (ordersChanged) {
+            SGU_CORE.saveOrders(orders);
+        }
+    }
+
     initUserState();
     closeModal('modal-profile');
-    showToast('Cập nhật hồ sơ thông tin cá nhân thành công!', 'success');
+    showToast('Cập nhật hồ sơ tài khoản và Email thành công!', 'success');
 }
 
 // RENDER MENU DANH MỤC ĐỘNG TỪ SGU_CORE

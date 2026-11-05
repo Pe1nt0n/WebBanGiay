@@ -302,12 +302,33 @@ function handleLogin() {
 // ĐĂNG KÝ (Mục II.1)
 function handleRegister() {
     const name = document.getElementById('reg-fullname').value.trim();
+    const emailEl = document.getElementById('reg-email');
+    const email = emailEl ? emailEl.value.trim() : '';
     const phone = document.getElementById('reg-phone').value.trim();
     const address = document.getElementById('reg-address').value.trim();
     const pass = document.getElementById('reg-password').value.trim();
 
-    if (!name || !phone || !address || !pass) {
-        showToast('Vui lòng điền đầy đủ các thông tin bắt buộc (*)!', 'warning');
+    if (!name || !email || !phone || !address || !pass) {
+        showToast('Vui lòng điền đầy đủ tất cả các trường thông tin (*)!', 'warning');
+        return;
+    }
+
+    // Kiểm tra định dạng Email hợp lệ
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Email không đúng định dạng! Vui lòng nhập email hợp lệ (ví dụ: ten@gmail.com).', 'warning');
+        return;
+    }
+
+    // Kiểm tra định dạng Số điện thoại (9-11 chữ số)
+    const phoneRegex = /^[0-9]{9,11}$/;
+    if (!phoneRegex.test(phone.replace(/[\s.-]/g, ''))) {
+        showToast('Số điện thoại không hợp lệ! Vui lòng nhập từ 9-11 chữ số.', 'warning');
+        return;
+    }
+
+    if (pass.length < 6) {
+        showToast('Mật khẩu tối thiểu phải từ 6 ký tự trở lên!', 'warning');
         return;
     }
 
@@ -315,11 +336,18 @@ function handleRegister() {
         ? SGU_CORE.getUsers() 
         : (JSON.parse(localStorage.getItem('sgu_users')) || []);
 
-    const autoEmail = 'user_' + Date.now().toString().slice(-4) + '@gmail.com';
+    // Kiểm tra xem Email đã được đăng ký trước đó chưa
+    const emailLower = email.toLowerCase();
+    const exists = users.find(u => u.email && u.email.toLowerCase() === emailLower);
+    if (exists) {
+        showToast('Email này đã được sử dụng! Vui lòng đăng nhập hoặc dùng email khác.', 'warning');
+        return;
+    }
+
     const newUser = {
         id: 'KH' + String(users.length + 1).padStart(3, '0'),
         name: name,
-        email: autoEmail,
+        email: email,
         pass: pass,
         phone: phone,
         address: address,
@@ -336,6 +364,14 @@ function handleRegister() {
     }
 
     currentUser = newUser;
+
+    // Reset các trường nhập liệu sau khi đăng ký thành công
+    document.getElementById('reg-fullname').value = '';
+    if (emailEl) emailEl.value = '';
+    document.getElementById('reg-phone').value = '';
+    document.getElementById('reg-address').value = '';
+    document.getElementById('reg-password').value = '';
+
     closeModal('modal-register');
     initUserState();
     updateCartBadge();

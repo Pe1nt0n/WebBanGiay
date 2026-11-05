@@ -252,6 +252,10 @@
                 <input type="text" id="reg-fullname" class="form-control" placeholder="Nhập họ và tên...">
             </div>
             <div class="form-group">
+                <label>Email / Gmail đăng nhập & liên hệ *</label>
+                <input type="email" id="reg-email" class="form-control" placeholder="Nhập địa chỉ email/gmail (ví dụ: user@gmail.com)...">
+            </div>
+            <div class="form-group">
                 <label>Số điện thoại liên hệ *</label>
                 <input type="tel" id="reg-phone" class="form-control" placeholder="Nhập số điện thoại...">
             </div>
@@ -261,11 +265,14 @@
             </div>
             <div class="form-group">
                 <label>Mật khẩu đăng nhập *</label>
-                <input type="password" id="reg-password" class="form-control" placeholder="Nhập mật khẩu...">
+                <input type="password" id="reg-password" class="form-control" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)...">
             </div>
             <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 8px;" onclick="handleRegister()">
                 Hoàn Tất Đăng Ký →
             </button>
+            <div style="text-align: center; margin-top: 18px; font-size: 13px; color: var(--gray);">
+                Đã có tài khoản? <a href="javascript:void(0)" style="color: var(--primary); font-weight: 700;" onclick="closeModal('modal-register'); openModal('modal-login')">Đăng nhập tại đây</a>
+            </div>
         </div>
     </div>
 

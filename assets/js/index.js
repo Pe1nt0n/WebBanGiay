@@ -586,12 +586,14 @@ function applyFilters() {
     // Lấy danh sách thương hiệu được tích chọn
     const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value);
     const allBrandBoxes = document.querySelectorAll('input[name="brand"]');
-    const allOrNone = selectedBrands.length === 0 || selectedBrands.length === allBrandBoxes.length;
+    const hasBrandBoxes = allBrandBoxes.length > 0;
+    const allChecked = hasBrandBoxes && selectedBrands.length === allBrandBoxes.length;
 
     filteredProducts = productsData.filter(prod => {
         const matchKeyword = !normKey || norm(prod.name).includes(normKey) || norm(prod.desc).includes(normKey) || norm(prod.brand).includes(normKey);
         const matchCategory = (cat === 'Tất cả') || (prod.category === cat);
-        const matchBrand = allOrNone || selectedBrands.includes(prod.brand);
+        // Khi bỏ hết tích thương hiệu (selectedBrands.length === 0): không hiển thị sản phẩm nào (0 kết quả)
+        const matchBrand = !hasBrandBoxes || allChecked || selectedBrands.includes(prod.brand);
         const matchPrice = (prod.price >= minPrice && prod.price <= maxPrice);
         const matchSize = (selectedSize === 'ALL') || (prod.sizes && prod.sizes.includes(parseInt(selectedSize)));
 

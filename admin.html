@@ -786,35 +786,51 @@
 
     <!-- MODAL THÊM / SỬA PHIẾU NHẬP HÀNG (MỤC I.5) -->
     <div class="modal-overlay" id="modal-import">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width: 620px;">
             <h3 id="modal-imp-title" style="margin-bottom: 16px; font-weight:800;">Thêm Phiếu Nhập Hàng</h3>
             <input type="hidden" id="imp-edit-id" value="">
-            <div style="margin-bottom: 14px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Ngày nhập hàng *</label>
-                <input type="date" id="imp-date" class="form-control" value="2025-10-24" style="width:100%;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Ngày nhập hàng *</label>
+                    <input type="date" id="imp-date" class="form-control" value="2025-10-24" style="width:100%;">
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Đơn giá nhập (VNĐ/đôi) *</label>
+                    <input type="number" id="imp-price" class="form-control" value="1800000" min="0" step="50000" oninput="calculateImportTotals()">
+                </div>
             </div>
-            <p style="font-size:13px; font-weight:700; margin-bottom: 8px;">Danh sách sản phẩm nhập:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sản phẩm giày</th>
-                        <th>Giá nhập (VNĐ)</th>
-                        <th>Số lượng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <select class="form-control" id="imp-prod-select">
-                                <option value="SP001">SP001 - Nike Air Max Red 2025</option>
-                            </select>
-                        </td>
-                        <td><input type="number" id="imp-price" class="form-control" value="1800000"></td>
-                        <td><input type="number" id="imp-qty" class="form-control" value="10" style="width:80px;"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Sản phẩm giày nhập kho *</label>
+                <select class="form-control" id="imp-prod-select" onchange="onImportProductSelectChange()" style="width: 100%;">
+                    <option value="SP001">SP001 - Nike Air Max Red 2025</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label style="font-size:13px; font-weight:700;">Phân bổ số lượng nhập theo từng Size giày:</label>
+                    <button type="button" class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="distributeImportQtyEqually()">⚡ Chia đều 2 đôi/size</button>
+                </div>
+                <div id="import-size-inputs-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <!-- Dynamic size inputs for selected product -->
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #fff7ed; border: 1px solid #fed7aa; padding: 12px 16px; border-radius: 8px; margin-top: 14px;">
+                <div>
+                    <span style="font-size: 12.5px; color: #9a3412;">Tổng số lượng nhập:</span>
+                    <div id="import-total-qty-display" style="font-size: 18px; font-weight: 800; color: #c2410c;">0 đôi</div>
+                    <input type="hidden" id="imp-qty" value="0">
+                </div>
+                <div>
+                    <span style="font-size: 12.5px; color: #9a3412;">Tổng tiền thanh toán:</span>
+                    <div id="import-total-cost-display" style="font-size: 18px; font-weight: 800; color: #c2410c;">0 ₫</div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
                 <button class="btn btn-dark" onclick="closeModal('modal-import')">Đóng</button>
                 <button class="btn btn-primary" onclick="saveImportModal()">💾 Lưu phiếu nhập</button>
             </div>

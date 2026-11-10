@@ -25,11 +25,28 @@ function loadAdminImports(customList) {
         return;
     }
 
-    table.innerHTML = imports.map(imp => `
+    table.innerHTML = imports.map(imp => {
+        let sizeSummaryHtml = '';
+        if (imp.sizeBreakdown) {
+            const sizeEntries = Object.entries(imp.sizeBreakdown).filter(([_, qty]) => Number(qty) > 0);
+            if (sizeEntries.length > 0) {
+                sizeSummaryHtml = `
+                    <div style="margin-top:4px; font-size:11.5px; color:#475569; display:flex; gap:4px; flex-wrap:wrap;">
+                        <span style="font-weight:700;">Size nhập:</span>
+                        ${sizeEntries.map(([s, q]) => `<span style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #cbd5e1; font-weight:600;">${s}(+${q})</span>`).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        return `
         <tr id="imp-row-${imp.id}">
             <td><strong>${imp.id}</strong></td>
             <td>${imp.date}</td>
-            <td>${imp.items}</td>
+            <td>
+                <strong>${imp.items}</strong>
+                ${sizeSummaryHtml}
+            </td>
             <td><strong style="color:var(--primary);">${imp.total}</strong></td>
             <td><span class="badge ${imp.status === 'Đã hoàn thành' ? 'badge-done' : 'badge-pending'}" id="imp-status-${imp.id}">${imp.status}</span></td>
             <td id="imp-actions-${imp.id}">
@@ -41,7 +58,7 @@ function loadAdminImports(customList) {
                 `}
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 function filterAdminImports() {
@@ -80,7 +97,7 @@ function resetAdminImportFilters() {
     if (typeof showToast === 'function') showToast('Đã đặt lại bộ lọc phiếu nhập hàng!', 'success');
 }
 
-function openImportModal(mode, id) {
+function openImportModal(mode, id, defaultProdId = null, defaultQty = null) {
     editingImportId = (mode === 'edit') ? id : null;
     document.getElementById('imp-edit-id').value = editingImportId || '';
     document.getElementById('modal-imp-title').innerText = (mode === 'edit') 
@@ -91,13 +108,15 @@ function openImportModal(mode, id) {
     const select = document.getElementById('imp-prod-select');
     if (select && window.SGU_CORE) {
         const prods = SGU_CORE.getProducts();
-        select.innerHTML = prods.map(p => `<option value="${p.id}">${p.id} - ${p.name}</option>`).join('');
+        select.innerHTML = prods.map(p => `<option value="${p.id}">${p.id} - ${p.name} (${p.category})</option>`).join('');
     }
 
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('imp-date');
     const priceInput = document.getElementById('imp-price');
-    const qtyInput = document.getElementById('imp-qty');
+
+    let targetProdId = defaultProdId || (select ? select.value : 'SP001');
+    let existingBreakdown = null;
 
     if (mode === 'edit' && id && window.SGU_CORE) {
         const imports = SGU_CORE.getImports();
@@ -105,16 +124,122 @@ function openImportModal(mode, id) {
         if (found) {
             if (dateInput) dateInput.value = found.date || today;
             if (priceInput) priceInput.value = found.unitCost || 1800000;
-            if (qtyInput) qtyInput.value = found.qty || 10;
-            if (select && found.prodId) select.value = found.prodId;
+            if (select && found.prodId) {
+                select.value = found.prodId;
+                targetProdId = found.prodId;
+            }
+            existingBreakdown = found.sizeBreakdown || null;
         }
     } else {
         if (dateInput) dateInput.value = today;
-        if (priceInput) priceInput.value = 1800000;
-        if (qtyInput) qtyInput.value = 10;
+        if (select && defaultProdId) select.value = defaultProdId;
+        const prods = SGU_CORE.getProducts();
+        const prod = prods.find(p => p.id === targetProdId);
+        if (priceInput) priceInput.value = prod ? (prod.costPrice || 1800000) : 1800000;
     }
 
+    renderImportSizeInputs(targetProdId, existingBreakdown, defaultQty);
+    calculateImportTotals();
     document.getElementById('modal-import').style.display = 'flex';
+}
+
+// RENDER Ô NHẬP SỐ LƯỢNG CHO TỪNG SIZE
+function renderImportSizeInputs(prodId, existingBreakdown = null, defaultTotalQty = null) {
+    const container = document.getElementById('import-size-inputs-grid');
+    if (!container || !window.SGU_CORE) return;
+
+    const prods = SGU_CORE.getProducts();
+    const prod = prods.find(p => p.id === prodId) || prods[0];
+    if (!prod) return;
+
+    const sizes = prod.sizes || [38, 39, 40, 41, 42, 43, 44];
+    const currentSizeStock = prod.sizeStock || {};
+
+    let initialAllocations = {};
+    if (existingBreakdown) {
+        initialAllocations = { ...existingBreakdown };
+    } else if (defaultTotalQty && defaultTotalQty > 0) {
+        const base = Math.floor(defaultTotalQty / sizes.length);
+        let rem = defaultTotalQty % sizes.length;
+        sizes.forEach(s => {
+            initialAllocations[s] = base + (rem > 0 ? 1 : 0);
+            rem--;
+        });
+    } else {
+        // Mặc định đề xuất 2 đôi cho mỗi size
+        sizes.forEach(s => {
+            initialAllocations[s] = 2;
+        });
+    }
+
+    container.innerHTML = sizes.map(s => {
+        const curStock = currentSizeStock[s] !== undefined ? currentSizeStock[s] : 0;
+        const alloc = initialAllocations[s] !== undefined ? initialAllocations[s] : 0;
+        const isOutOfStock = curStock === 0;
+        const isLow = curStock > 0 && curStock <= 2;
+
+        return `
+            <div style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; padding:8px 10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-weight:700; font-size:13px;">Size ${s}</span>
+                    <span style="font-size:11px; font-weight:600; ${isOutOfStock ? 'color:#dc2626;' : (isLow ? 'color:#d97706;' : 'color:#64748b;')}">
+                        (Hiện: ${curStock})
+                    </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <span style="font-size:12px; font-weight:700; color:#10b981;">+</span>
+                    <input type="number" min="0" max="500" class="form-control imp-size-input" data-size="${s}" value="${alloc}" style="padding:4px; font-size:13px; font-weight:700; text-align:center;" oninput="calculateImportTotals()">
+                    <span style="font-size:11px; color:var(--gray);">đôi</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    calculateImportTotals();
+}
+
+function calculateImportTotals() {
+    const sizeInputs = document.querySelectorAll('.imp-size-input');
+    let totalQty = 0;
+    sizeInputs.forEach(inp => {
+        totalQty += Math.max(0, parseInt(inp.value) || 0);
+    });
+
+    const priceInput = document.getElementById('imp-price');
+    const unitPrice = Math.max(0, parseInt(priceInput ? priceInput.value : 0) || 0);
+    const totalCost = totalQty * unitPrice;
+
+    const qtyDisplay = document.getElementById('import-total-qty-display');
+    const costDisplay = document.getElementById('import-total-cost-display');
+    const hiddenQty = document.getElementById('imp-qty');
+
+    if (qtyDisplay) qtyDisplay.innerText = `${totalQty} đôi`;
+    if (costDisplay) costDisplay.innerText = (window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(totalCost) : `${totalCost.toLocaleString('vi-VN')} ₫`;
+    if (hiddenQty) hiddenQty.value = totalQty;
+}
+
+function distributeImportQtyEqually() {
+    const sizeInputs = document.querySelectorAll('.imp-size-input');
+    if (sizeInputs.length === 0) return;
+    const count = sizeInputs.length;
+    sizeInputs.forEach(inp => {
+        inp.value = 2;
+    });
+    calculateImportTotals();
+    if (typeof showToast === 'function') showToast(`Đã chia đều 2 đôi cho mỗi size (Tổng: ${count * 2} đôi)!`, 'info');
+}
+
+function onImportProductSelectChange() {
+    const select = document.getElementById('imp-prod-select');
+    if (!select || !window.SGU_CORE) return;
+    const prodId = select.value;
+    const prods = SGU_CORE.getProducts();
+    const prod = prods.find(p => p.id === prodId);
+    if (prod) {
+        const priceInput = document.getElementById('imp-price');
+        if (priceInput) priceInput.value = prod.costPrice || 1500000;
+    }
+    renderImportSizeInputs(prodId);
 }
 
 function saveImportModal() {
@@ -126,19 +251,35 @@ function saveImportModal() {
     const prods = SGU_CORE.getProducts();
     const prod = prods.find(p => p.id === prodId) || prods[0];
     const price = parseInt(document.getElementById('imp-price').value) || 1800000;
-    const qty = parseInt(document.getElementById('imp-qty').value) || 10;
-    const total = price * qty;
+
+    const sizeInputs = document.querySelectorAll('.imp-size-input');
+    const sizeBreakdown = {};
+    let totalQty = 0;
+    sizeInputs.forEach(inp => {
+        const s = parseInt(inp.getAttribute('data-size'));
+        const q = Math.max(0, parseInt(inp.value) || 0);
+        sizeBreakdown[s] = q;
+        totalQty += q;
+    });
+
+    if (totalQty <= 0) {
+        showToast('Tổng số lượng nhập phải lớn hơn 0! Vui lòng nhập số lượng cho ít nhất 1 size.', 'warning');
+        return;
+    }
+
+    const total = price * totalQty;
     const totalStr = SGU_CORE.formatVND(total);
 
     if (editingImportId) {
         const target = imports.find(x => x.id === editingImportId);
         if (target) {
             target.date = dateVal;
-            target.items = `${prod ? prod.name : 'Giày Sneaker'} (x${qty})`;
+            target.items = `${prod ? prod.name : 'Giày Sneaker'} (x${totalQty} đôi)`;
             target.total = totalStr;
             target.unitCost = price;
-            target.qty = qty;
+            target.qty = totalQty;
             target.prodId = prodId;
+            target.sizeBreakdown = sizeBreakdown;
         }
         if (typeof showToast === 'function') showToast(`Đã cập nhật thành công phiếu nhập ${editingImportId}!`, 'success');
     } else {
@@ -146,13 +287,14 @@ function saveImportModal() {
         imports.unshift({
             id: newId,
             date: dateVal,
-            items: `${prod ? prod.name : 'Giày Sneaker'} (x${qty})`,
+            items: `${prod ? prod.name : 'Giày Sneaker'} (x${totalQty} đôi)`,
             total: totalStr,
             status: 'Chưa hoàn thành',
             canEdit: true,
             unitCost: price,
-            qty: qty,
-            prodId: prodId
+            qty: totalQty,
+            prodId: prodId,
+            sizeBreakdown: sizeBreakdown
         });
         if (typeof showToast === 'function') showToast(`Đã tạo mới phiếu nhập ${newId} ở trạng thái Chưa hoàn thành!`, 'success');
     }
@@ -183,13 +325,28 @@ function completeImport(id) {
     if (targetProd) {
         targetProd.stock = (targetProd.stock || 0) + addQty;
         targetProd.stockImport = (targetProd.stockImport || 0) + addQty;
+        if (targetProd.costPrice && imp.unitCost) {
+            targetProd.costPrice = imp.unitCost;
+        }
+
         if (targetProd.sizeStock) {
-            const sizes = Object.keys(targetProd.sizeStock);
-            if (sizes.length > 0) {
-                const perSize = Math.max(1, Math.floor(addQty / sizes.length));
-                sizes.forEach(s => {
-                    targetProd.sizeStock[s] = (targetProd.sizeStock[s] || 0) + perSize;
+            if (imp.sizeBreakdown && Object.keys(imp.sizeBreakdown).length > 0) {
+                // Cộng chính xác số lượng nhập của từng size
+                Object.entries(imp.sizeBreakdown).forEach(([s, q]) => {
+                    const numQ = Number(q) || 0;
+                    targetProd.sizeStock[s] = (targetProd.sizeStock[s] || 0) + numQ;
                 });
+            } else {
+                // Phân bổ đều và phân bổ số dư chính xác 100%
+                const sizes = Object.keys(targetProd.sizeStock);
+                if (sizes.length > 0) {
+                    const base = Math.floor(addQty / sizes.length);
+                    let rem = addQty % sizes.length;
+                    sizes.forEach(s => {
+                        targetProd.sizeStock[s] = (targetProd.sizeStock[s] || 0) + base + (rem > 0 ? 1 : 0);
+                        rem--;
+                    });
+                }
             }
         }
         SGU_CORE.saveProducts(prods);
@@ -197,6 +354,7 @@ function completeImport(id) {
 
     loadAdminImports();
     loadAdminInventory();
+    if (typeof loadAdminPricing === 'function') loadAdminPricing();
     if (typeof updateAdminKPIs === 'function') updateAdminKPIs();
     if (typeof showToast === 'function') showToast(`Đã hoàn thành phiếu nhập ${id}, khóa tính năng sửa và cộng tồn kho thành công!`, 'success');
 }

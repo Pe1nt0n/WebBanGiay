@@ -684,7 +684,7 @@ function loadAdminProducts() {
             <td><strong>${p.name}</strong></td>
             <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:700;">${p.brand || 'Khác'}</span></td>
             <td>${p.category}</td>
-            <td style="max-width:200px; font-size:13px; color:var(--gray);">${p.desc ? p.desc.substring(0, 55) + '...' : ''}</td>
+            <td><strong style="color:var(--primary); font-size:14px;">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price || 0).toLocaleString('vi-VN') + ' ₫'}</strong></td>
             <td><span class="badge ${p.active ? 'badge-active' : 'badge-locked'}">${p.active ? 'Đang bán' : 'Đã ẩn'}</span></td>
             <td style="text-align: center; white-space: nowrap;">
                 <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;" onclick="openEditProductModal('${p.id}')" title="Chỉnh sửa thông tin">✏️ Sửa</button>
@@ -695,6 +695,17 @@ function loadAdminProducts() {
             </td>
         </tr>
     `).join('');
+}
+
+function updateProductPricePreview(val, targetId) {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) {
+        el.innerText = '0 ₫';
+    } else {
+        el.innerText = (window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(num) : Number(num).toLocaleString('vi-VN') + ' ₫';
+    }
 }
 
 function handleBrandSelectChange(val) {
@@ -725,6 +736,17 @@ function openAddProductModal() {
         customBrandInput.style.display = 'none';
         customBrandInput.value = '';
     }
+
+    // Reset Price fields
+    const priceInput = document.getElementById('prod-price');
+    const oldPriceInput = document.getElementById('prod-old-price');
+    const costPriceInput = document.getElementById('prod-cost-price');
+    if (priceInput) priceInput.value = '2000000';
+    if (oldPriceInput) oldPriceInput.value = '2400000';
+    if (costPriceInput) costPriceInput.value = '1500000';
+    updateProductPricePreview(2000000, 'prod-price-preview');
+    updateProductPricePreview(2400000, 'prod-oldprice-preview');
+    updateProductPricePreview(1500000, 'prod-costprice-preview');
 
     document.getElementById('prod-img').value = './assets/images/products/sp001.jpg';
     document.getElementById('prod-desc').value = '';
@@ -806,6 +828,17 @@ function openEditProductModal(id) {
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'inline-block';
 
+    // Tải thông tin giá tiền
+    const priceInput = document.getElementById('prod-price');
+    const oldPriceInput = document.getElementById('prod-old-price');
+    const costPriceInput = document.getElementById('prod-cost-price');
+    if (priceInput) priceInput.value = p.price || '';
+    if (oldPriceInput) oldPriceInput.value = p.oldPrice || '';
+    if (costPriceInput) costPriceInput.value = p.costPrice || '';
+    updateProductPricePreview(p.price || 0, 'prod-price-preview');
+    updateProductPricePreview(p.oldPrice || 0, 'prod-oldprice-preview');
+    updateProductPricePreview(p.costPrice || 0, 'prod-costprice-preview');
+
     document.getElementById('modal-product').style.display = 'flex';
 }
 
@@ -817,6 +850,26 @@ function saveProductModal() {
     const brandSelect = document.getElementById('prod-brand') ? document.getElementById('prod-brand').value : 'Nike';
     const customBrand = document.getElementById('prod-brand-custom') ? document.getElementById('prod-brand-custom').value.trim() : '';
     const brand = (brandSelect === 'custom') ? (customBrand || 'Khác') : brandSelect;
+
+    const priceInput = document.getElementById('prod-price');
+    const rawPrice = priceInput ? parseFloat(priceInput.value) : NaN;
+    if (isNaN(rawPrice) || rawPrice <= 0) {
+        showToast('Vui lòng nhập giá bán hợp lệ cho sản phẩm (lớn hơn 0)!', 'warning');
+        if (priceInput) priceInput.focus();
+        return;
+    }
+
+    const oldPriceInput = document.getElementById('prod-old-price');
+    const costPriceInput = document.getElementById('prod-cost-price');
+
+    const finalPrice = Math.round(rawPrice);
+    const finalOldPrice = (oldPriceInput && parseFloat(oldPriceInput.value) > 0)
+        ? Math.round(parseFloat(oldPriceInput.value))
+        : Math.round(finalPrice * 1.15);
+    const finalCostPrice = (costPriceInput && parseFloat(costPriceInput.value) > 0)
+        ? Math.round(parseFloat(costPriceInput.value))
+        : Math.round(finalPrice * 0.7);
+    const finalProfitPercent = Math.max(0, Math.round(((finalPrice - finalCostPrice) / finalCostPrice) * 100));
 
     const img = document.getElementById('prod-img').value.trim();
     const desc = document.getElementById('prod-desc').value.trim();
@@ -838,6 +891,10 @@ function saveProductModal() {
         existing.name = name;
         existing.brand = brand;
         existing.category = cat;
+        existing.price = finalPrice;
+        existing.oldPrice = finalOldPrice;
+        existing.costPrice = finalCostPrice;
+        existing.profitPercent = finalProfitPercent;
         existing.img = img;
         existing.gallery = finalGallery;
         existing.desc = desc;
@@ -848,10 +905,10 @@ function saveProductModal() {
             brand: brand,
             category: cat,
             catCode: cat.includes('Sneaker') ? 'LOAI01' : (cat.includes('Chạy') ? 'LOAI02' : (cat.includes('Đá') ? 'LOAI03' : 'LOAI04')),
-            costPrice: 1500000,
-            profitPercent: 35,
-            price: 2025000,
-            oldPrice: 2400000,
+            costPrice: finalCostPrice,
+            profitPercent: finalProfitPercent,
+            price: finalPrice,
+            oldPrice: finalOldPrice,
             stock: 15,
             stockInitial: 15,
             stockImport: 0,
@@ -879,7 +936,7 @@ function saveProductModal() {
     updateAdminKPIs();
 
     closeModal('modal-product');
-    showToast(`Đã lưu sản phẩm "${name}" (Thương hiệu: ${brand}) thành công!`, 'success');
+    showToast(`Đã lưu sản phẩm "${name}" thành công với giá bán ${SGU_CORE.formatVND(finalPrice)}!`, 'success');
 }
 
 function deleteProduct(id) {

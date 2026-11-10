@@ -295,7 +295,7 @@
                                 <th>Tên sản phẩm giày</th>
                                 <th>Thương hiệu</th>
                                 <th>Phân loại</th>
-                                <th>Mô tả tóm tắt</th>
+                                <th>Giá bán</th>
                                 <th>Trạng thái</th>
                                 <th style="width: 200px; text-align: center;">Thao tác quản trị</th>
                             </tr>
@@ -305,8 +305,9 @@
                                 <td><img src="./assets/images/products/sp001.jpg" class="thumb" alt="Shoe"></td>
                                 <td><strong>SP001</strong></td>
                                 <td><strong>Nike Air Max Red 2025</strong></td>
+                                <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:700;">Nike</span></td>
                                 <td>Giày Sneaker</td>
-                                <td>Đệm khí Air Max êm ái, vải lưới thoáng khí cao cấp.</td>
+                                <td><strong style="color:var(--primary); font-size:14px;">2.450.000 ₫</strong></td>
                                 <td><span class="badge badge-active">Đang bán</span></td>
                                 <td>
                                     <button class="btn btn-warning" onclick="openEditProductModal('SP001')">✏️ Sửa</button>
@@ -665,35 +666,65 @@
     <div class="modal-overlay" id="modal-product">
         <div class="modal-box">
             <h3 id="modal-prod-title" style="margin-bottom: 18px; font-weight: 800;">Thêm sản phẩm giày mới</h3>
-            <div class="form-group">
-                <label>Loại sản phẩm giày *</label>
-                <select id="prod-cat" class="form-control">
-                    <option value="Giày Sneaker">Giày Sneaker</option>
-                    <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
-                    <option value="Giày Đá Bóng">Giày Đá Bóng</option>
-                    <option value="Giày Tây Nam">Giày Tây Nam</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                    <label>Loại sản phẩm giày *</label>
+                    <select id="prod-cat" class="form-control">
+                        <option value="Giày Sneaker">Giày Sneaker</option>
+                        <option value="Giày Chạy Bộ">Giày Chạy Bộ</option>
+                        <option value="Giày Đá Bóng">Giày Đá Bóng</option>
+                        <option value="Giày Tây Nam">Giày Tây Nam</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Thương hiệu giày (Brand) *</label>
+                    <select id="prod-brand" class="form-control" onchange="handleBrandSelectChange(this.value)">
+                        <option value="Nike">Nike</option>
+                        <option value="Adidas">Adidas</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Puma">Puma</option>
+                        <option value="Clarks">Clarks</option>
+                        <option value="Converse">Converse</option>
+                        <option value="custom">+ Thêm thương hiệu khác...</option>
+                    </select>
+                    <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu khác..." style="display: none; margin-top: 8px;">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Thương hiệu giày (Brand) *</label>
-                <select id="prod-brand" class="form-control" onchange="handleBrandSelectChange(this.value)">
-                    <option value="Nike">Nike</option>
-                    <option value="Adidas">Adidas</option>
-                    <option value="Jordan">Jordan</option>
-                    <option value="Puma">Puma</option>
-                    <option value="Clarks">Clarks</option>
-                    <option value="Converse">Converse</option>
-                    <option value="custom">+ Thêm thương hiệu khác...</option>
-                </select>
-                <input type="text" id="prod-brand-custom" class="form-control" placeholder="Nhập tên thương hiệu khác..." style="display: none; margin-top: 8px;">
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 14px;">
+                <div class="form-group">
+                    <label>Mã sản phẩm *</label>
+                    <input type="text" id="prod-code" class="form-control" placeholder="Ví dụ: SP013">
+                </div>
+                <div class="form-group">
+                    <label>Tên sản phẩm giày *</label>
+                    <input type="text" id="prod-name" class="form-control" placeholder="Nhập tên sản phẩm giày...">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Mã sản phẩm *</label>
-                <input type="text" id="prod-code" class="form-control" placeholder="Mã sản phẩm...">
-            </div>
-            <div class="form-group">
-                <label>Tên sản phẩm giày *</label>
-                <input type="text" id="prod-name" class="form-control" placeholder="Nhập tên sản phẩm giày...">
+
+            <!-- THIẾT LẬP GIÁ TIỀN SẢN PHẨM (MỤC I.4 & I.6) -->
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                        <span>💰 Giá bán (VNĐ) *</span>
+                        <span id="prod-price-preview" style="font-size: 11.5px; color: var(--primary);">0 ₫</span>
+                    </label>
+                    <input type="number" id="prod-price" class="form-control" placeholder="Ví dụ: 2450000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-price-preview')">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
+                        <span>🏷️ Giá gốc niêm yết</span>
+                        <span id="prod-oldprice-preview" style="font-size: 11px; color: var(--gray);">0 ₫</span>
+                    </label>
+                    <input type="number" id="prod-old-price" class="form-control" placeholder="Ví dụ: 2900000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-oldprice-preview')">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
+                        <span>📥 Giá vốn nhập</span>
+                        <span id="prod-costprice-preview" style="font-size: 11px; color: #166534;">0 ₫</span>
+                    </label>
+                    <input type="number" id="prod-cost-price" class="form-control" placeholder="Ví dụ: 1800000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-costprice-preview')">
+                </div>
             </div>
             <div class="form-group">
                 <label style="display: flex; justify-content: space-between; align-items: center;">

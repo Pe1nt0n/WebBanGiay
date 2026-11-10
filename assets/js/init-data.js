@@ -429,7 +429,9 @@
     const initialOrders = [
         {
             id: '#DH2025-089',
+            userId: 'KH001',
             cust: 'Nguyễn Văn A',
+            custEmail: 'nguyenvana@gmail.com',
             email: 'nguyenvana@gmail.com',
             date: '20/10/2025',
             items: 'Nike Air Max Red 2025 (x1), Adidas Ultraboost Light Pro (x1)',
@@ -444,7 +446,9 @@
         },
         {
             id: '#DH2025-072',
+            userId: 'KH001',
             cust: 'Nguyễn Văn A',
+            custEmail: 'nguyenvana@gmail.com',
             email: 'nguyenvana@gmail.com',
             date: '15/10/2025',
             items: 'Puma Velocity Nitro 2 Running (x1)',
@@ -458,7 +462,9 @@
         },
         {
             id: '#DH2025-061',
+            userId: 'KH002',
             cust: 'Trần Thị Bích',
+            custEmail: 'tranthibich@gmail.com',
             email: 'tranthibich@gmail.com',
             date: '12/10/2025',
             items: 'Air Jordan 1 Retro High Chicago (x1)',
@@ -534,6 +540,37 @@
             ]));
             localStorage.setItem(STORAGE_KEY_INIT, 'true');
             console.log('%c[SGU Sneaker Core] LocalStorage initialized with v9 schema!', 'color:#10b981; font-weight:bold;');
+        }
+
+        // Đảm bảo đơn hàng cũ trong LocalStorage có đủ userId và custEmail để phân quyền lịch sử đơn
+        try {
+            const rawOrders = localStorage.getItem('sgu_orders');
+            if (rawOrders) {
+                const storedOrders = JSON.parse(rawOrders);
+                let orderUpdated = false;
+                storedOrders.forEach(o => {
+                    if (!o.custEmail && o.email) {
+                        o.custEmail = o.email;
+                        orderUpdated = true;
+                    }
+                    if (!o.userId) {
+                        if (o.custEmail === 'nguyenvana@gmail.com' || o.cust === 'Nguyễn Văn A') {
+                            o.userId = 'KH001';
+                            if (!o.custEmail) o.custEmail = 'nguyenvana@gmail.com';
+                            orderUpdated = true;
+                        } else if (o.custEmail === 'tranthibich@gmail.com' || o.cust === 'Trần Thị Bích') {
+                            o.userId = 'KH002';
+                            if (!o.custEmail) o.custEmail = 'tranthibich@gmail.com';
+                            orderUpdated = true;
+                        }
+                    }
+                });
+                if (orderUpdated) {
+                    localStorage.setItem('sgu_orders', JSON.stringify(storedOrders));
+                }
+            }
+        } catch (e) {
+            console.warn('Lỗi kiểm tra đồng bộ sgu_orders:', e);
         }
     }
 

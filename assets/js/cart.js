@@ -374,10 +374,12 @@ function handlePlaceOrder() {
     }
 
     // Lưu đơn hàng mới vào SGU_CORE
+    const checkoutEmail = currentUser ? currentUser.email : (document.getElementById('checkout-email') ? document.getElementById('checkout-email').value.trim() : '');
     const newOrder = {
         id: orderId,
+        userId: currentUser ? currentUser.id : null,
         cust: finalRecipient,
-        custEmail: currentUser ? currentUser.email : 'guest@sgu.vn',
+        custEmail: checkoutEmail || 'guest@sgu.vn',
         phone: finalPhone,
         date: today,
         items: cartItemsSnapshot.map(i => `${i.name} (Size ${i.size || 40} x${i.qty})`).join(', '),
@@ -412,21 +414,50 @@ function handlePlaceOrder() {
 // ==========================================================
 // 4. LỊCH SỬ ĐƠN HÀNG, LỌC & XEM CHI TIẾT (MỤC II.4)
 // ==========================================================
+
+// Kiểm tra quyền sở hữu đơn hàng của tài khoản đang đăng nhập
+function isCurrentUserOrder(ord) {
+    if (!currentUser || !ord) return false;
+    if (currentUser.id && ord.userId && String(ord.userId) === String(currentUser.id)) {
+        return true;
+    }
+    const userEmail = (currentUser.email || '').trim().toLowerCase();
+    const orderEmail = (ord.custEmail || ord.email || '').trim().toLowerCase();
+    if (userEmail && orderEmail && userEmail === orderEmail) {
+        return true;
+    }
+    return false;
+}
+
 function renderOrderHistory(ordersList) {
     const table = document.getElementById('orders-history-table');
     if (!table) return;
 
-    // Lọc theo người dùng đang đăng nhập (hoặc hiển thị các đơn mẫu nếu là tài khoản mặc định)
-    let userOrders = ordersList.filter(o => {
-        if (!currentUser) return true;
-        return !o.custEmail || o.custEmail === currentUser.email || o.cust === currentUser.name || o.cust === 'Nguyễn Văn A';
-    });
+    // Chưa đăng nhập -> Hiển thị thông báo yêu cầu đăng nhập, bảo vệ thông tin người dùng
+    if (!currentUser) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center; padding:45px 20px; color:var(--gray);">
+                    <div style="font-size:36px; margin-bottom:12px;">🔒</div>
+                    <strong style="font-size:15px; color:var(--dark); display:block; margin-bottom:6px;">Vui lòng đăng nhập tài khoản</strong>
+                    <p style="margin:0 0 16px; font-size:13px; color:var(--gray);">Bạn cần đăng nhập tài khoản để tra cứu và theo dõi các đơn hàng của riêng mình.</p>
+                    <a href="index.html#login" class="btn-primary" style="display:inline-block; padding:9px 22px; font-size:13px; text-decoration:none; border-radius:6px;">Đăng Nhập Ngay</a>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    // Lọc nghiêm ngặt chỉ hiển thị đơn hàng thuộc về tài khoản đang đăng nhập
+    let userOrders = ordersList.filter(isCurrentUserOrder);
 
     if (userOrders.length === 0) {
         table.innerHTML = `
             <tr>
-                <td colspan="8" style="text-align:center; padding:30px; color:var(--gray);">
-                    Không tìm thấy đơn hàng nào phù hợp với bộ lọc.
+                <td colspan="8" style="text-align:center; padding:35px 20px; color:var(--gray);">
+                    <div style="font-size:32px; margin-bottom:8px;">📦</div>
+                    <strong style="font-size:14px; color:var(--dark); display:block; margin-bottom:4px;">Chưa có đơn hàng nào</strong>
+                    <span style="font-size:12.5px;">Bạn chưa có đơn đặt hàng nào hoặc không có đơn nào khớp với bộ lọc tìm kiếm.</span>
                 </td>
             </tr>
         `;
@@ -514,6 +545,12 @@ function viewHistoryDetail(orderId) {
     const ord = allOrders.find(o => o.id === orderId);
     if (!ord) return;
 
+    // Kiểm tra quyền sở hữu đơn hàng của người dùng hiện tại
+    if (!isCurrentUserOrder(ord)) {
+        showToast('⚠️ Bạn không có quyền xem thông tin đơn hàng này.', 'warning');
+        return;
+    }
+
     document.getElementById('hist-modal-id').innerText = ord.id;
     document.getElementById('hist-modal-cust').innerText = ord.cust || (currentUser ? currentUser.name : 'Khách hàng');
     document.getElementById('hist-modal-phone').innerText = ord.phone || (currentUser ? currentUser.phone : '0909123456');
@@ -561,10 +598,21 @@ function viewHistoryDetail(orderId) {
 
 // HỦY ĐƠN HÀNG (MỤC II.4)
 function cancelOrderCustomer(orderId) {
-    if (!confirm(`Bạn có chắc muốn hủy đơn hàng ${orderId} không?`)) return;
-
     const ord = allOrders.find(o => o.id === orderId);
     if (!ord) return;
+
+    // Kiểm tra quyền sở hữu đơn hàng của người dùng hiện tại
+    if (!isCurrentUserOrder(ord)) {
+        showToast('⚠️ Bạn không có quyền hủy đơn hàng này.', 'warning');
+        return;
+    }
+
+    if (ord.status !== 'Mới đặt') {
+        showToast('Chỉ có thể hủy đơn hàng ở trạng thái "Mới đặt"!', 'warning');
+        return;
+    }
+
+    if (!confirm(`Bạn có chắc muốn hủy đơn hàng ${orderId} không?`)) return;
 
     ord.status = 'Hủy';
     if (window.SGU_CORE && SGU_CORE.saveOrders) {

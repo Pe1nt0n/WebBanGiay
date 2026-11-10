@@ -21,7 +21,7 @@ function loadAdminImports(customList) {
     const imports = customList || SGU_CORE.getImports();
 
     if (imports.length === 0) {
-        table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy phiếu nhập hàng nào phù hợp với bộ lọc.</td></tr>`;
+        table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:35px; color:var(--gray);">Chưa có phiếu nhập hàng nào. Bấm <strong>"+ Thêm phiếu nhập mới"</strong> để tạo phiếu nhập kho.</td></tr>`;
         return;
     }
 
@@ -56,9 +56,20 @@ function loadAdminImports(customList) {
                 ` : `
                     <button class="btn btn-disabled" disabled title="Phiếu đã hoàn thành không thể sửa">🔒 Đã khóa sửa</button>
                 `}
+                <button class="btn btn-danger" style="padding: 5px 9px; font-size: 12px; margin-left: 4px;" onclick="deleteImportSlip('${imp.id}')" title="Xóa phiếu nhập">🗑️ Xóa</button>
             </td>
         </tr>
     `}).join('');
+}
+
+function deleteImportSlip(impId) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa phiếu nhập ${impId} khỏi hệ thống không?`)) return;
+    if (!window.SGU_CORE) return;
+    const list = SGU_CORE.getImports();
+    const filtered = list.filter(x => x.id !== impId);
+    SGU_CORE.saveImports(filtered);
+    loadAdminImports();
+    if (typeof showToast === 'function') showToast(`Đã xóa thành công phiếu nhập ${impId}!`, 'success');
 }
 
 function filterAdminImports() {
@@ -283,7 +294,12 @@ function saveImportModal() {
         }
         if (typeof showToast === 'function') showToast(`Đã cập nhật thành công phiếu nhập ${editingImportId}!`, 'success');
     } else {
-        const newId = 'PN' + String(imports.length + 1).padStart(3, '0');
+        let maxNum = 0;
+        imports.forEach(x => {
+            const m = x.id && x.id.match(/\d+/);
+            if (m) maxNum = Math.max(maxNum, parseInt(m[0]));
+        });
+        const newId = 'PN' + String(maxNum + 1).padStart(3, '0');
         imports.unshift({
             id: newId,
             date: dateVal,

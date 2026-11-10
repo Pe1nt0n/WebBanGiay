@@ -478,42 +478,8 @@
         }
     ];
 
-    // 5. DANH MỤC PHIẾU NHẬP HÀNG MẪU
-    const initialImports = [
-        {
-            id: 'PN001',
-            date: '18/10/2025',
-            items: 'Nike Air Max Red 2025 (x15 đôi)',
-            total: '27.000.000 ₫',
-            status: 'Đã hoàn thành',
-            canEdit: false,
-            unitCost: 1800000,
-            qty: 15,
-            prodId: 'SP001'
-        },
-        {
-            id: 'PN002',
-            date: '19/10/2025',
-            items: 'Adidas Ultraboost Light Pro (x10 đôi)',
-            total: '14.000.000 ₫',
-            status: 'Đã hoàn thành',
-            canEdit: false,
-            unitCost: 1400000,
-            qty: 10,
-            prodId: 'SP002'
-        },
-        {
-            id: 'PN003',
-            date: '20/10/2025',
-            items: 'Air Jordan 1 Retro High (x10 đôi)',
-            total: '24.000.000 ₫',
-            status: 'Chưa hoàn thành',
-            canEdit: true,
-            unitCost: 2400000,
-            qty: 10,
-            prodId: 'SP003'
-        }
-    ];
+    // 5. DANH MỤC PHIẾU NHẬP HÀNG MẪU (Khởi tạo rỗng)
+    const initialImports = [];
 
     // 6. DANH SÁCH YÊU THÍCH BAN ĐẦU
     const initialWishlist = ['SP001', 'SP003'];
@@ -571,6 +537,20 @@
             }
         } catch (e) {
             console.warn('Lỗi kiểm tra đồng bộ sgu_orders:', e);
+        }
+
+        // Xóa bỏ các phiếu nhập mẫu cũ PN001, PN002, PN003 nếu còn lưu trong LocalStorage
+        try {
+            const rawImports = localStorage.getItem('sgu_imports');
+            if (rawImports) {
+                const storedImports = JSON.parse(rawImports);
+                const filtered = storedImports.filter(imp => imp.id !== 'PN001' && imp.id !== 'PN002' && imp.id !== 'PN003');
+                if (filtered.length !== storedImports.length) {
+                    localStorage.setItem('sgu_imports', JSON.stringify(filtered));
+                }
+            }
+        } catch (e) {
+            console.warn('Lỗi kiểm tra đồng bộ sgu_imports:', e);
         }
     }
 

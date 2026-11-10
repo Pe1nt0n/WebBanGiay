@@ -312,8 +312,9 @@ function loadAdminCategories() {
                 <td>${count} sản phẩm</td>
                 <td><span class="badge ${c.active ? 'badge-active' : 'badge-locked'}">${c.active ? 'Đang hiển thị' : 'Tạm ẩn'}</span></td>
                 <td>
-                    <button class="btn btn-warning" onclick="editCategory('${c.code}', '${safeName}')">✏️ Sửa</button>
-                    <button class="btn btn-danger" onclick="toggleHideCategory('${c.code}')">${c.active ? '👁️ Ẩn / Xóa' : '🔓 Hiển thị'}</button>
+                    <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;" onclick="editCategory('${c.code}', '${safeName}')">✏️ Sửa</button>
+                    <button class="btn ${c.active ? 'btn-outline' : 'btn-success'}" style="padding: 5px 10px; font-size: 12px; margin: 0 4px;" onclick="toggleHideCategory('${c.code}')">${c.active ? '👁️ Ẩn' : '🔓 Bật'}</button>
+                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteCategory('${c.code}')">🗑️ Xóa</button>
                 </td>
             </tr>
         `;
@@ -422,6 +423,31 @@ function toggleHideCategory(code) {
         loadAdminCategories();
         showToast(`Đã ${c.active ? 'hiển thị lại' : 'tạm ẩn'} danh mục "${c.name}"!`, c.active ? 'success' : 'warning');
     }
+}
+
+function deleteCategory(code) {
+    if (!window.SGU_CORE) return;
+    const cats = SGU_CORE.getCategories();
+    const c = cats.find(x => x.code === code);
+    if (!c) return;
+
+    const prods = SGU_CORE.getProducts();
+    const count = prods.filter(p => p.catCode === c.code || p.category === c.name).length;
+    if (count > 0) {
+        if (!confirm(`Phân loại "${c.name}" (${code}) hiện có ${count} sản phẩm đang sử dụng. Bạn có chắc chắn muốn xóa vĩnh viễn không?`)) {
+            return;
+        }
+    } else {
+        if (!confirm(`Bạn có chắc chắn muốn xóa phân loại "${c.name}" (${code}) khỏi hệ thống không?`)) {
+            return;
+        }
+    }
+
+    const filtered = cats.filter(x => x.code !== code);
+    SGU_CORE.saveCategories(filtered);
+    loadAdminCategories();
+    cancelCategoryEdit();
+    showToast(`Đã xóa vĩnh viễn phân loại "${c.name}" (${code}) thành công!`, 'success');
 }
 
 // ==========================================================

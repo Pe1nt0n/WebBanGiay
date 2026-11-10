@@ -409,9 +409,11 @@ function savePricing(prodId) {
 
     p.profitPercent = percent;
     p.price = newPrice;
+    p.oldPrice = Math.round(newPrice * 1.15);
     SGU_CORE.saveProducts(prods);
 
-    if (typeof showToast === 'function') showToast(`Đã lưu giá bán mới cho ${p.id} (${p.name}): ${SGU_CORE.formatVND(newPrice)}!`, 'success');
+    if (typeof loadAdminProducts === 'function') loadAdminProducts();
+    if (typeof showToast === 'function') showToast(`Đã lưu giá bán mới cho ${p.id} (${p.name}): ${SGU_CORE.formatVND(newPrice)} (Lợi nhuận: ${percent}%)!`, 'success');
 }
 
 function applyBulkProfit() {

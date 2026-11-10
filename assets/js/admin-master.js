@@ -697,8 +697,8 @@ function loadAdminProducts() {
     `).join('');
 }
 
-function updateProductPricePreview(val, targetId) {
-    const el = document.getElementById(targetId);
+function updateProductCostPricePreview(val) {
+    const el = document.getElementById('prod-costprice-preview');
     if (!el) return;
     const num = parseFloat(val);
     if (isNaN(num) || num <= 0) {
@@ -737,16 +737,10 @@ function openAddProductModal() {
         customBrandInput.value = '';
     }
 
-    // Reset Price fields
-    const priceInput = document.getElementById('prod-price');
-    const oldPriceInput = document.getElementById('prod-old-price');
+    // Reset Giá vốn sản phẩm
     const costPriceInput = document.getElementById('prod-cost-price');
-    if (priceInput) priceInput.value = '2000000';
-    if (oldPriceInput) oldPriceInput.value = '2400000';
     if (costPriceInput) costPriceInput.value = '1500000';
-    updateProductPricePreview(2000000, 'prod-price-preview');
-    updateProductPricePreview(2400000, 'prod-oldprice-preview');
-    updateProductPricePreview(1500000, 'prod-costprice-preview');
+    updateProductCostPricePreview(1500000);
 
     document.getElementById('prod-img').value = './assets/images/products/sp001.jpg';
     document.getElementById('prod-desc').value = '';
@@ -828,16 +822,10 @@ function openEditProductModal(id) {
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'inline-block';
 
-    // Tải thông tin giá tiền
-    const priceInput = document.getElementById('prod-price');
-    const oldPriceInput = document.getElementById('prod-old-price');
+    // Tải thông tin giá vốn
     const costPriceInput = document.getElementById('prod-cost-price');
-    if (priceInput) priceInput.value = p.price || '';
-    if (oldPriceInput) oldPriceInput.value = p.oldPrice || '';
-    if (costPriceInput) costPriceInput.value = p.costPrice || '';
-    updateProductPricePreview(p.price || 0, 'prod-price-preview');
-    updateProductPricePreview(p.oldPrice || 0, 'prod-oldprice-preview');
-    updateProductPricePreview(p.costPrice || 0, 'prod-costprice-preview');
+    if (costPriceInput) costPriceInput.value = p.costPrice || 1500000;
+    updateProductCostPricePreview(p.costPrice || 1500000);
 
     document.getElementById('modal-product').style.display = 'flex';
 }
@@ -851,25 +839,14 @@ function saveProductModal() {
     const customBrand = document.getElementById('prod-brand-custom') ? document.getElementById('prod-brand-custom').value.trim() : '';
     const brand = (brandSelect === 'custom') ? (customBrand || 'Khác') : brandSelect;
 
-    const priceInput = document.getElementById('prod-price');
-    const rawPrice = priceInput ? parseFloat(priceInput.value) : NaN;
-    if (isNaN(rawPrice) || rawPrice <= 0) {
-        showToast('Vui lòng nhập giá bán hợp lệ cho sản phẩm (lớn hơn 0)!', 'warning');
-        if (priceInput) priceInput.focus();
+    const costPriceInput = document.getElementById('prod-cost-price');
+    const rawCost = costPriceInput ? parseFloat(costPriceInput.value) : NaN;
+    if (isNaN(rawCost) || rawCost <= 0) {
+        showToast('Vui lòng nhập giá vốn hợp lệ cho sản phẩm (lớn hơn 0)!', 'warning');
+        if (costPriceInput) costPriceInput.focus();
         return;
     }
-
-    const oldPriceInput = document.getElementById('prod-old-price');
-    const costPriceInput = document.getElementById('prod-cost-price');
-
-    const finalPrice = Math.round(rawPrice);
-    const finalOldPrice = (oldPriceInput && parseFloat(oldPriceInput.value) > 0)
-        ? Math.round(parseFloat(oldPriceInput.value))
-        : Math.round(finalPrice * 1.15);
-    const finalCostPrice = (costPriceInput && parseFloat(costPriceInput.value) > 0)
-        ? Math.round(parseFloat(costPriceInput.value))
-        : Math.round(finalPrice * 0.7);
-    const finalProfitPercent = Math.max(0, Math.round(((finalPrice - finalCostPrice) / finalCostPrice) * 100));
+    const finalCostPrice = Math.round(rawCost);
 
     const img = document.getElementById('prod-img').value.trim();
     const desc = document.getElementById('prod-desc').value.trim();
@@ -891,14 +868,20 @@ function saveProductModal() {
         existing.name = name;
         existing.brand = brand;
         existing.category = cat;
-        existing.price = finalPrice;
-        existing.oldPrice = finalOldPrice;
         existing.costPrice = finalCostPrice;
-        existing.profitPercent = finalProfitPercent;
+        // Tính lại giá bán theo % lợi nhuận đã thiết lập cho sản phẩm này
+        const profit = existing.profitPercent !== undefined ? existing.profitPercent : 35;
+        existing.profitPercent = profit;
+        existing.price = Math.round(finalCostPrice * (1 + profit / 100));
+        existing.oldPrice = Math.round(existing.price * 1.15);
         existing.img = img;
         existing.gallery = finalGallery;
         existing.desc = desc;
     } else {
+        const defaultProfit = 35;
+        const finalPrice = Math.round(finalCostPrice * (1 + defaultProfit / 100));
+        const finalOldPrice = Math.round(finalPrice * 1.15);
+
         prods.unshift({
             id: code,
             name: name,
@@ -906,7 +889,7 @@ function saveProductModal() {
             category: cat,
             catCode: cat.includes('Sneaker') ? 'LOAI01' : (cat.includes('Chạy') ? 'LOAI02' : (cat.includes('Đá') ? 'LOAI03' : 'LOAI04')),
             costPrice: finalCostPrice,
-            profitPercent: finalProfitPercent,
+            profitPercent: defaultProfit,
             price: finalPrice,
             oldPrice: finalOldPrice,
             stock: 15,
@@ -936,7 +919,7 @@ function saveProductModal() {
     updateAdminKPIs();
 
     closeModal('modal-product');
-    showToast(`Đã lưu sản phẩm "${name}" thành công với giá bán ${SGU_CORE.formatVND(finalPrice)}!`, 'success');
+    showToast(`Đã lưu sản phẩm "${name}" thành công với Giá vốn ${SGU_CORE.formatVND(finalCostPrice)}!`, 'success');
 }
 
 function deleteProduct(id) {

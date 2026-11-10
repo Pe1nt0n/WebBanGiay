@@ -702,28 +702,15 @@
                 </div>
             </div>
 
-            <!-- THIẾT LẬP GIÁ TIỀN SẢN PHẨM (MỤC I.4 & I.6) -->
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
-                        <span>💰 Giá bán (VNĐ) *</span>
-                        <span id="prod-price-preview" style="font-size: 11.5px; color: var(--primary);">0 ₫</span>
-                    </label>
-                    <input type="number" id="prod-price" class="form-control" placeholder="Ví dụ: 2450000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-price-preview')">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
-                        <span>🏷️ Giá gốc niêm yết</span>
-                        <span id="prod-oldprice-preview" style="font-size: 11px; color: var(--gray);">0 ₫</span>
-                    </label>
-                    <input type="number" id="prod-old-price" class="form-control" placeholder="Ví dụ: 2900000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-oldprice-preview')">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
-                        <span>📥 Giá vốn nhập</span>
-                        <span id="prod-costprice-preview" style="font-size: 11px; color: #166534;">0 ₫</span>
-                    </label>
-                    <input type="number" id="prod-cost-price" class="form-control" placeholder="Ví dụ: 1800000" min="0" step="10000" oninput="updateProductPricePreview(this.value, 'prod-costprice-preview')">
+            <!-- THIẾT LẬP GIÁ VỐN SẢN PHẨM (MỤC I.4 & I.6) -->
+            <div class="form-group" style="background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 6px;">
+                    <span>📥 Giá vốn sản phẩm (VNĐ) *</span>
+                    <span id="prod-costprice-preview" style="font-size: 13px; font-weight: 700; color: #166534;">1.500.000 ₫</span>
+                </label>
+                <input type="number" id="prod-cost-price" class="form-control" placeholder="Ví dụ: 1500000" min="0" step="50000" value="1500000" oninput="updateProductCostPricePreview(this.value)">
+                <div style="font-size: 12px; color: var(--gray); margin-top: 6px; line-height: 1.4;">
+                    💡 Giá bán ra sẽ tự động tính theo công thức: <strong>Giá vốn * (1 + % Lợi nhuận)</strong>. Bạn có thể dễ dàng tùy chỉnh % lợi nhuận tại <a href="javascript:void(0)" onclick="closeModal('modal-product'); switchAdminTab('tab-pricing', document.getElementById('nav-pricing'));" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Mục 5. Quản lý Giá bán & Lợi nhuận</a>.
                 </div>
             </div>
             <div class="form-group">

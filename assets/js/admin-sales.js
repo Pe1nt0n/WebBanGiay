@@ -431,18 +431,34 @@ function printInvoice() {
 // 4. BÁO CÁO TỒN KHO & CẢNH BÁO TỒN THẤP (MỤC I.8)
 // ==========================================================
 
+let currentEditingSizeStockProdId = null;
+
 function loadAdminInventory(customList) {
     const table = document.getElementById('inventory-table-body');
     if (!table || !window.SGU_CORE) return;
     const prods = customList || SGU_CORE.getProducts();
 
     if (prods.length === 0) {
-        table.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy sản phẩm tồn kho phù hợp với điều kiện lọc.</td></tr>`;
+        table.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--gray);">Không tìm thấy sản phẩm tồn kho phù hợp với điều kiện lọc.</td></tr>`;
         return;
     }
 
     table.innerHTML = prods.map(p => {
         const isCritical = p.stock < 5;
+        const sizes = p.sizes || [38, 39, 40, 41, 42, 43, 44];
+        const sizeStock = p.sizeStock || {};
+
+        const sizeBadgesHtml = sizes.map(s => {
+            const qty = sizeStock[s] !== undefined ? sizeStock[s] : 0;
+            const isZero = qty === 0;
+            const isLow = qty > 0 && qty <= 2;
+            return `
+                <span style="display:inline-flex; align-items:center; gap:2px; padding:2px 6px; font-size:11.5px; border-radius:4px; font-weight:700; ${isZero ? 'background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;' : (isLow ? 'background:#fef3c7; color:#d97706; border:1px solid #fcd34d;' : 'background:#f1f5f9; color:#1e293b; border:1px solid #e2e8f0;')}" title="Size ${s}: ${qty} đôi">
+                    <span>${s}:</span><strong style="${isZero ? 'color:#b91c1c;' : ''}">${qty}</strong>
+                </span>
+            `;
+        }).join('');
+
         return `
             <tr style="${isCritical ? 'background: #fff1f2;' : ''}">
                 <td><strong>${p.id}</strong></td>
@@ -453,16 +469,107 @@ function loadAdminInventory(customList) {
                 <td style="color:#e11d48; font-weight:700;">-${p.stockExport || 0}</td>
                 <td><strong style="${isCritical ? 'color:var(--primary); font-size:16px;' : ''}">${p.stock} đôi</strong></td>
                 <td>
-                    ${isCritical ? `
-                        <span class="badge badge-danger">⚠️ Tồn kho nguy cấp</span>
-                        <button class="btn btn-warning" style="padding:4px 8px; font-size:11px; margin-left:6px;" onclick="quickImportProduct('${p.name}', 20)">+ Nhập hàng</button>
-                    ` : `
-                        <span class="badge badge-done">Đủ hàng</span>
-                    `}
+                    <div style="display:flex; gap:4px; flex-wrap:wrap; max-width:240px;">
+                        ${sizeBadgesHtml}
+                    </div>
+                </td>
+                <td>
+                    <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                        ${isCritical ? `
+                            <span class="badge badge-danger">⚠️ Tồn kho nguy cấp</span>
+                        ` : `
+                            <span class="badge badge-done">Đủ hàng</span>
+                        `}
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <button class="btn btn-dark" style="padding:4px 8px; font-size:11px;" onclick="openEditSizeStockModal('${p.id}')" title="Kiểm kê & điều chỉnh tồn theo từng size">✏️ Sửa size</button>
+                            ${isCritical ? `
+                                <button class="btn btn-warning" style="padding:4px 8px; font-size:11px;" onclick="quickImportProduct('${p.name}', 20)">+ Nhập hàng</button>
+                            ` : ''}
+                        </div>
+                    </div>
                 </td>
             </tr>
         `;
     }).join('');
+}
+
+// MỞ MODAL ĐIỀU CHỈNH SỐ LƯỢNG TỒN CHO TỪNG SIZE
+function openEditSizeStockModal(prodId) {
+    if (!window.SGU_CORE) return;
+    const prods = SGU_CORE.getProducts();
+    const prod = prods.find(p => p.id === prodId);
+    if (!prod) return;
+
+    currentEditingSizeStockProdId = prodId;
+    const titleEl = document.getElementById('size-stock-modal-title');
+    const subtitleEl = document.getElementById('size-stock-modal-subtitle');
+    const idInput = document.getElementById('size-stock-prod-id');
+    if (titleEl) titleEl.innerText = `👟 Tồn kho theo size: ${prod.id}`;
+    if (subtitleEl) subtitleEl.innerText = `${prod.name} (Phân loại: ${prod.category})`;
+    if (idInput) idInput.value = prodId;
+
+    const sizes = prod.sizes || [38, 39, 40, 41, 42, 43, 44];
+    const sizeStock = prod.sizeStock || {};
+
+    const container = document.getElementById('size-stock-inputs-container');
+    if (container) {
+        container.innerHTML = sizes.map(s => {
+            const qty = sizeStock[s] !== undefined ? sizeStock[s] : 0;
+            return `
+                <div style="background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <label style="font-size: 14px; font-weight: 700; color: var(--dark);">Size ${s}:</label>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <input type="number" min="0" max="999" class="form-control size-stock-input" data-size="${s}" value="${qty}" style="width: 75px; text-align: center; font-weight: 700;" oninput="recalculateSizeStockTotal()">
+                        <span style="font-size: 12px; color: var(--gray);">đôi</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    recalculateSizeStockTotal();
+    const modal = document.getElementById('modal-size-stock');
+    if (modal) modal.style.display = 'flex';
+}
+
+function recalculateSizeStockTotal() {
+    const inputs = document.querySelectorAll('.size-stock-input');
+    let total = 0;
+    inputs.forEach(inp => {
+        total += Math.max(0, parseInt(inp.value) || 0);
+    });
+    const totalEl = document.getElementById('size-stock-total-display');
+    if (totalEl) totalEl.innerText = `${total} đôi`;
+}
+
+function saveSizeStockModal() {
+    if (!window.SGU_CORE || !currentEditingSizeStockProdId) return;
+    const prods = SGU_CORE.getProducts();
+    const prod = prods.find(p => p.id === currentEditingSizeStockProdId);
+    if (!prod) return;
+
+    const inputs = document.querySelectorAll('.size-stock-input');
+    const newSizeStock = {};
+    let totalStock = 0;
+
+    inputs.forEach(inp => {
+        const size = parseInt(inp.getAttribute('data-size'));
+        const qty = Math.max(0, parseInt(inp.value) || 0);
+        newSizeStock[size] = qty;
+        totalStock += qty;
+    });
+
+    prod.sizeStock = newSizeStock;
+    prod.stock = totalStock;
+
+    SGU_CORE.saveProducts(prods);
+
+    closeModal('modal-size-stock');
+    loadAdminInventory();
+    if (typeof loadAdminProducts === 'function') loadAdminProducts();
+    if (typeof updateAdminKPIs === 'function') updateAdminKPIs();
+
+    showToast(`Đã cập nhật tồn kho theo size cho "${prod.name}" (Tổng tồn: ${totalStock} đôi)!`, 'success');
 }
 
 function filterAdminInventory() {
@@ -524,11 +631,14 @@ function exportInventoryReport() {
     let csvContent = '\uFEFF'; // UTF-8 BOM cho Microsoft Excel tiếng Việt
     csvContent += 'BÁO CÁO TỒN KHO SẢN PHẨM - SGU SNEAKER STORE\n';
     csvContent += `Ngày xuất báo cáo: ${today}\n\n`;
-    csvContent += 'Mã SP,Tên sản phẩm giày,Phân loại,Tồn đầu kỳ,Tổng nhập,Tổng xuất,Tồn hiện tại,Tình trạng\n';
+    csvContent += 'Mã SP,Tên sản phẩm giày,Phân loại,Tồn đầu kỳ,Tổng nhập,Tổng xuất,Tồn hiện tại,Chi tiết từng size,Tình trạng\n';
 
     prods.forEach(p => {
         const status = (p.stock < 5) ? 'Nguy cấp' : 'Đủ hàng';
-        csvContent += `"${p.id}","${p.name}","${p.category}",${p.stockInitial || 10},${p.stockImport || 0},${p.stockExport || 0},${p.stock},"${status}"\n`;
+        const sizes = p.sizes || [38, 39, 40, 41, 42, 43, 44];
+        const sizeStock = p.sizeStock || {};
+        const sizeDetails = sizes.map(s => `Size ${s}: ${sizeStock[s] !== undefined ? sizeStock[s] : 0} đôi`).join(' | ');
+        csvContent += `"${p.id}","${p.name}","${p.category}",${p.stockInitial || 10},${p.stockImport || 0},${p.stockExport || 0},${p.stock},"${sizeDetails}","${status}"\n`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

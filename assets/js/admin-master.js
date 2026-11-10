@@ -431,14 +431,37 @@ function deleteCategory(code) {
     const c = cats.find(x => x.code === code);
     if (!c) return;
 
+    if (cats.length <= 1) {
+        showToast('Hệ thống phải có ít nhất 1 phân loại sản phẩm, không thể xóa hết!', 'warning');
+        return;
+    }
+
     const prods = SGU_CORE.getProducts();
-    const count = prods.filter(p => p.catCode === c.code || p.category === c.name).length;
+    const affectedProds = prods.filter(p => p.catCode === c.code || p.category === c.name);
+    const count = affectedProds.length;
+
     if (count > 0) {
-        if (!confirm(`Phân loại "${c.name}" (${code}) hiện có ${count} sản phẩm đang sử dụng. Bạn có chắc chắn muốn xóa vĩnh viễn không?`)) {
+        // Tìm phân loại thay thế để tiếp nhận sản phẩm, bảo toàn toàn vẹn dữ liệu
+        const fallbackCat = cats.find(x => x.code !== code);
+        const confirmMsg = `⚠️ CẢNH BÁO TOÀN VẸN DỮ LIỆU:\n` +
+            `Phân loại "${c.name}" (${code}) hiện đang có ${count} sản phẩm giày.\n\n` +
+            `Để tránh sản phẩm bị "MỒ CÔI" (mất danh mục), hệ thống sẽ tự động chuyển ${count} sản phẩm này sang phân loại "${fallbackCat.name}".\n\n` +
+            `Bạn có đồng ý xóa phân loại này và chuyển sản phẩm không?`;
+
+        if (!confirm(confirmMsg)) {
             return;
         }
+
+        // Tự động chuyển toàn bộ sản phẩm con sang phân loại an toàn
+        affectedProds.forEach(p => {
+            p.category = fallbackCat.name;
+            p.catCode = fallbackCat.code;
+        });
+        SGU_CORE.saveProducts(prods);
+        if (typeof loadAdminProducts === 'function') loadAdminProducts();
+        if (typeof loadAdminPricing === 'function') loadAdminPricing();
     } else {
-        if (!confirm(`Bạn có chắc chắn muốn xóa phân loại "${c.name}" (${code}) khỏi hệ thống không?`)) {
+        if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn phân loại "${c.name}" (${code}) khỏi hệ thống không?`)) {
             return;
         }
     }
@@ -447,7 +470,7 @@ function deleteCategory(code) {
     SGU_CORE.saveCategories(filtered);
     loadAdminCategories();
     cancelCategoryEdit();
-    showToast(`Đã xóa vĩnh viễn phân loại "${c.name}" (${code}) thành công!`, 'success');
+    showToast(`Đã xóa phân loại "${c.name}". ${count > 0 ? `Đã chuyển an toàn ${count} sản phẩm sang "${cats.find(x => x.code !== code).name}"!` : ''}`, 'success');
 }
 
 // ==========================================================

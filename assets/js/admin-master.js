@@ -525,6 +525,53 @@ function handleProdImgInput(val) {
     }
 }
 
+function handleSimpleImageUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('Vui lòng chỉ chọn file hình ảnh (JPG, PNG, WebP)!', 'warning');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const tempImg = new Image();
+        tempImg.onload = function() {
+            // Tối ưu kích thước ảnh (tối đa 600px, nén jpeg nhẹ ~40KB) để vừa cực nét vừa không lo đầy localStorage
+            const canvas = document.createElement('canvas');
+            const maxDim = 600;
+            let width = tempImg.width;
+            let height = tempImg.height;
+            if (width > height) {
+                if (width > maxDim) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                }
+            } else {
+                if (height > maxDim) {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(tempImg, 0, 0, width, height);
+            const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+            document.getElementById('prod-img').value = optimizedBase64;
+            const select = document.getElementById('prod-img-select');
+            if (select) select.value = 'custom';
+            previewShoeImage(optimizedBase64);
+            showToast(`Đã nạp ảnh "${file.name}" từ máy tính thành công!`, 'success');
+        };
+        tempImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
 let currentEditingGallery = [];
 
 // ==========================================================

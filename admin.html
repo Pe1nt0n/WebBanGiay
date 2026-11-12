@@ -706,9 +706,13 @@
 
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
                     <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                        <!-- CHỌN NHANH ẢNH MẪU CÓ SẴN TRONG DỰ ÁN -->
-                        <div>
-                            <select id="prod-img-select" class="form-control" onchange="onProductImageSelectChange(this.value)">
+                        <!-- THANH CÔNG CỤ CHỌN ẢNH TỪ MÁY HOẶC CHỌN ẢNH MẪU -->
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 7px 12px; font-weight: 700; white-space: nowrap;" onclick="document.getElementById('simple-file-input').click()" title="Tải ảnh offline từ máy tính">
+                                📁 Chọn ảnh từ máy tính
+                            </button>
+                            <input type="file" id="simple-file-input" accept="image/*" style="display: none;" onchange="handleSimpleImageUpload(event)">
+                            <select id="prod-img-select" class="form-control" style="font-size: 13px;" onchange="onProductImageSelectChange(this.value)">
                                 <option value="./assets/images/products/sp001.jpg">SP001 - Nike Air Max Red</option>
                                 <option value="./assets/images/products/sp002.jpg">SP002 - Adidas Ultraboost</option>
                                 <option value="./assets/images/products/sp003.jpg">SP003 - Jordan 1 Chicago</option>
@@ -721,16 +725,16 @@
                                 <option value="./assets/images/products/sp010.jpg">SP010 - Penny Loafer Da Bóng</option>
                                 <option value="./assets/images/products/sp011.jpg">SP011 - Puma RS-X Triple White</option>
                                 <option value="./assets/images/products/sp012.jpg">SP012 - Adidas Adizero Pro</option>
-                                <option value="custom">-- Tự nhập đường dẫn / Link ảnh mạng --</option>
+                                <option value="custom">-- Tự nhập đường dẫn / Đã nạp từ máy --</option>
                             </select>
                         </div>
                         <!-- Ô NHẬP ĐƯỜNG DẪN ẢNH HOẶC LINK WEB -->
                         <div>
-                            <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc https://..." oninput="handleProdImgInput(this.value)">
+                            <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc link ảnh..." oninput="handleProdImgInput(this.value)">
                         </div>
                     </div>
-                    <!-- KHUNG XEM TRƯỚC ẢNH (PREVIEW BOX) -->
-                    <div style="width: 84px; height: 84px; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; background: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--shadow-sm);">
+                    <!-- KHUNG XEM TRƯỚC ẢNH (PREVIEW BOX - CÓ THỂ CLICK ĐỂ CHỌN ẢNH) -->
+                    <div style="width: 84px; height: 84px; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; background: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--shadow-sm); cursor: pointer;" onclick="document.getElementById('simple-file-input').click()" title="Click vào đây để đổi ảnh từ máy tính">
                         <img id="img-preview-thumb" src="./assets/images/products/sp001.jpg" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='./assets/images/products/sp001.jpg';">
                     </div>
                 </div>

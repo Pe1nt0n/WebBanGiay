@@ -564,7 +564,7 @@ function loadAdminProducts() {
 
     table.innerHTML = prods.map(p => `
         <tr>
-            <td><img src="${p.img}" class="thumb" alt="${p.name}"></td>
+            <td><img src="${p.img}" class="thumb" alt="${p.name}" width="52" height="52" style="width: 52px; height: 52px; object-fit: cover; border-radius: 8px;"></td>
             <td><strong>${p.id}</strong></td>
             <td><strong>${p.name}</strong></td>
             <td><span class="badge" style="background:#e0e7ff; color:#3730a3; font-weight:700;">${p.brand || 'Khác'}</span></td>

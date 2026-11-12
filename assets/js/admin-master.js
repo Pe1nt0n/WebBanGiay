@@ -494,226 +494,38 @@ const sampleShoeImages = [
 
 function previewShoeImage(url) {
     const img = document.getElementById('img-preview-thumb');
-    const placeholder = document.getElementById('preview-placeholder');
-    if (!img || !placeholder) return;
-    if (url && (url.startsWith('http') || url.startsWith('./') || url.startsWith('assets/') || url.startsWith('data:image/'))) {
-        img.src = url;
-        img.style.display = 'block';
-        placeholder.style.display = 'none';
+    if (!img) return;
+    const cleanUrl = (url && typeof url === 'string') ? url.trim() : '';
+    if (cleanUrl !== '') {
+        img.src = cleanUrl;
     } else {
-        img.style.display = 'none';
-        placeholder.style.display = 'block';
+        img.src = './assets/images/products/sp001.jpg';
     }
 }
 
-function renderSampleGallery() {
-    const container = document.getElementById('preset-gallery-items');
-    if (!container) return;
-
-    container.innerHTML = sampleShoeImages.map(item => `
-        <div class="preset-item" onclick="selectSampleImage('${item.img}')" title="${item.code} - ${item.name}">
-            <img src="${item.img}" alt="${item.name}">
-            <span>${item.code}</span>
-        </div>
-    `).join('');
-}
-
-function toggleSampleGallery() {
-    const card = document.getElementById('sample-gallery-card');
-    if (!card) return;
-    const isShowing = card.style.display !== 'none';
-    card.style.display = isShowing ? 'none' : 'block';
-}
-
-function selectSampleImage(imgUrl) {
+function onProductImageSelectChange(val) {
     const input = document.getElementById('prod-img');
-    const oldVal = input ? input.value : '';
-    if (input) input.value = imgUrl;
-    previewShoeImage(imgUrl);
-
-    if (typeof currentEditingGallery !== 'undefined') {
-        if (currentEditingGallery.length === 0) {
-            currentEditingGallery.push(imgUrl);
-        } else if (currentEditingGallery[0] === oldVal) {
-            currentEditingGallery[0] = imgUrl;
-        }
-        renderAdminGalleryStrip();
+    if (!input) return;
+    if (val !== 'custom') {
+        input.value = val;
+        previewShoeImage(val);
+    } else {
+        input.focus();
+        input.select();
     }
-
-    document.querySelectorAll('.preset-item').forEach(el => {
-        const itemImg = el.querySelector('img');
-        if (itemImg && itemImg.getAttribute('src') === imgUrl) {
-            el.classList.add('active');
-        } else {
-            el.classList.remove('active');
-        }
-    });
-
-    showToast('Đã chọn ảnh mẫu giày thành công!', 'success');
 }
 
-function handleProductFileUpload(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showToast('Vui lòng chỉ chọn file hình ảnh (JPG, PNG, WebP)!', 'warning');
-        return;
+function handleProdImgInput(val) {
+    previewShoeImage(val);
+    const select = document.getElementById('prod-img-select');
+    if (select) {
+        const cleanVal = (val || '').trim();
+        const hasOpt = Array.from(select.options).some(opt => opt.value === cleanVal);
+        select.value = hasOpt ? cleanVal : 'custom';
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-        showToast('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhẹ hơn!', 'warning');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const base64Url = e.target.result;
-        const input = document.getElementById('prod-img');
-        const oldVal = input ? input.value : '';
-        if (input) input.value = base64Url;
-        previewShoeImage(base64Url);
-
-        if (typeof currentEditingGallery !== 'undefined') {
-            if (currentEditingGallery.length === 0) {
-                currentEditingGallery.push(base64Url);
-            } else if (currentEditingGallery[0] === oldVal) {
-                currentEditingGallery[0] = base64Url;
-            }
-            renderAdminGalleryStrip();
-        }
-
-        showToast(`Đã tải ảnh "${file.name}" lên từ máy tính!`, 'success');
-    };
-    reader.readAsDataURL(file);
-}
-
-function initImageDragAndDrop() {
-    const box = document.getElementById('box-preview-img');
-    if (!box) return;
-
-    box.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        box.style.borderColor = 'var(--primary)';
-        box.style.background = '#fff1f2';
-    });
-
-    box.addEventListener('dragleave', () => {
-        box.style.borderColor = '#cbd5e1';
-        box.style.background = '#f8fafc';
-    });
-
-    box.addEventListener('drop', (e) => {
-        e.preventDefault();
-        box.style.borderColor = '#cbd5e1';
-        box.style.background = '#f8fafc';
-        const file = e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const base64Url = evt.target.result;
-                const input = document.getElementById('prod-img');
-                const oldVal = input ? input.value : '';
-                if (input) input.value = base64Url;
-                previewShoeImage(base64Url);
-
-                if (typeof currentEditingGallery !== 'undefined') {
-                    if (currentEditingGallery.length === 0) {
-                        currentEditingGallery.push(base64Url);
-                    } else if (currentEditingGallery[0] === oldVal) {
-                        currentEditingGallery[0] = base64Url;
-                    }
-                    renderAdminGalleryStrip();
-                }
-
-                showToast(`Đã thả ảnh "${file.name}" vào sản phẩm!`, 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
 }
 
 let currentEditingGallery = [];
-
-function renderAdminGalleryStrip() {
-    const strip = document.getElementById('admin-gallery-strip');
-    if (!strip) return;
-
-    if (!currentEditingGallery || currentEditingGallery.length === 0) {
-        strip.innerHTML = '<span style="font-size: 12px; color: var(--gray); font-style: italic;">Chưa có ảnh trong gallery. Ảnh chính ở trên sẽ được dùng làm ảnh đại diện duy nhất.</span>';
-        return;
-    }
-
-    strip.innerHTML = currentEditingGallery.map((imgUrl, idx) => `
-        <div class="admin-gallery-thumb-item" title="Ảnh góc chụp #${idx + 1}">
-            <img src="${imgUrl}" alt="Gallery ${idx + 1}" onerror="this.src='./assets/images/products/sp001.jpg'">
-            <button type="button" class="btn-remove-gallery" onclick="removeGalleryImage(${idx})" title="Xóa ảnh này khỏi bộ sưu tập">✕</button>
-            <span class="badge-main-tag">${idx === 0 ? 'ẢNH 1' : 'ẢNH ' + (idx + 1)}</span>
-        </div>
-    `).join('');
-}
-
-function removeGalleryImage(idx) {
-    if (idx >= 0 && idx < currentEditingGallery.length) {
-        currentEditingGallery.splice(idx, 1);
-        renderAdminGalleryStrip();
-        showToast('Đã xóa 1 ảnh khỏi bộ sưu tập gallery!', 'info');
-    }
-}
-
-function addImageToGallery(imgUrl) {
-    if (!imgUrl) return;
-    if (currentEditingGallery.includes(imgUrl)) {
-        showToast('Ảnh này đã có trong bộ sưu tập!', 'warning');
-        return;
-    }
-    currentEditingGallery.push(imgUrl);
-    renderAdminGalleryStrip();
-    showToast('Đã thêm 1 ảnh vào bộ sưu tập chi tiết!', 'success');
-}
-
-function handleGalleryFileUpload(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showToast('Vui lòng chỉ chọn file hình ảnh (JPG, PNG, WebP)!', 'warning');
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-        showToast('Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhẹ hơn!', 'warning');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        addImageToGallery(e.target.result);
-        event.target.value = '';
-    };
-    reader.readAsDataURL(file);
-}
-
-function toggleGalleryPresetPicker() {
-    const card = document.getElementById('gallery-preset-picker-card');
-    if (!card) return;
-    const isShowing = card.style.display !== 'none';
-    card.style.display = isShowing ? 'none' : 'block';
-    if (!isShowing) {
-        renderGalleryPresetPicker();
-    }
-}
-
-function renderGalleryPresetPicker() {
-    const container = document.getElementById('gallery-preset-picker-items');
-    if (!container) return;
-    container.innerHTML = sampleShoeImages.map(item => `
-        <div class="preset-item" onclick="addImageToGallery('${item.img}')" title="Thêm ${item.code} - ${item.name} vào gallery">
-            <img src="${item.img}" alt="${item.name}">
-            <span>${item.code}</span>
-        </div>
-    `).join('');
-}
 
 // ==========================================================
 // 6. QUẢN LÝ SẢN PHẨM GIÀY (MỤC I.4)
@@ -791,20 +603,17 @@ function openAddProductModal() {
     if (costPriceInput) costPriceInput.value = '1500000';
     updateProductCostPricePreview(1500000);
 
-    document.getElementById('prod-img').value = './assets/images/products/sp001.jpg';
-    document.getElementById('prod-desc').value = '';
-    previewShoeImage('./assets/images/products/sp001.jpg');
+    // Reset Hình ảnh sản phẩm
+    const defaultImg = './assets/images/products/sp001.jpg';
+    document.getElementById('prod-img').value = defaultImg;
+    const imgSelect = document.getElementById('prod-img-select');
+    if (imgSelect) imgSelect.value = defaultImg;
+    previewShoeImage(defaultImg);
 
-    currentEditingGallery = ['./assets/images/products/sp001.jpg'];
-    renderAdminGalleryStrip();
-    const galPicker = document.getElementById('gallery-preset-picker-card');
-    if (galPicker) galPicker.style.display = 'none';
+    document.getElementById('prod-desc').value = '';
 
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'none';
-
-    const galleryCard = document.getElementById('sample-gallery-card');
-    if (galleryCard) galleryCard.style.display = 'none';
 
     document.getElementById('modal-product').style.display = 'flex';
 }
@@ -814,18 +623,6 @@ function openEditProductModal(id) {
     const prods = SGU_CORE ? SGU_CORE.getProducts() : [];
     const p = prods.find(x => x.id === id);
     if (!p) return;
-
-    const galleryCard = document.getElementById('sample-gallery-card');
-    if (galleryCard) galleryCard.style.display = 'none';
-
-    document.querySelectorAll('.preset-item').forEach(el => {
-        const itemImg = el.querySelector('img');
-        if (itemImg && itemImg.getAttribute('src') === p.img) {
-            el.classList.add('active');
-        } else {
-            el.classList.remove('active');
-        }
-    });
 
     document.getElementById('modal-prod-title').innerText = '✏️ Sửa thông tin sản phẩm: ' + p.id;
     document.getElementById('prod-code').value = p.id;
@@ -853,20 +650,17 @@ function openEditProductModal(id) {
         }
     }
 
-    document.getElementById('prod-img').value = p.img;
-    document.getElementById('prod-desc').value = p.desc || '';
-    previewShoeImage(p.img);
-
-    if (p.gallery && Array.isArray(p.gallery) && p.gallery.length > 0) {
-        currentEditingGallery = [...p.gallery];
-    } else if (p.img) {
-        currentEditingGallery = [p.img];
-    } else {
-        currentEditingGallery = [];
+    // Tải hình ảnh sản phẩm & gán vào select/input
+    const shoeImg = p.img || './assets/images/products/sp001.jpg';
+    document.getElementById('prod-img').value = shoeImg;
+    const imgSelect = document.getElementById('prod-img-select');
+    if (imgSelect) {
+        const hasOpt = Array.from(imgSelect.options).some(opt => opt.value === shoeImg);
+        imgSelect.value = hasOpt ? shoeImg : 'custom';
     }
-    renderAdminGalleryStrip();
-    const galPicker = document.getElementById('gallery-preset-picker-card');
-    if (galPicker) galPicker.style.display = 'none';
+    previewShoeImage(shoeImg);
+
+    document.getElementById('prod-desc').value = p.desc || '';
 
     const deleteBtn = document.getElementById('btn-modal-delete-prod');
     if (deleteBtn) deleteBtn.style.display = 'inline-block';
@@ -897,7 +691,7 @@ function saveProductModal() {
     }
     const finalCostPrice = Math.round(rawCost);
 
-    const img = document.getElementById('prod-img').value.trim();
+    const img = document.getElementById('prod-img').value.trim() || './assets/images/products/sp001.jpg';
     const desc = document.getElementById('prod-desc').value.trim();
 
     if (!code || !name) {
@@ -908,10 +702,6 @@ function saveProductModal() {
     if (!window.SGU_CORE) return;
     const prods = SGU_CORE.getProducts();
     const existing = prods.find(p => p.id === code);
-
-    const finalGallery = (currentEditingGallery && currentEditingGallery.length > 0)
-        ? [...currentEditingGallery]
-        : (img ? [img] : []);
 
     if (existing) {
         existing.name = name;
@@ -924,7 +714,11 @@ function saveProductModal() {
         existing.price = Math.round(finalCostPrice * (1 + profit / 100));
         existing.oldPrice = Math.round(existing.price * 1.15);
         existing.img = img;
-        existing.gallery = finalGallery;
+        if (!existing.gallery || !Array.isArray(existing.gallery) || existing.gallery.length === 0) {
+            existing.gallery = [img];
+        } else {
+            existing.gallery[0] = img;
+        }
         existing.desc = desc;
     } else {
         const defaultProfit = 35;
@@ -947,7 +741,7 @@ function saveProductModal() {
             stockExport: 0,
             sizes: [38, 39, 40, 41, 42, 43],
             sizeStock: { 38: 2, 39: 3, 40: 4, 41: 3, 42: 2, 43: 1, 44: 0 },
-            gallery: finalGallery,
+            gallery: [img],
             reviewsList: [],
             colors: ['Đen Phối Trắng', 'Trắng Tuyết'],
             tag: 'NEW',
@@ -1020,8 +814,6 @@ function loadAdminMasterModules() {
     loadAdminUsers();
     loadAdminCategories();
     loadAdminProducts();
-    renderSampleGallery();
-    initImageDragAndDrop();
 }
 
 window.addEventListener('DOMContentLoaded', function() {

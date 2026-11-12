@@ -701,76 +701,38 @@
             <div class="form-group">
                 <label style="display: flex; justify-content: space-between; align-items: center;">
                     <span>Hình ảnh sản phẩm *</span>
-                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">Tải từ máy tính, chọn ảnh mẫu hoặc dán URL</span>
+                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">Chọn nhanh ảnh mẫu hoặc nhập đường dẫn ảnh</span>
                 </label>
 
-                <!-- TOOLBAR TIỆN ÍCH CHỌN ẢNH -->
-                <div class="image-picker-toolbar" style="margin-bottom: 8px;">
-                    <button type="button" class="btn-picker-tool" onclick="document.getElementById('file-upload-input').click()">
-                        📁 Tải ảnh từ máy tính
-                    </button>
-                    <button type="button" class="btn-picker-tool" onclick="toggleSampleGallery()">
-                        🖼️ Chọn từ kho ảnh mẫu (12 mẫu)
-                    </button>
-                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;" onchange="handleProductFileUpload(event)">
-                </div>
-
-                <!-- BẢNG CHỌN ẢNH MẪU CÓ SẴN (COLLAPSIBLE) -->
-                <div id="sample-gallery-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
-                    <div class="preset-gallery-title">
-                        <span>Kho ảnh giày có sẵn trong cửa hàng (Click để chọn ngay):</span>
-                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:14px; font-weight:700;" onclick="toggleSampleGallery()">✕ Đóng</button>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                        <!-- CHỌN NHANH ẢNH MẪU CÓ SẴN TRONG DỰ ÁN -->
+                        <div>
+                            <select id="prod-img-select" class="form-control" onchange="onProductImageSelectChange(this.value)">
+                                <option value="./assets/images/products/sp001.jpg">SP001 - Nike Air Max Red</option>
+                                <option value="./assets/images/products/sp002.jpg">SP002 - Adidas Ultraboost</option>
+                                <option value="./assets/images/products/sp003.jpg">SP003 - Jordan 1 Chicago</option>
+                                <option value="./assets/images/products/sp004.jpg">SP004 - Nike Mercurial Vapor</option>
+                                <option value="./assets/images/products/sp005.jpg">SP005 - Puma Velocity Nitro</option>
+                                <option value="./assets/images/products/sp006.jpg">SP006 - Oxford Da Bò Ý</option>
+                                <option value="./assets/images/products/sp007.jpg">SP007 - Nike Dunk Panda</option>
+                                <option value="./assets/images/products/sp008.jpg">SP008 - Adidas Predator Elite</option>
+                                <option value="./assets/images/products/sp009.jpg">SP009 - Nike Pegasus 40</option>
+                                <option value="./assets/images/products/sp010.jpg">SP010 - Penny Loafer Da Bóng</option>
+                                <option value="./assets/images/products/sp011.jpg">SP011 - Puma RS-X Triple White</option>
+                                <option value="./assets/images/products/sp012.jpg">SP012 - Adidas Adizero Pro</option>
+                                <option value="custom">-- Tự nhập đường dẫn / Link ảnh mạng --</option>
+                            </select>
+                        </div>
+                        <!-- Ô NHẬP ĐƯỜNG DẪN ẢNH HOẶC LINK WEB -->
+                        <div>
+                            <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc https://..." oninput="handleProdImgInput(this.value)">
+                        </div>
                     </div>
-                    <div class="preset-gallery-grid" id="preset-gallery-items">
-                        <!-- JS render 12 thumbnails -->
+                    <!-- KHUNG XEM TRƯỚC ẢNH (PREVIEW BOX) -->
+                    <div style="width: 84px; height: 84px; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; background: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--shadow-sm);">
+                        <img id="img-preview-thumb" src="./assets/images/products/sp001.jpg" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='./assets/images/products/sp001.jpg';">
                     </div>
-                </div>
-
-                <!-- ĐƯỜNG DẪN VÀ PREVIEW BOX -->
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="flex: 1;">
-                        <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc link ảnh..." oninput="previewShoeImage(this.value)">
-                        <div style="font-size: 11px; color: var(--gray); margin-top: 4px;">Hoặc kéo & thả file ảnh trực tiếp vào ô vuông bên phải.</div>
-                    </div>
-                    <div class="image-preview-large-box" id="box-preview-img" title="Click hoặc Kéo thả ảnh vào đây để tải" onclick="document.getElementById('file-upload-input').click()">
-                        <img id="img-preview-thumb" src="" style="display: none;">
-                        <span id="preview-placeholder" style="font-size: 11px; color: var(--gray); text-align: center; line-height: 1.2;">📁 Chọn<br>ảnh</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- QUẢN LÝ BỘ SƯU TẬP ẢNH GALLERY NHIỀU GÓC CHỤP -->
-            <div class="form-group" style="background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <div>
-                        <label style="font-weight: 800; font-size: 13px; color: var(--secondary); margin-bottom: 2px; display: block;">
-                            🖼️ Bộ sưu tập ảnh góc chụp (Gallery chi tiết)
-                        </label>
-                        <span style="font-size: 11.5px; color: var(--gray);">Các góc ảnh này hiển thị ở trang Chi tiết sản phẩm. Bấm ✕ để xóa ảnh không muốn.</span>
-                    </div>
-                    <div style="display: flex; gap: 6px;">
-                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="document.getElementById('gallery-file-input').click()">
-                            📁 + Tải thêm ảnh
-                        </button>
-                        <button type="button" class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; font-weight: 700;" onclick="toggleGalleryPresetPicker()">
-                            🖼️ + Chọn từ mẫu
-                        </button>
-                    </div>
-                    <input type="file" id="gallery-file-input" accept="image/*" style="display: none;" onchange="handleGalleryFileUpload(event)">
-                </div>
-
-                <!-- BẢNG CHỌN MẪU ĐỂ THÊM VÀO GALLERY (COLLAPSIBLE) -->
-                <div id="gallery-preset-picker-card" class="preset-gallery-card" style="display: none; margin-bottom: 10px;">
-                    <div class="preset-gallery-title">
-                        <span>Chọn ảnh để thêm vào bộ sưu tập:</span>
-                        <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:13px; font-weight:700;" onclick="toggleGalleryPresetPicker()">✕ Đóng</button>
-                    </div>
-                    <div class="preset-gallery-grid" id="gallery-preset-picker-items"></div>
-                </div>
-
-                <!-- DANH SÁCH ẢNH TRONG GALLERY HIỆN TẠI -->
-                <div id="admin-gallery-strip" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; min-height: 60px;">
-                    <!-- JS render danh sách ảnh với nút xóa ✕ -->
                 </div>
             </div>
             <div class="form-group">

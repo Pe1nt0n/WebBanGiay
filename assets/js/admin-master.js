@@ -474,22 +474,13 @@ function deleteCategory(code) {
 }
 
 // ==========================================================
-// 5. BỘ TIỆN ÍCH XỬ LÝ ẢNH SẢN PHẨM (100% OFFLINE)
+// 5. BỘ TIỆN ÍCH XỬ LÝ ẢNH SẢN PHẨM
 // ==========================================================
 
 function previewShoeImage(url) {
     const img = document.getElementById('img-preview-thumb');
     if (!img) return;
-    const cleanUrl = (url && typeof url === 'string') ? url.trim() : '';
-    if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
-        img.src = './assets/images/products/sp001.jpg';
-        return;
-    }
-    if (cleanUrl !== '') {
-        img.src = cleanUrl;
-    } else {
-        img.src = './assets/images/products/sp001.jpg';
-    }
+    img.src = (url && url.trim()) ? url.trim() : './assets/images/products/sp001.jpg';
 }
 
 function onProductImageSelectChange(val) {
@@ -500,22 +491,14 @@ function onProductImageSelectChange(val) {
         previewShoeImage(val);
     } else {
         input.focus();
-        input.select();
     }
 }
 
 function handleProdImgInput(val) {
-    const cleanVal = (val || '').trim();
-    if (cleanVal.startsWith('http://') || cleanVal.startsWith('https://')) {
-        showToast('Hệ thống chạy 100% Offline, không dùng ảnh mạng! Vui lòng bấm "Chọn ảnh từ máy tính" hoặc dùng ảnh nội bộ.', 'warning');
-        const input = document.getElementById('prod-img');
-        if (input) input.value = './assets/images/products/sp001.jpg';
-        previewShoeImage('./assets/images/products/sp001.jpg');
-        return;
-    }
-    previewShoeImage(cleanVal);
+    previewShoeImage(val);
     const select = document.getElementById('prod-img-select');
     if (select) {
+        const cleanVal = (val || '').trim();
         const hasOpt = Array.from(select.options).some(opt => opt.value === cleanVal);
         select.value = hasOpt ? cleanVal : 'custom';
     }
@@ -733,11 +716,6 @@ function saveProductModal() {
     const finalCostPrice = Math.round(rawCost);
 
     const img = document.getElementById('prod-img').value.trim() || './assets/images/products/sp001.jpg';
-    if (img.startsWith('http://') || img.startsWith('https://')) {
-        showToast('Hệ thống chạy 100% Offline! Vui lòng bấm "Chọn ảnh từ máy tính" hoặc chọn ảnh nội bộ, không dùng ảnh mạng.', 'warning');
-        document.getElementById('prod-img').focus();
-        return;
-    }
     const desc = document.getElementById('prod-desc').value.trim();
 
     if (!code || !name) {

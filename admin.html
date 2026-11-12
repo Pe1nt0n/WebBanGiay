@@ -701,14 +701,14 @@
             <div class="form-group">
                 <label style="display: flex; justify-content: space-between; align-items: center;">
                     <span>Hình ảnh sản phẩm *</span>
-                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">100% Offline: Chọn ảnh từ máy tính hoặc dùng ảnh mẫu có sẵn</span>
+                    <span style="font-size: 11.5px; font-weight: 500; color: var(--gray);">Chọn ảnh từ máy tính hoặc ảnh mẫu có sẵn</span>
                 </label>
 
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
                     <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                        <!-- THANH CÔNG CỤ CHỌN ẢNH TỪ MÁY HOẶC CHỌN ẢNH MẪU (OFFLINE) -->
+                        <!-- THANH CÔNG CỤ CHỌN ẢNH TỪ MÁY HOẶC CHỌN ẢNH MẪU -->
                         <div style="display: flex; gap: 8px;">
-                            <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 7px 12px; font-weight: 700; white-space: nowrap;" onclick="document.getElementById('simple-file-input').click()" title="Tải ảnh offline từ máy tính">
+                            <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 7px 12px; font-weight: 700; white-space: nowrap;" onclick="document.getElementById('simple-file-input').click()" title="Tải ảnh từ máy tính">
                                 📁 Chọn ảnh từ máy tính
                             </button>
                             <input type="file" id="simple-file-input" accept="image/*" style="display: none;" onchange="handleSimpleImageUpload(event)">
@@ -725,12 +725,12 @@
                                 <option value="./assets/images/products/sp010.jpg">SP010 - Penny Loafer Da Bóng</option>
                                 <option value="./assets/images/products/sp011.jpg">SP011 - Puma RS-X Triple White</option>
                                 <option value="./assets/images/products/sp012.jpg">SP012 - Adidas Adizero Pro</option>
-                                <option value="custom">-- Ảnh nạp từ máy tính / File nội bộ --</option>
+                                <option value="custom">-- Tự nhập đường dẫn / Ảnh từ máy --</option>
                             </select>
                         </div>
-                        <!-- ĐƯỜNG DẪN ẢNH NỘI BỘ (KHÔNG DÙNG ẢNH MẠNG) -->
+                        <!-- Ô NHẬP ĐƯỜNG DẪN ẢNH -->
                         <div>
-                            <input type="text" id="prod-img" class="form-control" placeholder="Đường dẫn nội bộ: ./assets/images/products/sp001.jpg" oninput="handleProdImgInput(this.value)">
+                            <input type="text" id="prod-img" class="form-control" placeholder="./assets/images/products/sp001.jpg hoặc đường dẫn ảnh..." oninput="handleProdImgInput(this.value)">
                         </div>
                     </div>
                     <!-- KHUNG XEM TRƯỚC ẢNH (PREVIEW BOX - CÓ THỂ CLICK ĐỂ CHỌN ẢNH) -->

@@ -249,13 +249,52 @@
 /* ==========================================================================
    6. BẢNG DỮ LIỆU & THANH TÌM KIẾM (TABLES & FILTERS)
    ========================================================================== */
-.table-search-bar {
+.card-box {
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+}
+
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--light);
     gap: 16px;
-    margin-bottom: 16px;
     flex-wrap: wrap;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 2px;
+}
+
+.table-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-search-bar input {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    outline: none;
+    min-width: 250px;
+    background: #ffffff;
+}
+
+.table-search-bar input:focus {
+    border-color: var(--primary);
 }
 
 .search-input-wrap {
@@ -318,12 +357,31 @@ th, td {
     text-align: left;
     border-bottom: 1px solid var(--border);
     font-size: 13px;
+    vertical-align: middle;
 }
 
 th {
     background: #f8fafc;
     color: var(--secondary);
     font-weight: 700;
+    white-space: nowrap;
+}
+
+/* ẢNH THUMBNAIL SẢN PHẨM TRONG BẢNG QUẢN TRỊ */
+.thumb,
+table td img.thumb,
+table td img {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    display: block;
+    background: #ffffff;
 }
 
 .btn-action {

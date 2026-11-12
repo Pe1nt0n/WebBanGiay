@@ -474,23 +474,8 @@ function deleteCategory(code) {
 }
 
 // ==========================================================
-// 5. BỘ TIỆN ÍCH CHỌN ẢNH VÀ QUẢN LÝ GALLERY SẢN PHẨM
+// 5. BỘ TIỆN ÍCH XỬ LÝ ẢNH SẢN PHẨM (100% OFFLINE)
 // ==========================================================
-
-const sampleShoeImages = [
-    { code: 'SP001', name: 'Nike Air Max Red', img: './assets/images/products/sp001.jpg' },
-    { code: 'SP002', name: 'Adidas Ultraboost', img: './assets/images/products/sp002.jpg' },
-    { code: 'SP003', name: 'Jordan 1 Chicago', img: './assets/images/products/sp003.jpg' },
-    { code: 'SP004', name: 'Nike Mercurial Vapor', img: './assets/images/products/sp004.jpg' },
-    { code: 'SP005', name: 'Puma Velocity Nitro', img: './assets/images/products/sp005.jpg' },
-    { code: 'SP006', name: 'Oxford Da Bò Ý', img: './assets/images/products/sp006.jpg' },
-    { code: 'SP007', name: 'Nike Dunk Panda', img: './assets/images/products/sp007.jpg' },
-    { code: 'SP008', name: 'Adidas Predator Elite', img: './assets/images/products/sp008.jpg' },
-    { code: 'SP009', name: 'Nike Pegasus 40', img: './assets/images/products/sp009.jpg' },
-    { code: 'SP010', name: 'Penny Loafer Da Bóng', img: './assets/images/products/sp010.jpg' },
-    { code: 'SP011', name: 'Puma RS-X Triple White', img: './assets/images/products/sp011.jpg' },
-    { code: 'SP012', name: 'Adidas Adizero Pro', img: './assets/images/products/sp012.jpg' }
-];
 
 function previewShoeImage(url) {
     const img = document.getElementById('img-preview-thumb');
@@ -582,8 +567,6 @@ function handleSimpleImageUpload(event) {
     reader.readAsDataURL(file);
     event.target.value = '';
 }
-
-let currentEditingGallery = [];
 
 // ==========================================================
 // 6. QUẢN LÝ SẢN PHẨM GIÀY (MỤC I.4)

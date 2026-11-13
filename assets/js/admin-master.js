@@ -702,69 +702,79 @@ function saveProductModal() {
     const name = document.getElementById('prod-name').value.trim();
     const cat = document.getElementById('prod-cat').value;
 
-    const brandSelect = document.getElementById('prod-brand') ? document.getElementById('prod-brand').value : 'Nike';
-    const customBrand = document.getElementById('prod-brand-custom') ? document.getElementById('prod-brand-custom').value.trim() : '';
-    const brand = (brandSelect === 'custom') ? (customBrand || 'Khác') : brandSelect;
+    if (!code || !name) {
+        showToast('Vui lòng nhập đầy đủ Mã và Tên sản phẩm giày!', 'warning');
+        return;
+    }
 
+    // 1. Xác định thương hiệu (Brand)
+    const brandSelect = document.getElementById('prod-brand');
+    const customBrandInput = document.getElementById('prod-brand-custom');
+    const brand = (brandSelect && brandSelect.value === 'custom')
+        ? (customBrandInput ? customBrandInput.value.trim() : 'Khác') || 'Khác'
+        : (brandSelect ? brandSelect.value : 'Nike');
+
+    // 2. Xác thực và định dạng Giá vốn (Cost Price)
     const costPriceInput = document.getElementById('prod-cost-price');
     const rawCost = costPriceInput ? parseFloat(costPriceInput.value) : NaN;
     if (isNaN(rawCost) || rawCost <= 0) {
-        showToast('Vui lòng nhập giá vốn hợp lệ cho sản phẩm (lớn hơn 0)!', 'warning');
+        showToast('Vui lòng nhập giá vốn hợp lệ (lớn hơn 0)!', 'warning');
         if (costPriceInput) costPriceInput.focus();
         return;
     }
     const finalCostPrice = Math.round(rawCost);
 
+    // 3. Hình ảnh và mô tả sản phẩm
     const img = document.getElementById('prod-img').value.trim() || './assets/images/products/sp001.jpg';
     const desc = document.getElementById('prod-desc').value.trim();
-
-    if (!code || !name) {
-        showToast('Vui lòng nhập Mã và Tên sản phẩm giày!', 'warning');
-        return;
-    }
 
     if (!window.SGU_CORE) return;
     const prods = SGU_CORE.getProducts();
     const existing = prods.find(p => p.id === code);
 
+    // Lấy mã loại sản phẩm (catCode) tương ứng từ danh mục
+    const categories = SGU_CORE.getCategories();
+    const catObj = categories.find(c => c.name === cat);
+    const catCode = catObj ? catObj.code : 'LOAI01';
+
     if (existing) {
+        // Cập nhật thông tin sản phẩm đã có
         existing.name = name;
         existing.brand = brand;
         existing.category = cat;
+        existing.catCode = catCode;
         existing.costPrice = finalCostPrice;
-        // Tính lại giá bán theo % lợi nhuận đã thiết lập cho sản phẩm này
+
+        // Tự động tính lại giá bán theo % lợi nhuận đã thiết lập
         const profit = existing.profitPercent !== undefined ? existing.profitPercent : 35;
         existing.profitPercent = profit;
         existing.price = Math.round(finalCostPrice * (1 + profit / 100));
         existing.oldPrice = Math.round(existing.price * 1.15);
         existing.img = img;
-        if (!existing.gallery || !Array.isArray(existing.gallery) || existing.gallery.length === 0) {
-            existing.gallery = [img];
-        } else {
-            existing.gallery[0] = img;
-        }
+        existing.gallery = (existing.gallery && existing.gallery.length) ? existing.gallery : [img];
+        existing.gallery[0] = img;
         existing.desc = desc;
     } else {
+        // Thêm sản phẩm mới (Tỉ lệ lợi nhuận khởi tạo mặc định: 35%)
         const defaultProfit = 35;
-        const finalPrice = Math.round(finalCostPrice * (1 + defaultProfit / 100));
-        const finalOldPrice = Math.round(finalPrice * 1.15);
+        const sellPrice = Math.round(finalCostPrice * (1 + defaultProfit / 100));
 
         prods.unshift({
             id: code,
             name: name,
             brand: brand,
             category: cat,
-            catCode: cat.includes('Sneaker') ? 'LOAI01' : (cat.includes('Chạy') ? 'LOAI02' : (cat.includes('Đá') ? 'LOAI03' : 'LOAI04')),
+            catCode: catCode,
             costPrice: finalCostPrice,
             profitPercent: defaultProfit,
-            price: finalPrice,
-            oldPrice: finalOldPrice,
+            price: sellPrice,
+            oldPrice: Math.round(sellPrice * 1.15),
             stock: 15,
             stockInitial: 15,
             stockImport: 0,
             stockExport: 0,
             sizes: [38, 39, 40, 41, 42, 43],
-            sizeStock: { 38: 2, 39: 3, 40: 4, 41: 3, 42: 2, 43: 1, 44: 0 },
+            sizeStock: { 38: 2, 39: 3, 40: 4, 41: 3, 42: 2, 43: 1 },
             gallery: [img],
             reviewsList: [],
             colors: ['Đen Phối Trắng', 'Trắng Tuyết'],
@@ -780,13 +790,13 @@ function saveProductModal() {
     SGU_CORE.saveProducts(prods);
     loadAdminProducts();
 
-    // Đồng bộ sang các module định giá & tồn kho (nếu đã nạp)
+    // Tự động đồng bộ sang Mục 5 (Giá bán & Lợi nhuận) và Mục 7 (Tồn kho)
     if (typeof loadAdminPricing === 'function') loadAdminPricing();
     if (typeof loadAdminInventory === 'function') loadAdminInventory();
     updateAdminKPIs();
 
     closeModal('modal-product');
-    showToast(`Đã lưu sản phẩm "${name}" thành công với Giá vốn ${SGU_CORE.formatVND(finalCostPrice)}!`, 'success');
+    showToast(`Đã lưu sản phẩm "${name}" thành công (Giá vốn: ${SGU_CORE.formatVND(finalCostPrice)})!`, 'success');
 }
 
 function deleteProduct(id) {

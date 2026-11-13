@@ -553,12 +553,12 @@
             console.warn('Lỗi kiểm tra đồng bộ sgu_imports:', e);
         }
 
-        // Xóa phân loại rác/thử nghiệm (mã iiiiiiiiiiiiiiiiiiii / gggggggggggggggggggg) nếu có trong LocalStorage
+        // Chuẩn hóa danh mục phân loại trong LocalStorage nếu có
         try {
             const rawCats = localStorage.getItem('sgu_categories');
             if (rawCats) {
                 const storedCats = JSON.parse(rawCats);
-                const filtered = storedCats.filter(c => c && c.code !== 'iiiiiiiiiiiiiiiiiiii' && c.name !== 'gggggggggggggggggggg');
+                const filtered = storedCats.filter(c => c && c.code && c.name);
                 if (filtered.length !== storedCats.length) {
                     localStorage.setItem('sgu_categories', JSON.stringify(filtered));
                 }
@@ -600,7 +600,7 @@
         // Danh mục loại
         getCategories: function () {
             const list = JSON.parse(localStorage.getItem('sgu_categories')) || initialCategories;
-            return list.filter(c => c && c.code !== 'iiiiiiiiiiiiiiiiiiii' && c.name !== 'gggggggggggggggggggg');
+            return list.filter(c => c && c.code && c.name);
         },
         saveCategories: function (cats) {
             localStorage.setItem('sgu_categories', JSON.stringify(cats));

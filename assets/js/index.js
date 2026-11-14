@@ -3,8 +3,9 @@
  */
 
 // 1. DỮ LIỆU SẢN PHẨM MẪU (ĐỒNG BỘ LOCALSTORAGE QUA SGU_CORE)
-const productsData = (window.SGU_CORE && SGU_CORE.getProducts) 
-    ? SGU_CORE.getProducts().filter(p => p.active !== false)
+const SGU_CORE = window.SGU_CORE;
+const productsData = (window.SGU_CORE && window.SGU_CORE.getProducts) 
+    ? window.SGU_CORE.getProducts().filter(p => p.active !== false)
     : [
     {
         id: 'SP001',
@@ -695,10 +696,8 @@ function renderProducts() {
         return `
         <div class="product-card" onclick="openProductDetailById('${p.id}')">
             <div class="card-img-wrap">
+                ${p.tag ? `<span class="card-tag ${p.tag.toLowerCase()}">${p.tag}</span>` : ''}
                 <img src="${p.img}" alt="${p.name}" loading="lazy">
-                <button type="button" class="btn-quick-view" onclick="event.stopPropagation(); openProductDetailById('${p.id}')">
-                    👁️ Xem Chi Tiết
-                </button>
             </div>
             <div class="card-body">
                 <div class="card-brand">${p.brand}</div>
@@ -717,8 +716,8 @@ function renderProducts() {
                 </div>
 
                 <div class="card-footer-action">
-                    <button type="button" class="btn-add-cart-sm" onclick="event.stopPropagation(); openQuickSizeModal('${p.id}')">
-                        🛒 Chọn mua
+                    <button type="button" class="btn-add-cart-sm" onclick="event.stopPropagation(); openProductDetailById('${p.id}')">
+                        🛒 Xem & Chọn size
                     </button>
                 </div>
             </div>
@@ -912,148 +911,8 @@ function handleToggleWishlist(prodId) {
     renderProducts();
 }
 
-// 3. QUICK SIZE PICKER MODAL STATE & ACTIONS
-let quickModalProduct = null;
-let quickModalSelectedSize = null;
-
+// 3. XỬ LÝ CHỌN MUA SẢN PHẨM
 function openQuickSizeModal(prodId) {
-    if (!currentUser) {
-        showToast('Khách hàng phải Đăng nhập trước khi chọn mua và sử dụng giỏ hàng!', 'warning');
-        openModal('modal-login');
-        return;
-    }
-
-    const prods = (window.SGU_CORE && SGU_CORE.getProducts) ? SGU_CORE.getProducts() : productsData;
-    const p = prods.find(item => item.id === prodId);
-    if (!p) return;
-
-    quickModalProduct = p;
-    const sizes = p.sizes && p.sizes.length > 0 ? p.sizes : [38, 39, 40, 41, 42, 43, 44];
-    const sizeStock = p.sizeStock || {};
-
-    const imgEl = document.getElementById('quick-modal-img');
-    const brandEl = document.getElementById('quick-modal-brand');
-    const titleEl = document.getElementById('quick-modal-title');
-    const priceEl = document.getElementById('quick-modal-price');
-
-    if (imgEl) imgEl.src = p.img;
-    if (brandEl) brandEl.innerText = p.brand;
-    if (titleEl) titleEl.innerText = p.name;
-    if (priceEl) priceEl.innerText = (window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫';
-
-    // Chọn size còn hàng đầu tiên
-    const firstInStock = sizes.find(s => (sizeStock[s] !== undefined ? sizeStock[s] > 0 : true));
-    quickModalSelectedSize = firstInStock !== undefined ? firstInStock : sizes[0];
-
-    renderQuickModalSizes();
-    updateQuickModalStockInfo();
-    openModal('modal-quick-size');
-}
-
-function renderQuickModalSizes() {
-    const container = document.getElementById('quick-modal-sizes');
-    if (!container || !quickModalProduct) return;
-
-    const sizes = quickModalProduct.sizes && quickModalProduct.sizes.length > 0 ? quickModalProduct.sizes : [38, 39, 40, 41, 42, 43, 44];
-    const sizeStock = quickModalProduct.sizeStock || {};
-
-    container.innerHTML = sizes.map(s => {
-        const inStock = sizeStock[s] !== undefined ? sizeStock[s] > 0 : true;
-        const isSelected = s === quickModalSelectedSize;
-        return `
-            <button type="button" class="size-chip-btn ${isSelected ? 'selected' : ''} ${!inStock ? 'out-of-stock' : ''}" 
-                ${!inStock ? 'disabled title="Hết size này"' : `onclick="selectQuickSize(${s})"`}>
-                ${s}
-            </button>
-        `;
-    }).join('');
-}
-
-function selectQuickSize(size) {
-    if (!quickModalProduct) return;
-    const sizeStock = quickModalProduct.sizeStock || {};
-    if (sizeStock[size] !== undefined && sizeStock[size] <= 0) {
-        showToast(`Size ${size} hiện đã tạm hết hàng, vui lòng chọn size khác!`, 'warning');
-        return;
-    }
-    quickModalSelectedSize = size;
-    renderQuickModalSizes();
-    updateQuickModalStockInfo();
-}
-
-function updateQuickModalStockInfo() {
-    const tag = document.getElementById('quick-modal-stock-tag');
-    const desc = document.getElementById('quick-modal-stock-desc');
-    const btn = document.getElementById('quick-modal-btn-confirm');
-    if (!quickModalProduct) return;
-
-    const sizeStock = quickModalProduct.sizeStock || {};
-    const stock = sizeStock[quickModalSelectedSize] !== undefined ? sizeStock[quickModalSelectedSize] : quickModalProduct.stock;
-
-    if (stock <= 0) {
-        if (tag) {
-            tag.className = 'size-stock-badge out-stock';
-            tag.innerText = 'Hết size';
-        }
-        if (desc) desc.innerHTML = `❌ Size ${quickModalSelectedSize} hiện tại đã <strong>tạm hết hàng</strong> trong kho. Vui lòng chọn size khác!`;
-        if (btn) btn.disabled = true;
-    } else if (stock <= 3) {
-        if (tag) {
-            tag.className = 'size-stock-badge low-stock';
-            tag.innerText = `Sắp hết (Còn ${stock})`;
-        }
-        if (desc) desc.innerHTML = `⚠️ Size ${quickModalSelectedSize}: Chỉ còn <strong>${stock} đôi</strong> sẵn có trong kho. Đặt sớm kẻo hết!`;
-        if (btn) btn.disabled = false;
-    } else {
-        if (tag) {
-            tag.className = 'size-stock-badge in-stock';
-            tag.innerText = `Còn ${stock} đôi`;
-        }
-        if (desc) desc.innerHTML = `✅ Size ${quickModalSelectedSize}: Còn <strong>${stock} đôi</strong> sẵn sàng giao hàng ngay.`;
-        if (btn) btn.disabled = false;
-    }
-}
-
-function confirmQuickAddToCart() {
-    if (!quickModalProduct || !quickModalSelectedSize) return;
-
-    const p = quickModalProduct;
-    const size = quickModalSelectedSize;
-    const sizeStock = p.sizeStock || {};
-    const avail = sizeStock[size] !== undefined ? sizeStock[size] : p.stock;
-
-    if (avail <= 0) {
-        showToast(`Size ${size} hiện đã tạm hết hàng trong kho!`, 'warning');
-        return;
-    }
-
-    let cart = (window.SGU_CORE && SGU_CORE.getCart) ? SGU_CORE.getCart() : (JSON.parse(localStorage.getItem('sgu_cart')) || []);
-    const existing = cart.find(item => item.code === p.id && item.size === size);
-
-    if (existing) {
-        if (existing.qty + 1 > avail) {
-            showToast(`Kho chỉ còn tối đa ${avail} sản phẩm cho Size ${size}!`, 'warning');
-            return;
-        }
-        existing.qty += 1;
-    } else {
-        cart.push({
-            code: p.id,
-            name: p.name,
-            price: p.price,
-            size: size,
-            qty: 1,
-            img: p.img
-        });
-    }
-
-    if (window.SGU_CORE && SGU_CORE.saveCart) {
-        SGU_CORE.saveCart(cart);
-    } else {
-        localStorage.setItem('sgu_cart', JSON.stringify(cart));
-    }
-
-    closeModal('modal-quick-size');
-    updateCartBadge();
-    showToast(`Đã thêm "${p.name}" (Size ${size}) vào giỏ hàng!`, 'success');
+    // Chuyển hướng người dùng sang trang chi tiết để chọn size chuẩn xác
+    openProductDetailById(prodId);
 }

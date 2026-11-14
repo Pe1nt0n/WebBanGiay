@@ -8,37 +8,40 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- STYLESHEETS DÙNG CHUNG & CHI TIẾT SẢN PHẨM -->
+    <!-- CSS Dùng Chung & Chi Tiết Sản Phẩm -->
     <link rel="stylesheet" href="./assets/css/common.css">
     <link rel="stylesheet" href="./assets/css/product-detail.css">
 </head>
 <body>
 
+    <!-- THÔNG BÁO TOAST -->
     <div id="toast-container"></div>
 
-    <!-- PROMO BAR -->
-    <div class="promo-bar" style="justify-content: flex-end;">
-        <div>
-            <span>📞 CSKH: 1900 1234</span> &nbsp;|&nbsp;
-            <a href="admin.html" style="color: #cbd5e1; text-decoration:none;">🔐 Cổng Quản Trị Admin →</a>
+    <!-- 1. THANH THÔNG BÁO TRÊN CÙNG -->
+    <div class="promo-bar">
+        <div class="promo-bar-right">
+            <span>📞 CSKH: 1900 1234</span>
+            <a href="admin.html">🔐 Cổng Quản Trị Admin ↗</a>
         </div>
     </div>
 
-    <!-- HEADER -->
+    <!-- 2. HEADER: LOGO, TÌM KIẾM, HÀNH ĐỘNG -->
     <header>
         <div class="header-container">
             <a href="index.html" class="logo">
                 👟 SGU<span>SNEAKER</span>
             </a>
 
-            <div style="flex:1; max-width:420px; margin: 0 20px; position: relative;">
-                <input type="text" class="search-input" id="detail-search-input" placeholder="Tìm kiếm giày theo tên, thương hiệu..." autocomplete="off" onkeydown="if(event.key==='Enter') window.location.href='index.html?search=' + encodeURIComponent(this.value.trim())">
-                <div class="search-autocomplete" id="detail-autocomplete-box" style="display: none;"></div>
+            <!-- Thanh tìm kiếm -->
+            <div class="basic-search">
+                <span class="search-icon-left">🔍</span>
+                <input type="text" id="detail-search-input" placeholder="Tìm kiếm theo tên giày, thương hiệu..." autocomplete="off" onkeydown="if(event.key==='Enter') window.location.href='index.html?search=' + encodeURIComponent(this.value.trim())">
+                <button type="button" onclick="const q = document.getElementById('detail-search-input').value.trim(); if(q) window.location.href='index.html?search=' + encodeURIComponent(q);">Tìm kiếm</button>
             </div>
 
             <div class="header-actions">
-                <a href="index.html" class="chip" style="padding: 8px 16px;">🏠 Cửa Hàng</a>
-                <div id="header-user-status" style="display:flex; align-items:center; gap:8px;"></div>
+                <a href="index.html" class="chip">🏠 Cửa Hàng</a>
+                <div id="header-user-status"></div>
                 <a href="cart.html" class="cart-btn">
                     <span>🛒 Giỏ Hàng</span>
                     <span class="cart-badge" id="cart-counter">0</span>
@@ -47,29 +50,28 @@
         </div>
     </header>
 
-    <!-- BREADCRUMB -->
+    <!-- 3. ĐIỀU HƯỚNG BREADCRUMB -->
     <div class="breadcrumb-wrap">
         <a href="index.html">Trang chủ</a> <span>/</span>
         <span id="bc-category">Giày Sneaker</span> <span>/</span>
-        <span id="bc-name" style="color: var(--secondary); font-weight: 700;">Nike Air Max Red 2025</span>
+        <span id="bc-name" style="color: var(--secondary); font-weight: 700;">Chi tiết sản phẩm</span>
     </div>
 
-    <!-- MAIN PRODUCT DETAIL -->
+    <!-- 4. KHUNG CHI TIẾT SẢN PHẨM CHÍNH -->
     <div class="detail-wrapper">
         <div class="product-main-grid">
-            <!-- CỘT 1: HÌNH ẢNH SẢN PHẨM & GALLERY NHIỀU GÓC CHỤP -->
+            <!-- CỘT 1: HÌNH ẢNH SẢN PHẨM & DẢI ẢNH NHỎ -->
             <div class="gallery-box">
                 <div class="main-img-box">
                     <img id="main-shoe-img" src="./assets/images/products/sp001.jpg" alt="Shoe Product Image">
                 </div>
-                <!-- DẢI ẢNH THUMBNAILS NHIỀU GÓC CHỤP -->
                 <div class="gallery-thumbnails" id="gallery-thumbs-box"></div>
             </div>
 
-            <!-- CỘT 2: THÔNG TIN CHI TIẾT & CHỌN MUA -->
+            <!-- CỘT 2: THÔNG TIN CHI TIẾT, GIÁ & CHỌN SIZE -->
             <div class="info-box">
                 <div class="prod-brand-row">
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="brand-pill" id="detail-brand">NIKE</span>
                         <span class="sku-text">Mã SP: <strong id="detail-sku">SP001</strong> | <span id="detail-stock-status" style="color:var(--success); font-weight:700;">● Còn hàng</span></span>
                     </div>
@@ -78,48 +80,38 @@
                     </button>
                 </div>
 
-                <h1 class="prod-title" id="detail-title">Nike Air Max Red 2025 - Special Edition</h1>
+                <h1 class="prod-title" id="detail-title">Tên sản phẩm giày</h1>
 
                 <div class="rating-sold-row">
                     <span class="stars" id="detail-stars">⭐⭐⭐⭐⭐</span>
-                    <span><strong id="detail-rating-score">4.9 / 5</strong></span>
+                    <span><strong id="detail-rating-score">5.0</strong></span>
                     <span>•</span>
-                    <span id="detail-reviews-count" style="cursor: pointer; text-decoration: underline;" onclick="switchDetailTab('tab-reviews', document.getElementById('tab-reviews-title'))">128 nhận xét</span>
-                    <span>•</span>
-                    <span>Đã bán: <strong>486 đôi</strong></span>
+                    <span id="detail-reviews-count" style="cursor: pointer; text-decoration: underline;" onclick="switchDetailTab('tab-reviews', document.getElementById('tab-reviews-title'))">0 nhận xét</span>
                 </div>
 
                 <div class="price-section">
-                    <span class="curr-price" id="detail-price">2.450.000 ₫</span>
-                    <span class="old-price" id="detail-old-price">2.900.000 ₫</span>
-                    <span class="discount-pill">Tiết kiệm 450.000 ₫ (-15%)</span>
+                    <span class="curr-price" id="detail-price">0 ₫</span>
+                    <span class="old-price" id="detail-old-price"></span>
+                    <span class="discount-pill" id="detail-discount-tag">Chính Hãng</span>
                 </div>
 
                 <p class="prod-short-desc" id="detail-desc">
-                    Mẫu sneaker biểu tượng được trang bị hệ thống đệm khí Air Max nâng cấp, mang lại độ êm vượt trội, chống sốc tối ưu và nâng đỡ từng bước chân. Vải dệt Flyknit thoáng khí cao cấp cùng đế cao su bám đường hoàn hảo.
+                    Mô tả ngắn về chất liệu, đệm khí và tính năng nổi bật của đôi giày.
                 </p>
 
-                <!-- CHỌN SIZE GIÀY -->
+                <!-- Chọn kích cỡ giày (Size EU) -->
                 <div class="option-group">
                     <div class="option-header">
                         <span>Chọn Kích Cỡ Giày (Size EU):</span>
-                        <span class="size-guide-btn" onclick="openSizeGuide()">📏 Hướng dẫn chọn size</span>
+                        <span class="size-guide-btn" onclick="openSizeGuide()">📏 Bảng quy đổi size</span>
                     </div>
-                    <div class="size-chips" id="size-chips-box">
-                        <button class="chip" onclick="selectSize(this, 38)">38</button>
-                        <button class="chip" onclick="selectSize(this, 39)">39</button>
-                        <button class="chip selected" onclick="selectSize(this, 40)">40</button>
-                        <button class="chip" onclick="selectSize(this, 41)">41</button>
-                        <button class="chip" onclick="selectSize(this, 42)">42</button>
-                        <button class="chip" onclick="selectSize(this, 43)">43</button>
-                        <button class="chip" onclick="selectSize(this, 44)">44</button>
-                    </div>
-                    <div id="detail-size-stock-feedback" style="font-size: 13px; font-weight: 600; margin-top: 8px;">
-                        ✅ Đang kiểm tra tồn kho...
+                    <div class="size-chips" id="size-chips-box"></div>
+                    <div id="detail-size-stock-feedback" style="font-size: 13px; font-weight: 600; margin-top: 6px; color: var(--success);">
+                        ✅ Vui lòng chọn size để kiểm tra số lượng tồn kho.
                     </div>
                 </div>
 
-                <!-- SỐ LƯỢNG & NÚT MUA -->
+                <!-- Số lượng & Nút mua hàng -->
                 <div class="action-row">
                     <div class="qty-box">
                         <button class="qty-btn" onclick="changeQty(-1)">-</button>
@@ -134,164 +126,158 @@
                     </button>
                 </div>
 
-                <!-- CAM KẾT VÀ BẢO HÀNH -->
+                <!-- Cam kết cửa hàng -->
                 <div class="trust-grid">
-                    <div class="trust-item">🚚 <span>Giao nhanh 2-3 ngày toàn quốc</span></div>
-                    <div class="trust-item">🔄 <span>Đổi size miễn phí trong 30 ngày</span></div>
-                    <div class="trust-item">🛡️ <span>Bảo hành keo chỉ 12 tháng</span></div>
-                    <div class="trust-item">📦 <span>Được kiểm tra trước khi nhận</span></div>
+                    <div>🚚 <span>Giao nhanh 2-3 ngày toàn quốc</span></div>
+                    <div>🔄 <span>Đổi trả miễn phí 7 ngày</span></div>
+                    <div>🛡️ <span>Bảo hành chính hãng 12 tháng</span></div>
+                    <div>📦 <span>Được kiểm tra trước khi nhận</span></div>
                 </div>
             </div>
         </div>
 
-        <!-- TABS THÔNG TIN KỸ THUẬT, MÔ TẢ & ĐÁNH GIÁ (RUBRIC II.2) -->
+        <!-- 5. TABS MÔ TẢ, THÔNG SỐ & ĐÁNH GIÁ -->
         <div class="tabs-section">
             <div class="tab-headers">
-                <div class="tab-title active" onclick="switchDetailTab('tab-desc', this)">Mô Tả & Công Nghệ</div>
+                <div class="tab-title active" onclick="switchDetailTab('tab-desc', this)">Mô Tả Sản Phẩm</div>
                 <div class="tab-title" onclick="switchDetailTab('tab-specs', this)">Thông Số Kỹ Thuật</div>
-                <div class="tab-title" id="tab-reviews-title" onclick="switchDetailTab('tab-reviews', this)">⭐ Đánh Giá Khách Hàng (<span id="tab-reviews-badge">0</span>)</div>
+                <div class="tab-title" id="tab-reviews-title" onclick="switchDetailTab('tab-reviews', this)">⭐ Đánh Giá (<span id="tab-reviews-badge">0</span>)</div>
             </div>
 
-            <!-- TAB 1: MÔ TẢ -->
+            <!-- Tab 1: Mô tả -->
             <div id="tab-desc" class="tab-pane" style="display: block;">
-                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">Đặc điểm nổi bật của dòng giày SGU Sneaker</h3>
-                <p style="margin-bottom: 14px; color: #475569;">
-                    Đôi giày được chế tác tỉ mỉ từ những vật liệu tiên tiến nhất. Hệ thống túi khí kép độc quyền hấp thụ xung lực khi gót chân chạm đất, phân tán đều áp lực lên lòng bàn chân, giúp giảm mỏi khi mang cả ngày dài.
+                <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 10px;">Đặc điểm nổi bật của dòng giày</h3>
+                <p style="margin-bottom: 12px; color: #475569;">
+                    Đôi giày được chế tác tỉ mỉ từ vật liệu tiên tiến, hệ thống đệm êm ái hấp thụ xung lực khi vận động, phân tán đều áp lực lên lòng bàn chân, mang lại cảm giác thoải mái khi di chuyển cả ngày dài.
                 </p>
                 <ul style="padding-left: 20px; color: #475569; line-height: 1.8;">
-                    <li><strong>Công nghệ đệm khí tiên tiến:</strong> Đem lại độ đàn hồi cao và khả năng bảo vệ cổ chân.</li>
-                    <li><strong>Lưới dệt kỹ thuật cao:</strong> Hàng nghìn lỗ thông hơi nhỏ li ti giúp bàn chân luôn khô ráo.</li>
-                    <li><strong>Đế ngoài cao su lưu hóa:</strong> Vân bám đa hướng giúp chống trượt trên bề mặt ướt.</li>
-                    <li><strong>Form dáng thể thao hiện đại:</strong> Dễ dàng phối cùng quần jeans, jogger hoặc trang phục thường ngày.</li>
+                    <li><strong>Công nghệ đệm tiên tiến:</strong> Khả năng hoàn trả năng lượng tối đa trên từng sải bước.</li>
+                    <li><strong>Thân vải dệt kỹ thuật:</strong> Giúp bàn chân luôn khô ráo và thoáng mát.</li>
+                    <li><strong>Đế cao su nguyên khối:</strong> Rãnh chống trượt bám dính chắc chắn trên mọi mặt phẳng.</li>
                 </ul>
             </div>
 
-            <!-- TAB 2: THÔNG SỐ KỸ THUẬT -->
+            <!-- Tab 2: Thông số kỹ thuật -->
             <div id="tab-specs" class="tab-pane" style="display: none;">
                 <table class="spec-table">
                     <tr><td>Thương hiệu</td><td id="spec-brand">Nike</td></tr>
-                    <tr><td>Dòng sản phẩm</td><td>Air Max Collection 2025</td></tr>
-                    <tr><td>Chất liệu thân (Upper)</td><td>Vải dệt Flyknit dẻo dai + Da tổng hợp</td></tr>
-                    <tr><td>Chất liệu đế (Outsole)</td><td>Cao su non đúc nguyên khối chống mài mòn</td></tr>
-                    <tr><td>Kiểu dáng</td><td>Cổ thấp (Low-top) / Phong cách Thể thao đường phố</td></tr>
-                    <tr><td>Trọng lượng</td><td>Khoảng 320g / chiếc (Size 41)</td></tr>
-                    <tr><td>Xuất xứ</td><td>Chính hãng nhập khẩu / Việt Nam gia công xuất khẩu</td></tr>
+                    <tr><td>Dòng sản phẩm</td><td>Bộ Sưu Tập Giày Thể Thao</td></tr>
+                    <tr><td>Chất liệu thân</td><td>Vải dệt Flyknit & Da tổng hợp cao cấp</td></tr>
+                    <tr><td>Chất liệu đế</td><td>Cao su non đúc nguyên khối chống mài mòn</td></tr>
+                    <tr><td>Kiểu dáng</td><td>Cổ thấp thể thao đường phố</td></tr>
+                    <tr><td>Trọng lượng</td><td>Khoảng 320g / chiếc</td></tr>
+                    <tr><td>Bảo hành</td><td>12 tháng keo chỉ chính hãng</td></tr>
                 </table>
             </div>
 
-            <!-- TAB 3: ĐÁNH GIÁ KHÁCH HÀNG & FORM GỬI ĐÁNH GIÁ (MỤC II.2) -->
+            <!-- Tab 3: Đánh giá khách hàng -->
             <div id="tab-reviews" class="tab-pane" style="display: none;">
                 <div class="reviews-wrapper">
-                    <!-- PHẦN TỔNG QUAN ĐÁNH GIÁ -->
+                    <!-- Tóm tắt điểm số -->
                     <div class="reviews-summary-card">
                         <div class="rating-big-score" id="review-avg-score">5.0</div>
                         <div>
-                            <div class="stars" style="font-size: 20px;" id="review-stars-display">⭐⭐⭐⭐⭐</div>
-                            <div style="font-size: 13.5px; color: var(--gray); margin-top: 4px;" id="review-total-count">
-                                Dựa trên các nhận xét chân thực từ khách hàng đã trải nghiệm
+                            <div class="stars" style="font-size: 18px;" id="review-stars-display">⭐⭐⭐⭐⭐</div>
+                            <div style="font-size: 13px; color: var(--gray); margin-top: 4px;" id="review-total-count">
+                                Đánh giá từ khách hàng đã trải nghiệm sản phẩm
                             </div>
                         </div>
                     </div>
 
-                    <!-- FORM GỬI ĐÁNH GIÁ MỚI -->
+                    <!-- Form gửi đánh giá -->
                     <div class="review-form-card">
-                        <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">Viết Đánh Giá Của Bạn</h4>
-                        <p style="font-size: 13px; color: var(--gray); margin-bottom: 16px;">
-                            Chia sẻ cảm nhận thực tế về chất lượng sản phẩm, độ êm ái và sự vừa vặn của form giày.
-                        </p>
+                        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Viết Đánh Giá Của Bạn</h4>
                         
-                        <div style="margin-bottom: 14px;">
-                            <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Đánh giá chất lượng:</label>
+                        <div style="margin-bottom: 12px;">
+                            <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 4px;">Đánh giá chất lượng:</label>
                             <div class="star-rating-select" id="star-picker">
                                 <span class="star-opt" data-rating="1" onclick="setReviewRating(1)">★</span>
                                 <span class="star-opt" data-rating="2" onclick="setReviewRating(2)">★</span>
                                 <span class="star-opt" data-rating="3" onclick="setReviewRating(3)">★</span>
                                 <span class="star-opt" data-rating="4" onclick="setReviewRating(4)">★</span>
                                 <span class="star-opt active" data-rating="5" onclick="setReviewRating(5)">★</span>
-                                <strong id="star-rating-label" style="font-size: 13.5px; color: var(--secondary); margin-left: 8px;">5/5 Tuyệt vời</strong>
+                                <strong id="star-rating-label" style="font-size: 13px; margin-left: 8px;">5/5 Tuyệt vời</strong>
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 13px; font-weight: 700;">Họ và tên của bạn: *</label>
-                            <input type="text" id="review-author" class="form-control" placeholder="Họ và tên người đánh giá...">
+                        <div class="form-group">
+                            <label>Họ và tên của bạn: *</label>
+                            <input type="text" id="review-author" class="form-control" placeholder="Họ và tên của bạn...">
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 16px;">
-                            <label style="font-size: 13px; font-weight: 700;">Nội dung nhận xét chi tiết: *</label>
-                            <textarea id="review-content" class="form-control" rows="3" placeholder="Nhập cảm nhận chi tiết về kích cỡ, chất liệu, độ êm ái khi mang..."></textarea>
+                        <div class="form-group">
+                            <label>Nội dung nhận xét chi tiết: *</label>
+                            <textarea id="review-content" class="form-control" rows="3" placeholder="Nhập cảm nhận về kích cỡ, chất liệu, độ êm..."></textarea>
                         </div>
 
-                        <button type="button" class="btn-primary" style="padding: 11px 24px; font-size: 14px;" onclick="submitProductReview()">
-                            ✍️ Gửi Đánh Giá Ngay
+                        <button type="button" class="btn-primary" onclick="submitProductReview()">
+                            ✍️ Gửi Đánh Giá
                         </button>
                     </div>
 
-                    <!-- DANH SÁCH CÁC ĐÁNH GIÁ ĐÃ CÓ -->
+                    <!-- Danh sách nhận xét -->
                     <div class="reviews-list-box">
-                        <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">Tất Cả Nhận Xét Từ Khách Hàng</h4>
+                        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Tất Cả Nhận Xét</h4>
                         <div id="reviews-items-container"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SẢN PHẨM LIÊN QUAN (TỰ ĐỘNG LẤY TỪ SGU_CORE) -->
+        <!-- 6. SẢN PHẨM LIÊN QUAN -->
         <div class="related-section">
             <h2 class="section-title">Có Thể Bạn Cũng Thích</h2>
-            <div class="product-grid" id="related-products-grid">
-                <!-- Javascript render dynamic related products -->
-            </div>
+            <div class="product-grid" id="related-products-grid"></div>
         </div>
     </div>
 
-    <!-- MODAL HƯỚNG DẪN CHỌN SIZE CHUẨN (MỤC II.2) -->
+    <!-- 7. MODAL BẢNG QUY ĐỔI SIZE GIÀY -->
     <div class="modal-overlay" id="modal-size-guide">
         <div class="modal-box">
-            <button class="close-btn" onclick="closeSizeGuide()">✕</button>
-            <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">📏 Bảng Quy Đổi Size Giày Chuẩn</h3>
-            <p style="font-size: 13.5px; color: var(--gray); margin-bottom: 20px;">
-                Đo chiều dài từ gót chân đến đầu ngón chân dài nhất (cm) và đối chiếu bảng bên dưới:
+            <button class="close-modal" onclick="closeSizeGuide()">✕</button>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">📏 Bảng Quy Đổi Size Giày Chuẩn</h3>
+            <p style="font-size: 13px; color: var(--gray); margin-bottom: 16px;">
+                Đo chiều dài từ gót chân đến đầu ngón chân dài nhất (cm) để chọn size phù hợp:
             </p>
             <table class="spec-table" style="text-align: center;">
-                <tr style="background:#f1f5f9; font-weight:800;">
-                    <td>Size EU</td><td>Chiều dài chân (cm)</td><td>Size US</td><td>Độ ôm form</td>
+                <tr style="background:#f1f5f9; font-weight:700;">
+                    <td>Size EU</td><td>Chiều dài chân</td><td>Size US</td><td>Độ ôm form</td>
                 </tr>
                 <tr><td><strong>38</strong></td><td>23.5 - 24.0 cm</td><td>5.5</td><td>Ôm vừa chân</td></tr>
                 <tr><td><strong>39</strong></td><td>24.1 - 24.5 cm</td><td>6.5</td><td>Ôm vừa chân</td></tr>
                 <tr><td><strong>40</strong></td><td>24.6 - 25.0 cm</td><td>7.5</td><td>Chuẩn form</td></tr>
                 <tr><td><strong>41</strong></td><td>25.1 - 25.5 cm</td><td>8.5</td><td>Chuẩn form</td></tr>
-                <tr><td><strong>42</strong></td><td>25.6 - 26.0 cm</td><td>9.0</td><td>Nới nhẹ nửa size</td></tr>
-                <tr><td><strong>43</strong></td><td>26.1 - 26.8 cm</td><td>10.0</td><td>Chuẩn form</td></tr>
+                <tr><td><strong>42</strong></td><td>25.6 - 26.0 cm</td><td>9.0</td><td>Chuẩn form</td></tr>
+                <tr><td><strong>43</strong></td><td>26.1 - 26.8 cm</td><td>10.0</td><td>Nới nửa size</td></tr>
                 <tr><td><strong>44</strong></td><td>26.9 - 27.5 cm</td><td>11.0</td><td>Chuẩn form</td></tr>
             </table>
-            <div style="text-align: right; margin-top: 20px;">
-                <button class="chip selected" style="padding: 10px 24px;" onclick="closeSizeGuide()">Đã Hiểu</button>
+            <div style="text-align: right; margin-top: 16px;">
+                <button class="btn-primary" onclick="closeSizeGuide()">Đã Hiểu</button>
             </div>
         </div>
     </div>
 
-    <!-- ================= FOOTER ================= -->
+    <!-- 8. CHÂN TRANG FOOTER -->
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="logo" style="margin-bottom: 14px; color: #fff; font-size: 20px; font-weight: 800;">
-                    👟 SGU<span style="color: var(--primary, #2563eb);">SNEAKER</span>
+                <div class="logo" style="margin-bottom: 12px; color: #ffffff;">
+                    👟 SGU<span>SNEAKER</span>
                 </div>
-                <p style="line-height: 1.6; margin-bottom: 14px; color: #94a3b8;">
-                    Cửa hàng phân phối giày Sneaker, giày thể thao và thời trang chính hãng uy tín hàng đầu. Cam kết chất lượng, bảo hành chu đáo và giao hàng toàn quốc.
+                <p style="line-height: 1.6; margin-bottom: 12px; color: #94a3b8;">
+                    Cửa hàng phân phối giày Sneaker và giày thể thao chính hãng. Cam kết chất lượng, bảo hành chu đáo và giao hàng toàn quốc.
                 </p>
-                <p style="color: #cbd5e1; margin-bottom: 6px;">📍 <strong>Địa chỉ:</strong> 273 An Dương Vương, P.3, Q.5, TP.HCM</p>
+                <p style="color: #cbd5e1; margin-bottom: 4px;">📍 <strong>Địa chỉ:</strong> 273 An Dương Vương, P.3, Q.5, TP.HCM</p>
                 <p style="color: #cbd5e1;">📞 <strong>Hotline:</strong> 1900 1234 (8:00 - 21:30)</p>
             </div>
             <div class="footer-col">
                 <h4>Về Cửa Hàng</h4>
-                <p style="line-height: 1.6; margin-bottom: 12px; color: #94a3b8;">
-                    Không gian mua sắm uy tín dành cho cộng đồng yêu thích giày chính hãng. Đa dạng mẫu mã từ chạy bộ, tập luyện đến phong cách đường phố năng động.
+                <p style="line-height: 1.6; margin-bottom: 10px; color: #94a3b8;">
+                    Không gian mua sắm uy tín dành cho cộng đồng yêu thích giày thể thao.
                 </p>
-                <div style="color: #cbd5e1; font-size: 13.5px; line-height: 1.9;">
-                    <div>🕒 <strong>Mở cửa:</strong> 08:00 – 22:00 (Tất cả các ngày)</div>
-                    <div>📦 <strong>Giao hàng:</strong> Ship COD toàn quốc từ 2 – 4 ngày</div>
+                <div style="color: #cbd5e1; font-size: 13px; line-height: 1.8;">
+                    <div>🕒 <strong>Mở cửa:</strong> 08:00 – 22:00</div>
+                    <div>📦 <strong>Giao hàng:</strong> Ship COD toàn quốc 2-4 ngày</div>
                     <div>💬 <strong>Tư vấn:</strong> Hỗ trợ giải đáp & chọn size 24/7</div>
                 </div>
             </div>
@@ -300,18 +286,18 @@
                 <ul>
                     <li><a href="javascript:void(0)" onclick="showToast('Đổi trả miễn phí trong 7 ngày nếu lỗi từ NSX!', 'info')">Chính sách đổi trả & bảo hành</a></li>
                     <li><a href="javascript:void(0)" onclick="showToast('Miễn phí giao hàng toàn quốc cho mọi đơn hàng!', 'info')">Giao nhận & vận chuyển</a></li>
-                    <li><a href="javascript:void(0)" onclick="showToast('Hỗ trợ thanh toán khi nhận hàng (COD) hoặc quét mã VietQR!', 'info')">Phương thức thanh toán</a></li>
-                    <li><a href="javascript:void(0)" onclick="showToast('Cam kết 100% sản phẩm chính hãng, phát hiện fake đền x10!', 'info')">Cam kết chính hãng</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Hỗ trợ thanh toán COD hoặc VietQR!', 'info')">Phương thức thanh toán</a></li>
+                    <li><a href="javascript:void(0)" onclick="showToast('Cam kết 100% sản phẩm chính hãng!', 'info')">Cam kết chính hãng</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
             <div>© 2026 SGU Sneaker. Tất cả quyền được bảo lưu.</div>
-            <div>Hệ thống phân phối giày chính hãng cao cấp</div>
+            <div>Hệ thống phân phối giày thể thao chính hãng</div>
         </div>
     </footer>
 
-    <!-- SCRIPTS SGU SNEAKER -->
+    <!-- SCRIPTS -->
     <script src="./assets/js/init-data.js"></script>
     <script src="./assets/js/product-detail.js"></script>
 </body>

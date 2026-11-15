@@ -24,18 +24,17 @@
             <p>Hệ thống quản lý cửa hàng dành cho Chủ shop & Quản lý.</p>
             <div class="form-group">
                 <label for="admin-user">Tài khoản Quản trị</label>
-                <input type="text" id="admin-user" class="form-control" placeholder="Tài khoản (admin)..." autocomplete="username" onkeydown="if(event.key==='Enter') document.getElementById('admin-pass').focus()">
+                <input type="text" id="admin-user" class="form-control" placeholder="Nhập tài khoản quản trị..." autocomplete="username" onkeydown="if(event.key==='Enter') document.getElementById('admin-pass').focus()">
             </div>
             <div class="form-group">
                 <label for="admin-pass">Mật khẩu</label>
-                <input type="password" id="admin-pass" class="form-control" placeholder="Mật khẩu (admin123)..." autocomplete="current-password" onkeydown="if(event.key==='Enter') loginAdmin()">
+                <input type="password" id="admin-pass" class="form-control" placeholder="Nhập mật khẩu..." autocomplete="current-password" onkeydown="if(event.key==='Enter') loginAdmin()">
             </div>
             <button class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;" onclick="loginAdmin()">
                 Đăng Nhập Vào Hệ Thống →
             </button>
-            <div style="margin-top: 14px; display: flex; justify-content: space-between; font-size: 12px; color: var(--gray);">
-                <span>💡 Demo: <strong>admin</strong> | <strong>admin123</strong></span>
-                <a href="index.html" style="text-decoration: underline;">← Quay lại Cửa hàng</a>
+            <div style="margin-top: 14px; text-align: center; font-size: 13px;">
+                <a href="index.html" style="text-decoration: underline; color: var(--gray);">← Quay lại Cửa hàng</a>
             </div>
         </div>
     </div>

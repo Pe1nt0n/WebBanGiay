@@ -3,6 +3,7 @@
  */
 
 // DỮ LIỆU ĐỒNG BỘ QUA SGU_CORE (SHARED DATA CORE)
+var SGU_CORE = window.SGU_CORE;
 let currentUser = null;
 let cartItems = [];
 let allOrders = [];

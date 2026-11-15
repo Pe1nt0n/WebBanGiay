@@ -3,7 +3,7 @@
  */
 
 // 1. DỮ LIỆU SẢN PHẨM MẪU (ĐỒNG BỘ LOCALSTORAGE QUA SGU_CORE)
-const SGU_CORE = window.SGU_CORE;
+var SGU_CORE = window.SGU_CORE;
 const productsData = (window.SGU_CORE && window.SGU_CORE.getProducts) 
     ? window.SGU_CORE.getProducts().filter(p => p.active !== false)
     : [

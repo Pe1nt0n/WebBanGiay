@@ -3,6 +3,7 @@
  */
 
 // DỮ LIỆU ĐỘNG TỪ BỘ KHỞI TẠO DÙNG CHUNG (SGU_CORE)
+var SGU_CORE = window.SGU_CORE;
 let currentProduct = null;
 let currentSelectedSize = 40;
 

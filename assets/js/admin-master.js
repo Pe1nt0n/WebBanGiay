@@ -13,6 +13,7 @@
 
 // ==========================================================
 // 1. TIỆN ÍCH DÙNG CHUNG GIAO DIỆN
+var SGU_CORE = window.SGU_CORE;
 // ==========================================================
 
 // Hệ thống thông báo Toast (Tối đa 3 toast cùng lúc)

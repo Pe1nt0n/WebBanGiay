@@ -788,9 +788,9 @@ function quickImportProduct(prodName, qty) {
     }
     openImportModal('new');
     const selects = document.querySelectorAll('#modal-import select');
-    if (selects.length > 0) {
+    if (selects.length > 0 && selects[0].options) {
         for (let opt of selects[0].options) {
-            if (opt.text.includes(prodName.split(' - ')[0])) {
+            if (opt.text && opt.text.includes(prodName.split(' - ')[0])) {
                 opt.selected = true;
                 break;
             }

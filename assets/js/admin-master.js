@@ -21,8 +21,17 @@ function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
     while (container.children && container.children.length >= 3) {
-        if (container.firstElementChild) container.firstElementChild.remove();
-        else break;
+        if (container.firstElementChild) {
+            if (typeof container.removeChild === 'function') {
+                container.removeChild(container.firstElementChild);
+            } else if (typeof container.firstElementChild.remove === 'function') {
+                container.firstElementChild.remove();
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
     }
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -329,7 +338,7 @@ function loadAdminCategories() {
         prodCatSelect.innerHTML = cats.filter(c => c.active !== false).map(c => 
             `<option value="${c.name}">${c.name}</option>`
         ).join('');
-        if (currentVal && Array.from(prodCatSelect.options).some(o => o.value === currentVal)) {
+        if (currentVal && prodCatSelect.options && Array.from(prodCatSelect.options).some(o => o.value === currentVal)) {
             prodCatSelect.value = currentVal;
         }
     }
@@ -501,7 +510,7 @@ function handleProdImgInput(val) {
     const select = document.getElementById('prod-img-select');
     if (select) {
         const cleanVal = (val || '').trim();
-        const hasOpt = Array.from(select.options).some(opt => opt.value === cleanVal);
+        const hasOpt = select.options ? Array.from(select.options).some(opt => opt.value === cleanVal) : false;
         select.value = hasOpt ? cleanVal : 'custom';
     }
 }
@@ -681,7 +690,7 @@ function openEditProductModal(id) {
     document.getElementById('prod-img').value = shoeImg;
     const imgSelect = document.getElementById('prod-img-select');
     if (imgSelect) {
-        const hasOpt = Array.from(imgSelect.options).some(opt => opt.value === shoeImg);
+        const hasOpt = imgSelect.options ? Array.from(imgSelect.options).some(opt => opt.value === shoeImg) : false;
         imgSelect.value = hasOpt ? shoeImg : 'custom';
     }
     previewShoeImage(shoeImg);

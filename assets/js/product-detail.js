@@ -86,7 +86,6 @@ function initProductDetail() {
     const skuEl = document.getElementById('detail-sku');
     const bcCatEl = document.getElementById('bc-category');
     const priceEl = document.getElementById('detail-price');
-    const oldPriceEl = document.getElementById('detail-old-price');
     const descEl = document.getElementById('detail-desc');
     const imgEl = document.getElementById('main-shoe-img');
 
@@ -97,7 +96,6 @@ function initProductDetail() {
     if (skuEl) skuEl.innerText = p.id;
     if (bcCatEl) bcCatEl.innerText = p.category;
     if (priceEl && window.SGU_CORE) priceEl.innerText = SGU_CORE.formatVND(p.price);
-    if (oldPriceEl && window.SGU_CORE) oldPriceEl.innerText = SGU_CORE.formatVND(p.oldPrice || (p.price * 1.2));
     if (descEl) descEl.innerText = p.desc;
     if (imgEl) imgEl.src = p.img;
 

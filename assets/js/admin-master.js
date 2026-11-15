@@ -760,7 +760,6 @@ function saveProductModal() {
         const profit = existing.profitPercent !== undefined ? existing.profitPercent : 35;
         existing.profitPercent = profit;
         existing.price = Math.round(finalCostPrice * (1 + profit / 100));
-        existing.oldPrice = Math.round(existing.price * 1.15);
         existing.img = img;
         existing.gallery = (existing.gallery && existing.gallery.length) ? existing.gallery : [img];
         existing.gallery[0] = img;
@@ -779,7 +778,6 @@ function saveProductModal() {
             costPrice: finalCostPrice,
             profitPercent: defaultProfit,
             price: sellPrice,
-            oldPrice: Math.round(sellPrice * 1.15),
             stock: 15,
             stockInitial: 15,
             stockImport: 0,

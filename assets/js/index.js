@@ -715,10 +715,7 @@ function renderProducts() {
                 </div>
 
                 <div class="card-price-row">
-                    <div>
-                        <span class="current-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫'}</span>
-                        ${p.oldPrice ? `<span class="old-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.oldPrice) : Number(p.oldPrice).toLocaleString('vi-VN') + ' ₫'}</span>` : ''}
-                    </div>
+                    <span class="current-price">${(window.SGU_CORE && SGU_CORE.formatVND) ? SGU_CORE.formatVND(p.price) : Number(p.price).toLocaleString('vi-VN') + ' ₫'}</span>
                 </div>
 
                 <div class="card-footer-action">

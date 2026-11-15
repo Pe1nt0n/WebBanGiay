@@ -426,7 +426,6 @@ function savePricing(prodId) {
 
     p.profitPercent = percent;
     p.price = newPrice;
-    p.oldPrice = Math.round(newPrice * 1.15);
     SGU_CORE.saveProducts(prods);
 
     if (typeof loadAdminProducts === 'function') loadAdminProducts();

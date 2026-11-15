@@ -20,8 +20,9 @@ var SGU_CORE = window.SGU_CORE;
 function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    while (container.children.length >= 3) {
-        container.firstElementChild.remove();
+    while (container.children && container.children.length >= 3) {
+        if (container.firstElementChild) container.firstElementChild.remove();
+        else break;
     }
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -166,7 +167,7 @@ function switchAdminTab(tabId, navEl) {
         'tab-orders': '#orders',
         'tab-inventory': '#inventory'
     };
-    if (mapHash[tabId]) {
+    if (mapHash[tabId] && typeof history !== 'undefined' && history.replaceState) {
         history.replaceState(null, null, mapHash[tabId]);
     }
 

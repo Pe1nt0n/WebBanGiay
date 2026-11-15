@@ -512,7 +512,10 @@ function changeOrderStatus(selectEl, idx) {
         badge.innerText = val;
         badge.className = 'badge ' + getBadgeClass(val);
     }
-    selectEl.closest('tr').dataset.status = val;
+    if (selectEl && selectEl.closest) {
+        const tr = selectEl.closest('tr');
+        if (tr && tr.dataset) tr.dataset.status = val;
+    }
     if (typeof updateAdminKPIs === 'function') updateAdminKPIs();
     if (typeof showToast === 'function') showToast(`Đã cập nhật đơn ${orders[idx].id} thành "${val}"!`, 'success');
 }

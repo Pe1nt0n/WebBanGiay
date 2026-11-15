@@ -563,22 +563,28 @@ function filterByCategory(cat, element) {
 
 function toggleSizeFilter(btn, size) {
     document.querySelectorAll('.size-grid .size-chip').forEach(c => c.classList.remove('selected'));
-    btn.classList.add('selected');
+    if (btn && btn.classList) btn.classList.add('selected');
     selectedSize = size;
     applyFilters();
 }
 
 function handleBasicSearch() {
-    const keyword = document.getElementById('basic-search-input').value.trim();
-    document.getElementById('adv-name').value = keyword;
+    const searchInput = document.getElementById('basic-search-input');
+    const keyword = searchInput ? searchInput.value.trim() : '';
+    const advName = document.getElementById('adv-name');
+    if (advName) advName.value = keyword;
     applyFilters();
 }
 
 function applyFilters() {
-    const keyword = document.getElementById('adv-name').value.trim();
-    const cat = document.getElementById('adv-category').value;
-    const minPrice = parseInt(document.getElementById('adv-min-price').value) || 0;
-    const maxPrice = parseInt(document.getElementById('adv-max-price').value) || 999999999;
+    const nameEl = document.getElementById('adv-name');
+    const keyword = nameEl ? nameEl.value.trim() : '';
+    const catEl = document.getElementById('adv-category');
+    const cat = (catEl && catEl.value) ? catEl.value : 'Tất cả';
+    const minEl = document.getElementById('adv-min-price');
+    const minPrice = (minEl && minEl.value) ? parseInt(minEl.value) || 0 : 0;
+    const maxEl = document.getElementById('adv-max-price');
+    const maxPrice = (maxEl && maxEl.value) ? parseInt(maxEl.value) || 999999999 : 999999999;
 
     // Chuẩn hóa tiếng Việt không dấu để tìm kiếm thông minh
     const norm = (s) => (window.SGU_CORE && SGU_CORE.removeVietnameseTones) ? SGU_CORE.removeVietnameseTones(s) : (s || '').toLowerCase();

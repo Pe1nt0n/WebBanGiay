@@ -261,7 +261,11 @@ function calculateTotal() {
 // ==========================================================
 // 2. CHỌN ĐỊA CHỈ & PHƯƠNG THỨC THANH TOÁN (MỤC II.3)
 // ==========================================================
+let currentAddressMode = 'default';
+let currentPaymentMode = 'COD';
+
 function selectAddressMode(mode) {
+    currentAddressMode = mode;
     const addrDef = document.getElementById('card-addr-default');
     const addrNew = document.getElementById('card-addr-new');
     const newForm = document.getElementById('new-address-form');
@@ -269,9 +273,13 @@ function selectAddressMode(mode) {
     if (addrDef) addrDef.classList.toggle('selected', mode === 'default');
     if (addrNew) addrNew.classList.toggle('selected', mode === 'new');
     if (newForm) newForm.style.display = mode === 'new' ? 'block' : 'none';
+
+    const radio = document.querySelector(`input[name="addr_mode"][value="${mode}"]`);
+    if (radio) radio.checked = true;
 }
 
 function selectPaymentMethod(mode) {
+    currentPaymentMode = mode;
     const payCod = document.getElementById('pay-card-cod');
     const payBank = document.getElementById('pay-card-bank');
     const bankBox = document.getElementById('bank-box');
@@ -279,6 +287,9 @@ function selectPaymentMethod(mode) {
     if (payCod) payCod.classList.toggle('selected', mode === 'COD');
     if (payBank) payBank.classList.toggle('selected', mode === 'BANK');
     if (bankBox) bankBox.style.display = mode === 'BANK' ? 'block' : 'none';
+
+    const radio = document.querySelector(`input[name="pay_mode"][value="${mode}"]`);
+    if (radio) radio.checked = true;
 }
 
 // ==========================================================
@@ -297,7 +308,8 @@ function handlePlaceOrder() {
     }
 
     const addrRadio = document.querySelector('input[name="addr_mode"]:checked');
-    const addrMode = addrRadio ? addrRadio.value : 'default';
+    const addrMode = (addrRadio && addrRadio.value) ? addrRadio.value : currentAddressMode;
+
     let finalRecipient = currentUser ? currentUser.name : 'Khách vãng lai';
     let finalPhone = currentUser ? currentUser.phone : '0909123456';
     let finalAddress = `${finalRecipient} (${finalPhone}) - ${currentUser ? currentUser.address : '273 An Dương Vương, Q.5, TP.HCM'}`;
@@ -320,7 +332,8 @@ function handlePlaceOrder() {
     }
 
     const payRadio = document.querySelector('input[name="pay_mode"]:checked');
-    const payMode = payRadio ? payRadio.value : 'COD';
+    const payMode = (payRadio && payRadio.value) ? payRadio.value : currentPaymentMode;
+
     const payText = payMode === 'COD' 
         ? 'Tiền mặt khi nhận hàng (COD)' 
         : 'Chuyển khoản VietQR 24/7';
@@ -418,7 +431,10 @@ function handlePlaceOrder() {
 
 // Kiểm tra quyền sở hữu đơn hàng của tài khoản đang đăng nhập
 function isCurrentUserOrder(ord) {
-    if (!currentUser || !ord) return false;
+    if (!ord) return false;
+    if (!currentUser) {
+        return !ord.userId || ord.custEmail === 'guest@sgu.vn';
+    }
     if (currentUser.id && ord.userId && String(ord.userId) === String(currentUser.id)) {
         return true;
     }
